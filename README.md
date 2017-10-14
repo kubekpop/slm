@@ -1,2 +1,2 @@
-# slm
-Simple Linux Manager
+# Simple Linux Manager
+Manager for most common services
