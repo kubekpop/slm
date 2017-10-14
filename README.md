@@ -1,0 +1,2 @@
+# slm
+Simple Linux Manager
