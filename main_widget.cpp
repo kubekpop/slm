@@ -74,8 +74,8 @@ void main_widget::update_module_info()
         for(int i = 0; i < service_names.count(); i++)
         {
             pid_check(pids_names[i],i);
-            port_check(service_names[i],i);
             status_check(service_names[i],i);
+            port_check(service_names[i],i);
             update_log("Done checks for module: "+service_names[i]);
 
         }
@@ -95,6 +95,9 @@ void main_widget::update_module_info()
 
 void main_widget::change_distribution()
 {
+    service_names.clear();
+    pids_names.clear();
+    installCommands.clear();
     QSettings settings;
 
     QString distribution = settings.value("distro").toString();
