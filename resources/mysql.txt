@@ -1,0 +1,95 @@
+#!/bin/bash
+
+
+####
+##SUSE INSTALL
+####
+function installSuse
+{
+echo 'Installing mysql server'
+$usr zypper install mariadb mariadb-client
+
+#echo 'Installing database'
+#$usr mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+
+echo 'Starting mysql and opening secure_installation'
+$usr systemctl start mysql
+$usr mysql_secure_installation
+exit=""
+until [[ $exit != "" ]];
+do
+	echo "Installation complete. Press any key to exit"
+	echo "";
+	read -n1 exit
+done
+exit exit
+}
+
+####
+##ARCH INSTALL
+####
+function installArch
+{
+echo 'Installing mysql server'
+$usr pacman -S mysql
+
+echo 'Installing database'
+$usr mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+
+echo 'Starting mysql and opening secure_installation'
+$usr systemctl start mysqld
+$usr mysql_secure_installation
+exit=""
+until [[ $exit != "" ]];
+do
+	echo "Installation complete. Press any key to exit"
+	echo "";
+	read -n1 exit
+done
+exit exit
+}
+
+####
+##DEB INSTALL
+####
+function installDeb
+{
+echo 'Installing mysql server'
+$usr apt install mariadb-server mariadb-client
+
+#echo 'Installing database'
+#$usr mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+
+echo 'Starting mysql and opening secure_installation'
+$usr systemctl start mysql
+
+$usr mysql_secure_installation
+exit=""
+until [[ $exit != "" ]];
+do
+	echo "Installation complete. Press any key to exit"
+	echo "";
+	read -n1 exit
+done
+exit exit
+}
+
+
+if [ $(whoami) == "root" ];then usr="";else usr="sudo";fi
+
+selekt()
+{
+echo 'Pick your distro:'
+select dist in suse arch deb
+do
+	case "$dist" in
+		"suse")installSuse ;;
+		"arch")installArch ;;
+		"deb")installDeb ;;
+		*)echo 'Wrong value' selekt ;;
+	esac
+	break
+done
+}
+
+selekt

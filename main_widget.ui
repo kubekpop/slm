@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>main_widget</class>
+ <widget class="QWidget" name="main_widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1101</width>
+    <height>681</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Simple Linux Manager</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/new/prefix2/resources/linux.svg</normaloff>:/new/prefix2/resources/linux.svg</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="2" rowspan="6" colspan="2">
+      <layout class="QVBoxLayout" name="buttons">
+       <item>
+        <widget class="QPushButton" name="authorize">
+         <property name="text">
+          <string>Authorize</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="iptables">
+         <property name="text">
+          <string>Iptables</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>jp</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="shell">
+         <property name="text">
+          <string>Shell</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Browse HTTP DIR</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="config">
+         <property name="text">
+          <string>Settings</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="info">
+         <property name="text">
+          <string>Info</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="quit">
+         <property name="text">
+          <string>Quit</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="6" column="0" colspan="2">
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="spacer_top_label">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="status_label">
+         <property name="text">
+          <string>Satus</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="module_label">
+         <property name="text">
+          <string>Module</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="pids_label">
+         <property name="text">
+          <string>PID(s)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="ports_label">
+         <property name="text">
+          <string>Port(s)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="actions_label">
+         <property name="text">
+          <string>Actions</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="5" column="0" colspan="2">
+      <widget class="QTextEdit" name="log">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="3">
+      <spacer name="horizontalSpacer_6">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Maximum</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QScrollArea" name="services_scroll_layout">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="services_layout">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>927</width>
+          <height>274</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <layout class="QHBoxLayout" name="apache_layout">
+           <item>
+            <widget class="QLabel" name="apache_status">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="apache_label">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Module name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Apache</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="apache_pids">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="apache_port">
+             <property name="text">
+              <string>N/A</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="apache_start">
+             <property name="text">
+              <string>Start</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="apache_stop">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>Stop</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="apache_restart">
+             <property name="text">
+              <string>Restart</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="apache_config">
+             <property name="text">
+              <string>Config</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="mysql_layout">
+           <item>
+            <widget class="QLabel" name="mysql_status">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="mysqll">
+             <property name="text">
+              <string>MySQL</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="mysql_pids">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="mysql_port">
+             <property name="text">
+              <string>N/A</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="mysql_start">
+             <property name="text">
+              <string>Start</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="mysql_stop">
+             <property name="text">
+              <string>Stop</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="mysql_restart">
+             <property name="text">
+              <string>Restart</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="mysql_config">
+             <property name="text">
+              <string>Config</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="ftp_layout">
+           <item>
+            <widget class="QLabel" name="ftp_status">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="ftpl">
+             <property name="text">
+              <string>FTP</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="ftp_pids">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="ftp_port">
+             <property name="text">
+              <string>N/A</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="ftp_start">
+             <property name="text">
+              <string>Start</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="ftp_stop">
+             <property name="text">
+              <string>Stop</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="ftp_restart">
+             <property name="text">
+              <string>Restart</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="ftp_config">
+             <property name="text">
+              <string>Config</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="samba_layout">
+           <item>
+            <widget class="QLabel" name="samba_status">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="samba_label">
+             <property name="text">
+              <string>SAMBA</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="samba_pids">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="samba_port">
+             <property name="text">
+              <string>N/A</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="samba_start">
+             <property name="text">
+              <string>Start</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="samba_stop">
+             <property name="text">
+              <string>Stop</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="samba_restart">
+             <property name="text">
+              <string>Restart</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="samba_config">
+             <property name="text">
+              <string>Config</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="dhcp_layout">
+           <item>
+            <widget class="QLabel" name="dhcp_status">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="dhcp_label">
+             <property name="text">
+              <string>DHCP</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="dhcp_pids">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="dhcp_port">
+             <property name="text">
+              <string>N/A</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="dhcp_start">
+             <property name="text">
+              <string>Start</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="dhcp_stop">
+             <property name="text">
+              <string>Stop</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="dhcp_restart">
+             <property name="text">
+              <string>Restart</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="dhcp_config">
+             <property name="text">
+              <string>Config</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="nfs_layout">
+           <item>
+            <widget class="QLabel" name="nfs_status">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="nfs_label">
+             <property name="text">
+              <string>NFS</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="nfs_pids">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="nfs_port">
+             <property name="text">
+              <string>N/A</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="nfs_start">
+             <property name="text">
+              <string>Start</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="nfs_stop">
+             <property name="text">
+              <string>Stop</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="nfs_restart">
+             <property name="text">
+              <string>Restart</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="nfs_config">
+             <property name="text">
+              <string>Config</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <spacer name="horizontalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>100</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="1">
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap resource="resources.qrc">:/new/prefix2/resources/linux.png</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="title_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Sans Serif</family>
+           <pointsize>14</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+           <kerning>true</kerning>
+          </font>
+         </property>
+         <property name="text">
+          <string>Simple Linux Manager</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>quit</sender>
+   <signal>clicked()</signal>
+   <receiver>main_widget</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>922</x>
+     <y>496</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>502</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

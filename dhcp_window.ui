@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dhcp_window</class>
+ <widget class="QWidget" name="dhcp_window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>866</width>
+    <height>579</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <widget class="QStackedWidget" name="content">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="configure_server_1">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <item row="5" column="0">
+        <layout class="QHBoxLayout" name="last_addres_layout">
+         <item>
+          <widget class="QLabel" name="last_addres_label">
+           <property name="text">
+            <string>Last address</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="last_addres"/>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="0">
+        <layout class="QHBoxLayout" name="first_address_layout">
+         <item>
+          <widget class="QLabel" name="first_address_label">
+           <property name="text">
+            <string>First address</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="first_address"/>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <layout class="QHBoxLayout" name="subnet_layout">
+         <item>
+          <widget class="QLabel" name="subnet_label">
+           <property name="text">
+            <string>Subnet ip</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="subnet_ip">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IP address&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="subnet_mask_label">
+           <property name="text">
+            <string>mask</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="subnet_mask">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Netmask eg. 255.255.255.0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0">
+        <layout class="QHBoxLayout" name="default_gateway_layout">
+         <item>
+          <widget class="QLabel" name="default_gateway_label">
+           <property name="text">
+            <string>Default gateway</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="default_gateway"/>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="configure_server_1_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Configure new server (1/2)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <layout class="QHBoxLayout" name="broadcast_layout">
+         <item>
+          <widget class="QLabel" name="broadcast_label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Broadcast</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="broadcast">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Broadcast address&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="configure_server_2">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <item row="1" column="0">
+        <layout class="QHBoxLayout" name="dns_layout">
+         <item>
+          <widget class="QLabel" name="dns_label">
+           <property name="text">
+            <string>DNS</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="dns"/>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <layout class="QHBoxLayout" name="domain_name_layout">
+         <item>
+          <widget class="QLabel" name="domain_name_label">
+           <property name="text">
+            <string>Domain-name</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="domain_name"/>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0">
+        <layout class="QHBoxLayout" name="max_lease_layout">
+         <item>
+          <widget class="QLabel" name="max_lease_label">
+           <property name="text">
+            <string>Max lease time</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="max_lease"/>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="0">
+        <widget class="QPushButton" name="configure_server_apply">
+         <property name="text">
+          <string>Apply</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="configure_server_2_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Configure new server (2/2)</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="host_reservation">
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="8" column="1">
+        <layout class="QHBoxLayout" name="fixed_ip_layout">
+         <item>
+          <widget class="QLabel" name="fixed_ip_label">
+           <property name="text">
+            <string>Fixed IP</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="fixed_ip"/>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="host_reservation_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Host reservation</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <layout class="QHBoxLayout" name="hardware_address_layout">
+         <item>
+          <widget class="QLabel" name="hardware_address_label">
+           <property name="text">
+            <string>Hardware Address</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="hardware_address"/>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="1">
+        <layout class="QHBoxLayout" name="select_host_layout">
+         <item>
+          <widget class="QComboBox" name="select_host_combo_box">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <item>
+            <property name="text">
+             <string>new</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="select_host_input"/>
+         </item>
+        </layout>
+       </item>
+       <item row="9" column="1">
+        <widget class="QPushButton" name="host_reservation_apply">
+         <property name="text">
+          <string>Apply</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="top_label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Ignored">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>18</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>DHCP</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="back">
+       <property name="text">
+        <string>Back</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="next">
+       <property name="text">
+        <string>Next</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

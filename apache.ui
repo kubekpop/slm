@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>apache</class>
+ <widget class="QWidget" name="apache">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>935</width>
+    <height>538</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="3" column="1">
+    <layout class="QHBoxLayout" name="error_document_layout">
+     <item>
+      <widget class="QLabel" name="error_document_label">
+       <property name="text">
+        <string>ErrorDocument</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="error_document_spin">
+       <property name="specialValueText">
+        <string>404</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="error_document"/>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="1">
+    <layout class="QHBoxLayout" name="error_log_layout">
+     <item>
+      <widget class="QLabel" name="error_log_label">
+       <property name="text">
+        <string>ErrorLog</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="error_log"/>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="1">
+    <layout class="QHBoxLayout" name="directory_directive_layout">
+     <item>
+      <widget class="QLabel" name="directory_directive_label">
+       <property name="text">
+        <string>Directory Directive</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="directory_directive_combobox">
+       <item>
+        <property name="text">
+         <string>new</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="1">
+    <layout class="QHBoxLayout" name="site_layout">
+     <item>
+      <widget class="QLabel" name="site_label">
+       <property name="text">
+        <string>Site</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="site_combo_box">
+       <item>
+        <property name="text">
+         <string>new</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="7" column="1">
+    <layout class="QHBoxLayout" name="options_layout">
+     <item>
+      <widget class="QLabel" name="options_label">
+       <property name="text">
+        <string>Options</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="options_indexes">
+       <property name="text">
+        <string>Indexes</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="options_followsymlinks">
+       <property name="text">
+        <string>FollowSymLinks</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="1">
+    <layout class="QHBoxLayout" name="document_root_layout">
+     <item>
+      <widget class="QLabel" name="document_root_label">
+       <property name="text">
+        <string>DocumentRoot</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="document_root"/>
+     </item>
+    </layout>
+   </item>
+   <item row="6" column="1">
+    <layout class="QHBoxLayout" name="directory_layout">
+     <item>
+      <widget class="QLabel" name="directory_label">
+       <property name="text">
+        <string>Directory (set to DocumentRoot)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="directory"/>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="apache_label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Apache Sites</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <layout class="QHBoxLayout" name="allow_override_layout">
+     <item>
+      <widget class="QLabel" name="allow_override_label">
+       <property name="text">
+        <string>Allow override</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="override_all">
+       <property name="text">
+        <string>All</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="override_none">
+       <property name="text">
+        <string>None</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="8" column="1">
+    <layout class="QHBoxLayout" name="require_all_layout">
+     <item>
+      <widget class="QWidget" name="widget" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="require_all_label">
+          <property name="text">
+           <string>Require all</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="require_granted">
+          <property name="text">
+           <string>granted</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="require_denied">
+          <property name="text">
+           <string>denied</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="10" column="1">
+    <layout class="QHBoxLayout" name="apply_layout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="apply">
+       <property name="text">
+        <string>Apply</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

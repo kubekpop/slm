@@ -1,0 +1,124 @@
+#!/bin/bash 
+
+
+####
+##SUSE INSTALLATION
+####
+installSuse () 
+{
+echo 'Installing apache and php'
+
+$usr zypper install apache2 php5 php5-mysql php5-mcrypt apache2-mod_php5 php5-mbstring php-mcrypt php-gd php-json php-zlib
+file='/etc/apache2/httpd.conf'
+
+$usr cp $file $file.apache
+
+echo "Enabling php module"
+$usr a2enmod php5
+
+exit='';
+
+until [[ $exit != "" ]];do
+	echo "Installation complete. Press any key to exit"
+	echo "";
+	read -n1 exit
+done
+
+exit exit
+}
+
+####
+##ARCH INSTALLATION
+####
+installArch ()
+{
+echo 'Installing apache and php'
+
+$usr pacman -S apache php php-apache
+file='/etc/httpd/conf/httpd.conf'
+cp $file $file.apache
+#COMMENTER
+echo 'Enabling/disabling modules'
+
+$usr sed -e '/LoadModule mpm_event_module modules\/mod_mpm_event.so/ s/^#*/#/' -i $file
+$usr sed -e '/LoadModule unique_id_module modules\/mod_unique_id.so/ s/^#*/#/' -i $file
+egrep 'LoadModule mpm_prefork_module modules/mod_mpm_prefork.so' $file && oki="Tak" || oki="Nie"
+
+if [ $oki=="Tak" ];then
+
+	var="LoadModule mpm_prefork_module modules/mod_mpm_prefork.so"
+	line=$(grep -n 'LoadModule mpm_prefork_module modules/mod_mpm_prefork.so' $file |cut -d: -f1)
+
+	#UNCOMMENTER
+	$usr sed -i "$line""s/# *//" $file
+
+	else
+	echo 'LoadModule mpm_prefork_module modules/mod_mpm_prefork.so' >> $file
+fi
+
+echo 'Adding additional content'
+
+echo 'LoadModule php7_module modules/libphp7.so' >> $file
+echo 'AddHandler php7-script php' >> $file
+echo 'Include conf/extra/php7_module.conf' >> $file
+
+exit=""
+until [[ $exit != "" ]];do
+	echo "Installation complete. Press any key to exit"
+	echo "";
+	read -n1 exit
+done
+
+exit exit
+}
+
+
+####
+##DEB INSTALLATION
+####
+installDeb () 
+{
+echo 'Installing apache and php'
+
+#$usr apt install apache2 php5 libapache2-mod-php5 php5-apcu php5-mysqlnd
+$usr apt install apache2 php7.0 libapache2-mod-php7.0 php7.0-mysql
+file='/etc/apache2/apache2.conf'
+
+cp $file $file.apache
+
+#$usr a2enmod proxy_fcgi setenvif
+#$usr sudo a2enconf php7.0-fpm
+
+
+
+exit=""
+until [[ $exit != "" ]];do
+	echo "Installation complete. Press any key to exit"
+	echo "";
+	read -n1 exit
+done
+
+exit exit
+}
+
+
+
+
+if [ $(whoami) == "root" ];then usr="";else usr="sudo";fi
+
+selekt()
+{
+echo 'Pick your distro:'
+select dist in suse arch deb
+do
+	case "$dist" in
+		"suse")installSuse ;;
+		"arch")installArch ;;
+		"deb")installDeb ;;
+		*)echo 'Wrong value' selekt ;;
+	esac
+	break
+done
+}
+
+selekt

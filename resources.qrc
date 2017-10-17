@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/new/prefix2">
+        <file>resources/blank.PNG</file>
+        <file>resources/working.PNG</file>
+        <file>resources/error.PNG</file>
+        <file>resources/cursor.png</file>
+        <file>resources/tux.png</file>
+        <file>resources/linux.svg</file>
+        <file>resources/linux.png</file>
+    </qresource>
+    <qresource prefix="/new/skrypcikiinstalujace">
+        <file>resources/apache.txt</file>
+        <file>resources/mysql.txt</file>
+        <file>resources/phpmyadmin.txt</file>
+        <file>resources/phpmyadmin.conf</file>
+        <file>resources/ftp.txt</file>
+    </qresource>
+</RCC>

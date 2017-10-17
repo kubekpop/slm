@@ -1,0 +1,133 @@
+#!/bin/bash 
+
+
+####
+##INSTALL SUSE
+####
+function installSuse
+{
+echo 'Installing phpmyadmin'
+
+$usr zypper in phpMyAdmin
+file='/etc/httpd/conf/httpd.conf'
+cp $file $file.pma
+
+echo 'Enabling/disabling modules'
+#echo 'Include conf/extra/phpmyadmin.conf' > $file
+#echo 'Creating config in /etc/httpd/conf/extra/phpmyadmin.conf'
+#cat .phpmyadmin.conf > /etc/httpd/conf/extra/phpmyadmin.conf
+
+
+#COMMENTER
+
+filePhp='/etc/php5/apache2/php.ini'
+fileAdmin='/etc/apache2/conf.d/phpMyAdmin.conf'
+
+$usr sed -e '/extension=php_mbstring.dll/ s/^;*//' -i $filePhp
+#$usr sed -i '/TEXT_TO_BE_REPLACED/c\This line is removed by the admin.' $fileAdmin
+
+
+exit=""
+until [[ $exit != "" ]];
+do
+	echo "Installation complete. Press any key to exit"
+	echo "";
+	read -n1 exit
+done
+
+exit exit
+}
+
+####
+##ARCH INSTALL
+####
+function installArch
+{
+echo 'Installing phpmyadmin'
+
+$usr pacman -S phpmyadmin php-mcrypt
+file='/etc/httpd/conf/httpd.conf'
+cp $file $file.pma
+
+echo 'Enabling/disabling modules'
+echo 'Include conf/extra/phpmyadmin.conf' >> $file
+
+echo 'Creating config in /etc/httpd/conf/extra/phpmyadmin.conf'
+cat .phpmyadmin.conf > /etc/httpd/conf/extra/phpmyadmin.conf
+
+
+#COMMENTER
+
+filePhp='/etc/php/php.ini'
+
+$usr sed -e '/extension=bz2.so/ s/^;*//' -i $filePhp
+$usr sed -e '/extension=mcrypt.so/ s/^;*//' -i $filePhp
+$usr sed -e '/extension=mysqli.so/ s/^;*//' -i $filePhp
+
+exit=""
+until [[ $exit != "" ]];
+do
+	echo "Installation complete. Press any key to exit"
+	echo "";
+	read -n1 exit
+done
+
+exit exit
+}
+
+####
+##INSTALL DEB
+####
+function installDeb
+{
+echo 'Installing phpmyadmin'
+
+$usr apt install phpmyadmin
+#file='/etc/httpd/conf/httpd.conf'
+#cp $file $file.pma
+
+echo 'Enabling/disabling modules'
+#echo 'Include conf/extra/phpmyadmin.conf' > $file
+#echo 'Creating config in /etc/httpd/conf/extra/phpmyadmin.conf'
+#cat .phpmyadmin.conf > /etc/httpd/conf/extra/phpmyadmin.conf
+
+
+#COMMENTER
+
+filePhp='/etc/php5/apache2/php.ini'
+fileAdmin='/etc/apache2/conf.d/phpMyAdmin.conf'
+
+#$usr sed -e '/extension=php_mbstring.dll/ s/^;*//' -i $filePhp
+#$usr sed -i '/TEXT_TO_BE_REPLACED/c\This line is removed by the admin.' $fileAdmin
+
+
+exit=""
+until [[ $exit != "" ]];
+do
+	echo "Installation complete. Press any key to exit"
+	echo "";
+	read -n1 exit
+done
+
+exit exit
+}
+
+
+if [ $(whoami) == "root" ];then usr="";else usr="sudo";fi
+
+selekt()
+{
+echo 'Pick your distro:'
+select dist in suse arch deb
+do
+	case "$dist" in
+		"suse")installSuse ;;
+		"arch")installArch ;;
+		"deb")installDeb ;;
+		*)echo 'Wrong value' selekt ;;
+	esac
+	break
+done
+}
+
+selekt

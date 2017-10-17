@@ -1,0 +1,92 @@
+netstat -i |  sed -n 3,89p | awk '{ print $1 }' //Listowanie interfejsów
+netstat -i | sed -n 3,89p | awk '{ print  $1 }' | sed ':a;N;$!ba;s/\n/,/g'
+
+
+iptables --policy policja [DROP/ACCEPT/REJECT] //domyślna policja dla tablicuf iptables[];
+
+
+###
+##Opensuse jako router  na świat
+###
+iptables -t nat -A POSTROUTING -o $iface -j MASQUERADE //ustawia maskarade
+sysctl -w net.ipv4.ip_forward=1 //włącza forwardowanko
+iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT //enabla takie tam
+		
+
+
+###
+##Input port/adres
+###
+
+$command="iptables -t INPUT ";
+	if(isset(input-ip))
+	{
+	$command .= '-s '.$sourceip.' ';
+	}
+	
+	if(isset(input-port))
+	{
+	$command .= '-p tcp --sport '.$input-port.' ';
+	}
+	
+	if(isset(input-iface))
+	{
+	$command .= '--in-interface '.$input-iface.' ';
+	}
+	
+
+###
+##FORWARD(prerouting)
+##
+
+$command="iptables -t nat -A PREROUTING  "; //Początek komendy
+	
+if(isset(source-ip)
+{
+$command .= '-s '.$source-ip.' ';
+}		
+
+if(isset(source-port)
+{		
+$command .= '-p tcp --sport '.$source-port.' ';
+}		
+	
+if(isset(iface-src)
+{
+$command .= '--in-interface '.$iface-src.' ';
+}
+	
+if(isset(port-dest)
+{
+$command .= '--dport '.$port-dest.' ';
+}
+	
+if(isset(dest-ip))
+{
+	if($dest-ip != ""&& $destport != "")
+	{
+	$command .= '-j DNAT --to-destination '.$dest-ip.':'.$destport.' ';
+	}
+	else
+	{
+	$command .= '-j DNAT --to-destination '.$dest-ip.' ';	
+	}
+}
+	
+if(isset(forward-iface-src))
+{
+$command .= '--in-interface '.$forward-iface-src.' ';
+}
+
+if(isset(iface-dest))
+{
+$command .= '-o '.$iface-dest.' ';
+}
+	
+$command .= '-m state --state NEW,RELATED,ESTABLISHED -j ACCEPT';
+
+iptables -A FORWARD -i $iface-src -o $iface-dest -p tcp --sport $source-port -d $dest-ip --dport $destport -m state --state NEW -j ACCEPT
+
+iptables -A FORWARD -i $iface-src -o $iface-dest -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+iptables -A FORWARD -i $iface-dest -o $iface-src -m state --state ESTABLISHED,RELATED -j ACCEPT
