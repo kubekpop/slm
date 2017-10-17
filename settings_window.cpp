@@ -26,7 +26,7 @@ settings_window::~settings_window()
 
 void settings_window::settings_prepare_window()
 {
-	if(is_authorised== true)
+    if(is_authorised== true)
     {
         ui->install_apache->setDisabled(false);
         ui->install_nfs->setDisabled(false);
@@ -48,16 +48,67 @@ void settings_window::settings_prepare_window()
         ui->install_mysql->setDisabled(true);
         ui->install_samba->setDisabled(true);
     }
-	
+
+    QSettings settings;
+    QString distro = settings.value("distro").toString();
+    if(distro == "suse")
+    {
+        ui->distribution_select->setCurrentIndex(0);
+    }
+    else if(distro == "ubuntu")
+    {
+        ui->distribution_select->setCurrentIndex(1);
+    }
+    else if(distro == "fedora")
+    {
+        ui->distribution_select->setCurrentIndex(2);
+    }
+    else if(distro == "arch")
+    {
+        ui->distribution_select->setCurrentIndex(3);
+    }
+    else if(distro == "debian")
+    {
+        ui->distribution_select->setCurrentIndex(4);
+    }
+    else
+    {
+        ui->distribution_select->setCurrentIndex(2);
+    }
 }
 
 void settings_window::on_install_phpmyadmin_clicked()
 {
-    QString command = "echo '[00028]'`dnf -y install phpmyadmin2 > /var/log/slm.log && echo 'Successfully installed phpmyadmin' || echo 'Failed to install PMA'`'[XXXXX]' \n";
+    QString command = "echo '[00029]'`"+installCommands[0]+" > /var/log/slm.log && echo 'Successfully installed phpmyadmin' || echo 'Failed to install PMA'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
 
 void settings_window::on_install_apache_clicked()
 {
+    QString command = "echo '[00028]'`"+installCommands[0]+" > /var/log/slm.log && echo 'Successfully installed Apache' || echo 'Failed to install Apache'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}
 
+void settings_window::on_distribution_select_currentIndexChanged(int index)
+{
+    QSettings settings;
+    switch(index)
+    {
+    case 0:
+        settings.setValue("distro", "suse");
+        break;
+    case 1:
+        settings.setValue("distro", "ubuntu");
+        break;
+    case 2:
+        settings.setValue("distro", "fedora");
+        break;
+    case 3:
+        settings.setValue("distro", "arch");
+        break;
+    case 4:
+        settings.setValue("distro", "debian");
+        break;
+    }
+    emit distro_changed();
 }
