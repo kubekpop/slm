@@ -1,4 +1,3 @@
 # Simple Linux Manager
 Manager for most common services
-<b>SLM</b>
-https://slm.tuxdev.com
+Project website: https://slm.tuxdev.com
