@@ -30,7 +30,8 @@ SOURCES += \
     apache.cpp \
     dhcp_window.cpp \
     ftp_window.cpp \
-    settings_window.cpp
+    settings_window.cpp \
+    firewall_window.cpp
 
 HEADERS += \
         main_widget.h \
@@ -38,7 +39,8 @@ HEADERS += \
     apache.h \
     dhcp_window.h \
     ftp_window.h \
-    settings_window.h
+    settings_window.h \
+    firewall_window.h
 
 FORMS += \
         main_widget.ui \
@@ -46,7 +48,8 @@ FORMS += \
     apache.ui \
     dhcp_window.ui \
     ftp_window.ui \
-    settings_window.ui
+    settings_window.ui \
+    firewall_window.ui
 
 RESOURCES += \
     resources.qrc

@@ -6,11 +6,15 @@
 #include <QScrollBar>
 #include <QDebug>
 #include <QCloseEvent>
+#include <QSettings>
+#include <QScrollBar>
+
 #include "nfs.h"
 #include "apache.h"
 #include "dhcp_window.h"
 #include "ftp_window.h"
 #include "settings_window.h"
+#include "firewall_window.h"
 
 namespace Ui {
 class main_widget;
@@ -27,6 +31,7 @@ public:
     void root_setup();
     QProcess *bash_root;
 
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -36,6 +41,8 @@ private slots:
     void authorisation(QString user);
 
     void lock_interface(bool interface_locked);
+
+    void change_distribution();
 
     void on_iptables_clicked();
 
@@ -91,12 +98,19 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void update_log(QString new_content);
+
+    void update_module_info();
+
 private:
     Ui::main_widget *ui;
     QScrollBar *log_scrollbar;
     QStringList service_names;
     QStringList pids_names;
     bool is_authorised;
+    QStringList installCommands;
+    QString log_string;
+    settings_window *settings_win;
 };
 
 #endif // MAIN_WIDGET_H

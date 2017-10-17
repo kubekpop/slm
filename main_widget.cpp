@@ -38,16 +38,72 @@ void main_widget::startup()
     bash_root = new QProcess(this);
     bash_root->start("/bin/bash");
     connect(bash_root, SIGNAL(readyRead()), this, SLOT(bash_root_reader()));
-    // todo: read chosen distribution from settings
-    QString distribution = "fedora";
 
-    ui->log->append("SLM dev.");
-    ui->log->append("Distribution: "+distribution);
-    ui->log->append("Current kernel: 4.13.4-200.fc26.x86_64");
-    ui->log->append(QTime::currentTime().toString()+" Loading modules...");
+    // get scrollbar
+    log_scrollbar = ui->log->verticalScrollBar();
 
+    // print version
+    update_log("SLM dev. [version]");
 
+    //setup interface before authorisation
+    is_authorised = false;
+    lock_interface(true);
 
+    // set app info
+    QCoreApplication::setOrganizationName("Tuxdev");
+    QCoreApplication::setOrganizationDomain("slm.tuxdev.com");
+    QCoreApplication::setApplicationName("SLM");
+
+    // get distribution from settings
+    change_distribution();
+
+    // print startup info
+    bash_root->write("echo '[00036]'`uname -r`'[XXXXX]' \n");
+
+    //windows
+    settings_win = new settings_window();
+    connect(settings_win, SIGNAL(distro_changed()),this, SLOT(change_distribution()));
+    settings_win->bash_root = bash_root;
+}
+
+void main_widget::update_module_info()
+{
+    update_log("Loading modules...");
+    if(is_authorised == true)
+    {
+        for(int i = 0; i < service_names.count(); i++)
+        {
+            pid_check(pids_names[i],i);
+            port_check(service_names[i],i);
+            status_check(service_names[i],i);
+            update_log("Done checks for module: "+service_names[i]);
+
+        }
+    }
+    else
+    {
+        for(int i = 0; i < service_names.count(); i++)
+        {
+            pid_check(pids_names[i],i);
+            status_check(service_names[i],i);
+            update_log("Done checks for module: "+service_names[i]);
+
+        }
+    }
+    update_log("Done module checking");
+}
+
+void main_widget::change_distribution()
+{
+    QSettings settings;
+
+    QString distribution = settings.value("distro").toString();
+    update_log("Distribution: "+distribution);
+    if(distribution == "")
+    {
+        distribution = "fedora";
+        settings.setValue("distro","fedora");
+    }
 
     if(distribution == "suse")
     {
@@ -68,6 +124,15 @@ void main_widget::startup()
 
         service_names.append("nfs-server");
         pids_names.append("nfsd");
+
+        installCommands.append("dnf install -y httpd php php-common");      //install Apache
+        installCommands.append("dnf install -y dhcp-server");               //install dhcp-server
+        installCommands.append("dnf install -y nfs-utils");                 //install nfs server
+        installCommands.append("dnf install -y exo");                       //install exo
+        installCommands.append("dnf install -y mysql-server");              //install mysql server
+        installCommands.append("dnf install -y vsftpd");                    //install ftp-server
+        installCommands.append("dnf install -y samba");                     //install samba
+        installCommands.append("dnf install -y phpmyadmin");                //install phpmyadmin
     }
     else if(distribution == "fedora")
     {
@@ -89,7 +154,14 @@ void main_widget::startup()
         service_names.append("nfs-server");
         pids_names.append("nfsd");
 
-
+        installCommands.append("dnf install -y httpd php php-common");      //install Apache
+        installCommands.append("dnf install -y dhcp-server");               //install dhcp-server
+        installCommands.append("dnf install -y nfs-utils");                 //install nfs server
+        installCommands.append("dnf install -y exo");                       //install exo
+        installCommands.append("dnf install -y mysql-server");              //install mysql server
+        installCommands.append("dnf install -y vsftpd");                    //install ftp-server
+        installCommands.append("dnf install -y samba");                     //install samba
+        installCommands.append("dnf install -y phpmyadmin");                //install phpmyadmin
 
 
     }
@@ -112,20 +184,19 @@ void main_widget::startup()
 
         service_names.append("nfs-server");
         pids_names.append("nfsd");
+
+        installCommands.append("dnf install -y httpd php php-common");      //install Apache
+        installCommands.append("dnf install -y dhcp-server");               //install dhcp-server
+        installCommands.append("dnf install -y nfs-utils");                 //install nfs server
+        installCommands.append("dnf install -y exo");                       //install exo
+        installCommands.append("dnf install -y mysql-server");              //install mysql server
+        installCommands.append("dnf install -y vsftpd");                    //install ftp-server
+        installCommands.append("dnf install -y samba");                     //install samba
+        installCommands.append("dnf install -y phpmyadmin");                //install phpmyadmin
     }
+
     // update information about services
-
-    for(int i = 0; i < service_names.count(); i++)
-    {
-        pid_check(pids_names[i],i);
-        status_check(service_names[i],i);
-        ui->log->append(QTime::currentTime().toString()+" Done checks for module: "+service_names[i]);
-
-    }
-    ui->log->append(QTime::currentTime().toString()+" Done module checking");
-    //ui->log->append(QTime::currentTime().toString());
-    is_authorised = false;
-    lock_interface(true);
+    update_module_info();
 }
 
 void main_widget::root_setup()
@@ -151,8 +222,7 @@ void main_widget::authorisation(QString user)
 {
     if(user == "root")
     {
-        qInfo()<< "Autoryzacja zakonczona..."<<user;
-        ui->log->append(QTime::currentTime().toString()+" Authorization successful");
+        update_log("Authorization successful");
 
         is_authorised = true;
         lock_interface(false);
@@ -161,11 +231,20 @@ void main_widget::authorisation(QString user)
     }
     else
     {
-        qInfo()<< "Autoryzacja nieudana..."<<user;
-        ui->log->append(QTime::currentTime().toString()+" Authorization failed");
+        update_log("Authorization failed");
 
         lock_interface(true);
         //interfejs zablokowany
+    }
+}
+
+void main_widget::update_log(QString new_content)
+{
+    if(new_content != "")
+    {
+    log_string += "<font color=\"darkgreen\">" + QTime::currentTime().toString() + "</font> " + new_content + "<br/>";
+    ui->log->setHtml(log_string);
+    log_scrollbar->setValue(log_scrollbar->maximum());
     }
 }
 
@@ -428,7 +507,30 @@ void main_widget::bash_output_processor(QString output_from_bash)
             status_check(service_names[2],2);
             break;
         case 28:
-            ui->log->setText(output);
+            update_log(output);
+            break;
+        case 29:
+            update_log(output);
+        case 30:
+            update_log(output);
+            break;
+        case 31:
+            update_log(output);
+            break;
+        case 32:
+            update_log(output);
+            break;
+        case 33:
+            update_log(output);
+            break;
+        case 34:
+            update_log(output);
+            break;
+        case 35:
+            update_log(output);
+            break;
+        case 36:
+            update_log("Current kernel: "+output);
             break;
         default:
             // todo: error
@@ -755,7 +857,8 @@ void main_widget::set_port(QString port, int module_number)
 
 void main_widget::on_iptables_clicked()
 {
-
+    firewall_window *firewall = new firewall_window();
+    firewall->show();
 }
 
 void main_widget::on_shell_clicked()
@@ -765,11 +868,10 @@ void main_widget::on_shell_clicked()
 
 void main_widget::on_config_clicked()
 {
-    settings_window *settings = new settings_window();
-    settings->bash_root = bash_root;
-	setttings->is_authorised = is_authorised;
-	settings->settings_prepare_window();
-    settings->show();
+    settings_win->is_authorised = is_authorised;
+    settings_win->installCommands = installCommands;
+    settings_win->settings_prepare_window();
+    settings_win->show();
 }
 
 void main_widget::on_info_clicked()
@@ -900,4 +1002,6 @@ void main_widget::on_pushButton_clicked()
     ui->samba_config->setEnabled(true);
     ui->dhcp_config->setEnabled(true);
     ui->nfs_config->setEnabled(true);
+    is_authorised = true;
+    ui->iptables->setEnabled(true);
 }
