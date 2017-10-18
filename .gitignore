@@ -40,3 +40,6 @@ CMakeLists.txt.user*
 #dropbox
 .dropbox
 
+#windows
+desktop.ini
+
