@@ -2,6 +2,7 @@
 #define FIREWALL_WINDOW_H
 
 #include <QWidget>
+#include <QProcess>
 
 namespace Ui {
 class firewall_window;
@@ -13,9 +14,15 @@ class firewall_window : public QWidget
 
 public:
     explicit firewall_window(QWidget *parent = 0);
-    void firewall_prepare_window();
-
+    void firewall_prepare_window(QString ifaces);
+    QProcess *bash_root;
     ~firewall_window();
+
+signals:
+    void data_to_log(QString new_content);
+
+private slots:
+    void on_dnat_apply_clicked();
 
 private:
     Ui::firewall_window *ui;

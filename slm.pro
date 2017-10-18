@@ -26,31 +26,30 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         main_widget.cpp \
-    nfs.cpp \
-    apache.cpp \
     dhcp_window.cpp \
     ftp_window.cpp \
     settings_window.cpp \
-    firewall_window.cpp
+    firewall_window.cpp \
+    apache_window.cpp \
+    nfs_window.cpp
 
 HEADERS += \
         main_widget.h \
-    nfs.h \
-    apache.h \
     dhcp_window.h \
     ftp_window.h \
     settings_window.h \
-    firewall_window.h
+    firewall_window.h \
+    apache_window.h \
+    nfs_window.h
 
 FORMS += \
         main_widget.ui \
-    nfs.ui \
-    apache.ui \
     dhcp_window.ui \
     ftp_window.ui \
     settings_window.ui \
     firewall_window.ui \
-    form.ui
+    apache_window.ui \
+    nfs_window.ui
 
 RESOURCES += \
     resources.qrc

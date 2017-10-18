@@ -17,6 +17,12 @@ main_widget::~main_widget()
 void main_widget::closeEvent(QCloseEvent *event)
 {
     event->accept();
+    apache_win->close();
+    dhcp_win->close();
+    firewall_win->close();
+    ftp_win->close();
+    nfs_win->close();
+    settings_win->close();
     /*
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Sure?", "Exit XUMPP Lite?", QMessageBox::Yes | QMessageBox::No);
@@ -61,6 +67,20 @@ void main_widget::startup()
 
 
     //windows
+
+    apache_win = new apache_window();
+
+    dhcp_win = new dhcp_window();
+
+    firewall_win = new firewall_window();
+    firewall_win->bash_root = bash_root;
+    connect(firewall_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
+
+    ftp_win = new ftp_window();
+    ftp_win->bash_root = bash_root;
+
+    nfs_win = new nfs_window();
+
     settings_win = new settings_window();
     connect(settings_win, SIGNAL(distro_changed()),this, SLOT(change_distribution()));
     settings_win->bash_root = bash_root;
@@ -535,6 +555,13 @@ void main_widget::bash_output_processor(QString output_from_bash)
         case 36:
             update_log("Current kernel: "+output);
             break;
+        case 37:
+            firewall_win->firewall_prepare_window(output);
+            firewall_win->show();
+            break;
+        case 38:
+            update_log("Dnat command applied: "+output);
+            break;
         default:
             // todo: error
             break;
@@ -860,8 +887,7 @@ void main_widget::set_port(QString port, int module_number)
 
 void main_widget::on_iptables_clicked()
 {
-    firewall_window *firewall = new firewall_window();
-    firewall->show();
+    bash_root->write("echo '[00037]'`ls -A1 /sys/class/net | sed ':a;N;$!ba;s/\\n/-separate-/g'`'[XXXXX]' \n");
 }
 
 void main_widget::on_shell_clicked()
@@ -912,8 +938,7 @@ void main_widget::on_apache_restart_clicked()
 
 void main_widget::on_apache_config_clicked()
 {
-    apache *apache_window = new apache();
-    apache_window->show();
+    apache_win->show();
 }
 
 void main_widget::on_nfs_start_clicked()
@@ -945,8 +970,7 @@ void main_widget::on_nfs_restart_clicked()
 
 void main_widget::on_nfs_config_clicked()
 {
-    nfs *nfs_window = new nfs();
-    nfs_window->show();
+    nfs_win->show();
 }
 
 void main_widget::on_samba_config_clicked()
@@ -956,7 +980,6 @@ void main_widget::on_samba_config_clicked()
 
 void main_widget::on_dhcp_config_clicked()
 {
-    dhcp_window *dhcp_win = new dhcp_window();
     dhcp_win->show();
 }
 
@@ -990,8 +1013,6 @@ void main_widget::on_ftp_restart_clicked()
 
 void main_widget::on_ftp_config_clicked()
 {
-    ftp_window *ftp_win = new ftp_window();
-    ftp_win->bash_root = bash_root;
     ftp_win->show();
     ftp_win->ftpOptionCheck();
     ftp_win->ftpOptionCheckText();

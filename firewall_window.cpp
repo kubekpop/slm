@@ -1,6 +1,6 @@
 #include "firewall_window.h"
 #include "ui_firewall_window.h"
-//ls -A1 /sys/class/net | sed ':a;N;$!ba;s/\n/-/g'
+//ls -A1 /sys/class/net | sed ':a;N;$!ba;s/\n/=/g'
 
 
 firewall_window::firewall_window(QWidget *parent) :
@@ -9,8 +9,12 @@ firewall_window::firewall_window(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QString ifaces = "any=eth0=eth2=eth3";
-    QStringList interfaces = ifaces.split("=");
+
+}
+void firewall_window::firewall_prepare_window(QString ifaces)
+{
+    QStringList interfaces = ifaces.split("-separate-");
+    interfaces.prepend("");
     foreach(QString iface, interfaces)
     {
         iface.replace("\n","");
@@ -23,15 +27,21 @@ firewall_window::firewall_window(QWidget *parent) :
         ui->custom_port_interface->addItem(iface);
     }
 }
-void firewall_window::firewall_prepare_window()
+/*
+firewall_window::dnat()
 {
-
-
+    bash_root->write();
+    emit data_to_log("komenda");
 }
-
+*/
 firewall_window::~firewall_window()
 {
     delete ui;
 }
 
 
+
+void firewall_window::on_dnat_apply_clicked()
+{
+   emit data_to_log("komenda");
+}

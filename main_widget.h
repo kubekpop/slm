@@ -9,8 +9,8 @@
 #include <QSettings>
 #include <QScrollBar>
 
-#include "nfs.h"
-#include "apache.h"
+#include "nfs_window.h"
+#include "apache_window.h"
 #include "dhcp_window.h"
 #include "ftp_window.h"
 #include "settings_window.h"
@@ -110,6 +110,12 @@ private:
     bool is_authorised;
     QStringList installCommands;
     QString log_string;
+
+    apache_window *apache_win;
+    dhcp_window *dhcp_win;
+    firewall_window * firewall_win;
+    ftp_window *ftp_win;
+    nfs_window *nfs_win;
     settings_window *settings_win;
 };
 
