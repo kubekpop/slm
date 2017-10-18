@@ -13,10 +13,13 @@ class firewall_window : public QWidget
 
 public:
     explicit firewall_window(QWidget *parent = 0);
+    void firewall_prepare_window();
+
     ~firewall_window();
 
 private:
     Ui::firewall_window *ui;
+    QStringList interfaces;
 };
 
 #endif // FIREWALL_WINDOW_H

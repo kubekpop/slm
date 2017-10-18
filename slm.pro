@@ -49,7 +49,8 @@ FORMS += \
     dhcp_window.ui \
     ftp_window.ui \
     settings_window.ui \
-    firewall_window.ui
+    firewall_window.ui \
+    form.ui
 
 RESOURCES += \
     resources.qrc

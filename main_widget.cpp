@@ -44,7 +44,7 @@ void main_widget::startup()
 
     // print version
     update_log("SLM dev. [version]");
-
+    bash_root->write("echo '[00036]'`uname -r`'[XXXXX]' \n");
     //setup interface before authorisation
     is_authorised = false;
     lock_interface(true);
@@ -58,7 +58,7 @@ void main_widget::startup()
     change_distribution();
 
     // print startup info
-    bash_root->write("echo '[00036]'`uname -r`'[XXXXX]' \n");
+
 
     //windows
     settings_win = new settings_window();
