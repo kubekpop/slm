@@ -16,7 +16,7 @@ DEBIAN/UBUNTU:
 SLM is a GUI binary file either installed from rpm/deb package or run directly from an executable. It's supposed to run as a standard user. Advanced options appear after authenticating in a program.
 
 #### Main window
-dsa
+This section shows manageable services, their status, functional buttons to start/stop/restart
 
 #### FTP Configurator
 
