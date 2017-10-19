@@ -38,6 +38,14 @@ This panel is used for firewall configuration. It uses iptables command. Availab
 * List rules in chain and delete them
 
 #### Apache Configurator
+This panel is used for Apache configuration. Available features:
+* Add new vhost
+  * Root directory
+  * Server address
+  * Log file
+* Manage existing vhosts
+  * Change root directory
+  * Change server address
 
 #### Samba Configurator
 
