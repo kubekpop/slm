@@ -28,6 +28,18 @@ private slots:
 
     void on_distribution_select_currentIndexChanged(int index);
 
+    void on_install_nfs_clicked();
+
+    void on_install_mysql_clicked();
+
+    void on_install_samba_clicked();
+
+    void on_install_dhcp_clicked();
+
+    void on_install_ftp_clicked();
+
+    void on_install_exo_clicked();
+
 signals:
     void distro_changed();
 

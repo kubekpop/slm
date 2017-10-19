@@ -79,7 +79,7 @@ void settings_window::settings_prepare_window()
 
 void settings_window::on_install_phpmyadmin_clicked()
 {
-    QString command = "echo '[00029]'`"+installCommands[0]+" > /var/log/slm.log && echo 'Successfully installed phpmyadmin' || echo 'Failed to install PMA'`'[XXXXX]' \n";
+    QString command = "echo '[00029]'`"+installCommands[7]+" > /var/log/slm.log && echo 'Successfully installed phpmyadmin' || echo 'Failed to install phpmyadmin'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
 
@@ -111,4 +111,40 @@ void settings_window::on_distribution_select_currentIndexChanged(int index)
         break;
     }
     emit distro_changed();
+}
+
+void settings_window::on_install_nfs_clicked()
+{
+    QString command = "echo '[00030]'`"+installCommands[2]+" > /var/log/slm.log && echo 'Successfully installed nfs' || echo 'Failed to install nfs'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}
+
+void settings_window::on_install_mysql_clicked()
+{
+    QString command = "echo '[00031]'`"+installCommands[4]+" > /var/log/slm.log && echo 'Successfully installed mysql' || echo 'Failed to install mysql'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}
+
+void settings_window::on_install_samba_clicked()
+{
+    QString command = "echo '[00032]'`"+installCommands[6]+" > /var/log/slm.log && echo 'Successfully installed samba' || echo 'Failed to install samba'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}
+
+void settings_window::on_install_dhcp_clicked()
+{
+    QString command = "echo '[00033]'`"+installCommands[1]+" > /var/log/slm.log && echo 'Successfully installed dhcp' || echo 'Failed to install dhcp'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}
+
+void settings_window::on_install_ftp_clicked()
+{
+    QString command = "echo '[00034]'`"+installCommands[5]+" > /var/log/slm.log && echo 'Successfully installed ftp' || echo 'Failed to install ftp'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}
+
+void settings_window::on_install_exo_clicked()
+{
+    QString command = "echo '[00035]'`"+installCommands[3]+" > /var/log/slm.log && echo 'Successfully installed exo' || echo 'Failed to install exo'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
 }

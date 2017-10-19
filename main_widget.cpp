@@ -534,6 +534,7 @@ void main_widget::bash_output_processor(QString output_from_bash)
             break;
         case 29:
             update_log(output);
+            break;
         case 30:
             update_log(output);
             break;
