@@ -102,6 +102,26 @@ private slots:
 
     void update_module_info();
 
+    void on_mysql_start_clicked();
+
+    void on_mysql_stop_clicked();
+
+    void on_mysql_restart_clicked();
+
+    void on_samba_start_clicked();
+
+    void on_samba_stop_clicked();
+
+    void on_samba_restart_clicked();
+
+    void on_dhcp_start_clicked();
+
+    void on_dhcp_stop_clicked();
+
+    void on_dhcp_restart_clicked();
+
+    void on_mysql_config_clicked();
+
 private:
     Ui::main_widget *ui;
     QScrollBar *log_scrollbar;

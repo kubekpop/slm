@@ -113,7 +113,7 @@
            <bool>true</bool>
           </property>
           <property name="autoExclusive">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -127,6 +127,9 @@
           </property>
           <property name="text">
            <string>rw</string>
+          </property>
+          <property name="autoExclusive">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -157,6 +160,9 @@
           <property name="checked">
            <bool>true</bool>
           </property>
+          <property name="autoExclusive">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -167,6 +173,9 @@
           <property name="text">
            <string>root_squash</string>
           </property>
+          <property name="autoExclusive">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -176,6 +185,9 @@
           </property>
           <property name="text">
            <string>no_root_suqash</string>
+          </property>
+          <property name="autoExclusive">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

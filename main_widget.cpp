@@ -162,13 +162,13 @@ void main_widget::change_distribution()
         service_names.append("httpd");
         pids_names.append("httpd");
 
-        service_names.append("mysqld");
-        pids_names.append("mysql");
+        service_names.append("mariadb");
+        pids_names.append("mysqld");
 
         service_names.append("vsftpd");
         pids_names.append("vsftpd");
 
-        service_names.append("smbd");
+        service_names.append("smb");
         pids_names.append("smbd");
 
         service_names.append("dhcpd");
@@ -231,7 +231,6 @@ void main_widget::root_setup()
         status_check(service_names[i],i);
     }
 }
-
 
 void main_widget::on_authorize_clicked()
 {
@@ -431,137 +430,190 @@ void main_widget::bash_output_processor(QString output_from_bash)
             authorisation(output);
             break;
         case 1:
-            set_status(output, 0);
+            set_status(output, 0);//status check for Apache
             break;
         case 2:
-            set_status(output, 1);
+            set_status(output, 1);//status check for mysql
             break;
         case 3:
-            set_status(output, 2);
+            set_status(output, 2);//status check for ftp
             break;
         case 4:
-            set_status(output, 3);
+            set_status(output, 3);//status check for samba
             break;
         case 5:
-            set_status(output, 4);
+            set_status(output, 4);//status check for dhcp
             break;
         case 6:
-            set_pids(output, 0);
+            set_pids(output, 0);//pid check for apache
             break;
         case 7:
-            set_pids(output, 1);
+            set_pids(output, 1);//pid check for mysql
             break;
         case 8:
-            set_pids(output, 2);
+            set_pids(output, 2);//pid check for ftp
             break;
         case 9:
-            set_pids(output, 3);
+            set_pids(output, 3);//pid check for samba
             break;
         case 10:
-            set_pids(output, 4);
+            set_pids(output, 4);//pid check for dhcp
             break;
         case 11:
-            set_status(output, 5);
+            set_status(output, 5);//status check for nfs
             break;
         case 12:
-            set_pids(output, 5);
+            set_pids(output, 5);//pid check for nfs
             break;
         case 13:
-            set_port(output,0);
+            set_port(output,0);//port check for apache
             break;
         case 14:
-            set_port(output,1);
+            set_port(output,1);//port check for mysql
             break;
         case 15:
-            set_port(output,2);
+            set_port(output,2);//port check for ftp
             break;
         case 16:
-            set_port(output,3);
+            set_port(output,3);//port check for samba
             break;
         case 17:
-            set_port(output,4);
+            set_port(output,4);//port check for dhcp
             break;
         case 18:
-            set_port(output,5);
+            set_port(output,5);//port check for nfs
             break;
         case 19:
-            pid_check(pids_names[0],0);
+            pid_check(pids_names[0],0);//start apache
             port_check(service_names[0],0);
             status_check(service_names[0],0);
             break;
         case 20:
-            pid_check(pids_names[0],0);
+            pid_check(pids_names[0],0);//stop apache
             port_check(service_names[0],0);
             status_check(service_names[0],0);
             break;
         case 21:
-            pid_check(pids_names[0],0);
+            pid_check(pids_names[0],0);//restart apache
             port_check(service_names[0],0);
             status_check(service_names[0],0);
             break;
         case 22:
-            pid_check(pids_names[5],5);
+            pid_check(pids_names[5],5);//start nfs
             port_check(service_names[5],5);
             status_check(service_names[5],5);
             break;
         case 23:
-            pid_check(pids_names[5],5);
+            pid_check(pids_names[5],5);//stop nfs
             port_check(service_names[5],5);
             status_check(service_names[5],5);
             break;
         case 24:
-            pid_check(pids_names[5],5);
+            pid_check(pids_names[5],5);//restart nfs
             port_check(service_names[5],5);
             status_check(service_names[5],5);
             break;
         case 25:
-            pid_check(pids_names[2],2);
+            pid_check(pids_names[2],2);//start ftp
             port_check(service_names[2],2);
             status_check(service_names[2],2);
             break;
         case 26:
-            pid_check(pids_names[2],2);
+            pid_check(pids_names[2],2);//stop ftp
             port_check(service_names[2],2);
             status_check(service_names[2],2);
             break;
         case 27:
-            pid_check(pids_names[2],2);
+            pid_check(pids_names[2],2);//restart ftp
             port_check(service_names[2],2);
             status_check(service_names[2],2);
             break;
         case 28:
-            update_log(output);
+            update_log(output);//apache install
+            update_module_info();
             break;
         case 29:
-            update_log(output);
+            update_log(output);//phpmyadmin install
+            update_module_info();
             break;
         case 30:
-            update_log(output);
+            update_log(output);//ftp install
+            update_module_info();
             break;
         case 31:
-            update_log(output);
+            update_log(output);//samba install
+            update_module_info();
             break;
         case 32:
-            update_log(output);
+            update_log(output);//dhcp install
+            update_module_info();
             break;
         case 33:
-            update_log(output);
+            update_log(output);//nfs install
+            update_module_info();
             break;
         case 34:
-            update_log(output);
+            update_log(output);//mysql install
+            update_module_info();
             break;
         case 35:
-            update_log(output);
+            update_log(output);//exo install
+            update_module_info();
             break;
         case 36:
-            update_log("Current kernel: "+output);
+            update_log("Current kernel: "+output);//kernel info
             break;
         case 37:
-            firewall_win->firewall_prepare_window(output);
+            firewall_win->firewall_prepare_window(output);//gets interfaces and opens firewall
             firewall_win->show();
             break;
         case 38:
             update_log("Dnat command applied: "+output);
+            break;
+        case 39:
+            pid_check(pids_names[1],1);//start mysql
+            port_check(service_names[1],1);
+            status_check(service_names[1],1);
+            break;
+        case 40:
+            pid_check(pids_names[1],1);//stop mysql
+            port_check(service_names[1],1);
+            status_check(service_names[1],1);
+            break;
+        case 41:
+            pid_check(pids_names[1],1);//restart mysql
+            port_check(service_names[1],1);
+            status_check(service_names[1],1);
+            break;
+        case 42:
+            pid_check(pids_names[3],3);//start samba
+            port_check(service_names[3],3);
+            status_check(service_names[3],3);
+            break;
+        case 43:
+            pid_check(pids_names[3],3);//stop samba
+            port_check(service_names[3],3);
+            status_check(service_names[3],3);
+            break;
+        case 44:
+            pid_check(pids_names[3],3);//restart samba
+            port_check(service_names[3],3);
+            status_check(service_names[3],3);
+            break;
+        case 45:
+            pid_check(pids_names[4],4);//start dhcp
+            port_check(service_names[4],4);
+            status_check(service_names[4],4);
+            break;
+        case 46:
+            pid_check(pids_names[4],4);//stop dhcp
+            port_check(service_names[4],4);
+            status_check(service_names[4],4);
+            break;
+        case 47:
+            pid_check(pids_names[4],4);//restart dhcp
+            port_check(service_names[4],4);
+            status_check(service_names[4],4);
             break;
         default:
             // todo: error
@@ -974,17 +1026,6 @@ void main_widget::on_nfs_config_clicked()
     nfs_win->show();
 }
 
-void main_widget::on_samba_config_clicked()
-{
-
-}
-
-void main_widget::on_dhcp_config_clicked()
-{
-    dhcp_win->show();
-}
-
-
 void main_widget::on_ftp_start_clicked()
 {
     QString start_comand = "echo '[00025]'`systemctl start "+service_names[2]+"`'[XXXXX]' \n";
@@ -1029,4 +1070,100 @@ void main_widget::on_pushButton_clicked()
     ui->nfs_config->setEnabled(true);
     is_authorised = true;
     ui->iptables->setEnabled(true);
+}
+
+void main_widget::on_mysql_start_clicked()
+{
+    QString start_comand = "echo '[00039]'`systemctl start "+service_names[1]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->mysql_start->setEnabled(false);
+    ui->mysql_stop->setEnabled(false);
+    ui->mysql_restart->setEnabled(false);
+}
+
+void main_widget::on_mysql_stop_clicked()
+{
+    QString start_comand = "echo '[00040]'`systemctl stop "+service_names[1]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->mysql_start->setEnabled(false);
+    ui->mysql_stop->setEnabled(false);
+    ui->mysql_restart->setEnabled(false);
+}
+
+void main_widget::on_mysql_restart_clicked()
+{
+    QString start_comand = "echo '[00041]'`systemctl restart "+service_names[1]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->mysql_start->setEnabled(false);
+    ui->mysql_stop->setEnabled(false);
+    ui->mysql_restart->setEnabled(false);
+}
+
+void main_widget::on_mysql_config_clicked()
+{
+
+}
+
+void main_widget::on_samba_start_clicked()
+{
+    QString start_comand = "echo '[00042]'`systemctl start "+service_names[3]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->samba_start->setEnabled(false);
+    ui->samba_stop->setEnabled(false);
+    ui->samba_restart->setEnabled(false);
+}
+
+void main_widget::on_samba_stop_clicked()
+{
+    QString start_comand = "echo '[00043]'`systemctl stop "+service_names[3]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->samba_start->setEnabled(false);
+    ui->samba_stop->setEnabled(false);
+    ui->samba_restart->setEnabled(false);
+}
+
+void main_widget::on_samba_restart_clicked()
+{
+    QString start_comand = "echo '[00044]'`systemctl restart "+service_names[3]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->samba_start->setEnabled(false);
+    ui->samba_stop->setEnabled(false);
+    ui->samba_restart->setEnabled(false);
+}
+
+void main_widget::on_samba_config_clicked()
+{
+
+}
+
+void main_widget::on_dhcp_start_clicked()
+{
+    QString start_comand = "echo '[00045]'`systemctl start "+service_names[4]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->dhcp_start->setEnabled(false);
+    ui->dhcp_stop->setEnabled(false);
+    ui->dhcp_restart->setEnabled(false);
+}
+
+void main_widget::on_dhcp_stop_clicked()
+{
+    QString start_comand = "echo '[00046]'`systemctl stop "+service_names[4]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->dhcp_start->setEnabled(false);
+    ui->dhcp_stop->setEnabled(false);
+    ui->dhcp_restart->setEnabled(false);
+}
+
+void main_widget::on_dhcp_restart_clicked()
+{
+    QString start_comand = "echo '[00047]'`systemctl restart "+service_names[4]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->dhcp_start->setEnabled(false);
+    ui->dhcp_stop->setEnabled(false);
+    ui->dhcp_restart->setEnabled(false);
+}
+
+void main_widget::on_dhcp_config_clicked()
+{
+    dhcp_win->show();
 }

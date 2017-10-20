@@ -13,6 +13,13 @@ firewall_window::firewall_window(QWidget *parent) :
 }
 void firewall_window::firewall_prepare_window(QString ifaces)
 {
+    ui->source_interface->clear();
+    ui->destination_interface->clear();
+    ui->local_interface->clear();
+    ui->internet_interface->clear();
+    ui->allowed_interface_services->clear();
+    ui->custom_port_interface->clear();
+
     QStringList interfaces = ifaces.split("-separate-");
     interfaces.prepend("");
     foreach(QString iface, interfaces)
