@@ -217,7 +217,36 @@ void main_widget::change_distribution()
         installCommands.append("dnf install -y samba");                     //install samba
         installCommands.append("dnf install -y phpmyadmin");                //install phpmyadmin
     }
+    else if(distribution == "arch")
+    {
 
+        service_names.append("httpd");
+        pids_names.append("httpd");
+
+        service_names.append("mysqld");
+        pids_names.append("mysql");
+
+        service_names.append("vsftpd");
+        pids_names.append("vsftpd");
+
+        service_names.append("smbd");
+        pids_names.append("smbd");
+
+        service_names.append("dhcpd4");
+        pids_names.append("dhcpd");
+
+        service_names.append("nfs-server");
+        pids_names.append("nfsd");
+
+        installCommands.append("pacman -S apache php-apache --noconfirm");      //install Apache
+        installCommands.append("pacman -S dhcp --noconfirm");               //install dhcp-server
+        installCommands.append("pacman -S nfs-utils --noconfirm");                 //install nfs server
+        installCommands.append("pacman -S exo --noconfirm");                       //install exo
+        installCommands.append("pacman -S mysql --noconfirm");              //install mysql server
+        installCommands.append("pacman -S vsftpd --noconfirm");                    //install ftp-server
+        installCommands.append("pacman -S samba --noconfirm");                     //install samba
+        installCommands.append("pacman -S phpmyadmin --noconfirm");                //install phpmyadmin
+    }
     // update information about services
     update_module_info();
 }
