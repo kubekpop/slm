@@ -83,12 +83,17 @@
        </item>
        <item>
         <property name="text">
-         <string>CentOS/Fedora/RedHat</string>
+         <string>Fedora</string>
         </property>
        </item>
        <item>
         <property name="text">
          <string>Arch</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>CentOS/RedHat</string>
         </property>
        </item>
        <item>

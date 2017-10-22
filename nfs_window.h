@@ -2,6 +2,7 @@
 #define NFS_WINDOW_H
 
 #include <QWidget>
+#include <QProcess>
 
 namespace Ui {
 class nfs_window;
@@ -14,9 +15,10 @@ class nfs_window : public QWidget
 public:
     explicit nfs_window(QWidget *parent = 0);
     ~nfs_window();
+    QProcess *bash_root;
+    void nfs_prepare_window();
 
 private slots:
-    void collector();
 
     void on_share_combobox_currentTextChanged(const QString &arg1);
 

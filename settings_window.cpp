@@ -1,15 +1,5 @@
 #include "settings_window.h"
 #include "ui_settings_window.h"
-/*
-installCommands.append("dnf install -y httpd php php-common");      //install Apache
-installCommands.append("dnf install -y dhcp-server");               //install dhcp-server
-installCommands.append("dnf install -y nfs-utils");                 //install nfs server
-installCommands.append("dnf install -y exo");                       //install exo
-installCommands.append("dnf install -y mysql-server");              //install mysql server
-installCommands.append("dnf install -y vsftpd");                    //install ftp-server
-installCommands.append("dnf install -y samba");                     //install samba
-installCommands.append("dnf install -y phpmyadmin");                //install phpmyadmin
-*/
 
 settings_window::settings_window(QWidget *parent) :
     QWidget(parent),
@@ -67,9 +57,13 @@ void settings_window::settings_prepare_window()
     {
         ui->distribution_select->setCurrentIndex(3);
     }
-    else if(distro == "debian")
+    else if(distro == "centos")
     {
         ui->distribution_select->setCurrentIndex(4);
+    }
+    else if(distro == "debian")
+    {
+        ui->distribution_select->setCurrentIndex(5);
     }
     else
     {
@@ -107,6 +101,9 @@ void settings_window::on_distribution_select_currentIndexChanged(int index)
         settings.setValue("distro", "arch");
         break;
     case 4:
+        settings.setValue("distro", "centos");
+        break;
+    case 5:
         settings.setValue("distro", "debian");
         break;
     }

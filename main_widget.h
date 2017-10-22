@@ -127,6 +127,7 @@ private:
     QScrollBar *log_scrollbar;
     QStringList service_names;
     QStringList pids_names;
+    QStringList ports_names;
     bool is_authorised;
     QStringList installCommands;
     QString log_string;

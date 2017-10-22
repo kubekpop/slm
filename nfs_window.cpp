@@ -13,7 +13,7 @@ nfs_window::~nfs_window()
     delete ui;
 }
 
-void nfs_window::collector()
+void nfs_window::nfs_prepare_window()
 {
 
 }
@@ -26,5 +26,8 @@ void nfs_window::on_share_combobox_currentTextChanged(const QString &arg1)
 void nfs_window::on_apply_clicked()
 {
     QString name = ui->share_combobox->currentText();
+    if(ui->all_squash_radio->isChecked())
+    {
 
+    }
 }

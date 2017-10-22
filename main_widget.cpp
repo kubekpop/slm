@@ -80,6 +80,7 @@ void main_widget::startup()
     ftp_win->bash_root = bash_root;
 
     nfs_win = new nfs_window();
+    nfs_win->bash_root = bash_root;
 
     settings_win = new settings_window();
     connect(settings_win, SIGNAL(distro_changed()),this, SLOT(change_distribution()));
@@ -95,7 +96,7 @@ void main_widget::update_module_info()
         {
             pid_check(pids_names[i],i);
             status_check(service_names[i],i);
-            port_check(service_names[i],i);
+            port_check(ports_names[i],i);
             update_log("Done checks for module: "+service_names[i]);
 
         }
@@ -117,6 +118,7 @@ void main_widget::change_distribution()
 {
     service_names.clear();
     pids_names.clear();
+    ports_names.clear();
     installCommands.clear();
     QSettings settings;
 
@@ -132,21 +134,63 @@ void main_widget::change_distribution()
     {
         service_names.append("apache2");
         pids_names.append("apache2");
+        ports_names.append("httpd");
 
         service_names.append("mysql");
         pids_names.append("mysql");
+        ports_names.append("mysql");
 
         service_names.append("vsftpd");
         pids_names.append("vsftpd");
+        ports_names.append("vsftpd");
 
-        service_names.append("smbd");
+        service_names.append("smb");
         pids_names.append("smbd");
+        ports_names.append("smb");
 
         service_names.append("dhcpd");
         pids_names.append("dhcpd");
+        ports_names.append("dhcpd");
 
         service_names.append("nfs-server");
         pids_names.append("nfsd");
+        ports_names.append("nfs");
+        //rpcinfo -p | grep nfs
+
+        installCommands.append("zypper install -y apache2 php7 php7-pear apache2-mod_php7");      //install Apache
+        installCommands.append("zypper install -y dhcp-server");                                  //install dhcp-server
+        installCommands.append("zypper install -y nfs-kernel-server");                            //install nfs server
+        installCommands.append("zypper install -y exo-tools");                                    //install exo
+        installCommands.append("zypper install -y mysql-community-server");                       //install mysql server
+        installCommands.append("zypper install -y vsftpd");                                       //install ftp-server
+        installCommands.append("zypper install -y samba");                                        //install samba
+        installCommands.append("zypper install -y phpMyAdmin");                                   //install phpmyadmin
+    }
+    else if(distribution == "fedora")
+    {
+        service_names.append("httpd");
+        pids_names.append("httpd");
+        ports_names.append("httpd");
+
+        service_names.append("mariadb");
+        pids_names.append("mysqld");
+        ports_names.append("mysqld");
+
+        service_names.append("vsftpd");
+        pids_names.append("vsftpd");
+        ports_names.append("vsftpd");
+
+        service_names.append("smb");
+        pids_names.append("smbd");
+        ports_names.append("smbd");
+
+        service_names.append("dhcpd");
+        pids_names.append("dhcpd");
+        ports_names.append("dhcpd");
+
+        service_names.append("nfs-server");
+        pids_names.append("nfsd");
+        ports_names.append("nfs");
 
         installCommands.append("dnf install -y httpd php php-common");      //install Apache
         installCommands.append("dnf install -y dhcp-server");               //install dhcp-server
@@ -156,26 +200,34 @@ void main_widget::change_distribution()
         installCommands.append("dnf install -y vsftpd");                    //install ftp-server
         installCommands.append("dnf install -y samba");                     //install samba
         installCommands.append("dnf install -y phpmyadmin");                //install phpmyadmin
+
+
     }
-    else if(distribution == "fedora")
+    else if(distribution == "centos")
     {
         service_names.append("httpd");
         pids_names.append("httpd");
+        ports_names.append("httpd");
 
-        service_names.append("mariadb");
+        service_names.append("mariadb-server");
         pids_names.append("mysqld");
+        ports_names.append("mysqld");
 
         service_names.append("vsftpd");
         pids_names.append("vsftpd");
+        ports_names.append("vsftpd");
 
         service_names.append("smb");
         pids_names.append("smbd");
+        ports_names.append("smbd");
 
-        service_names.append("dhcpd");
+        service_names.append("dhcp");
         pids_names.append("dhcpd");
+        ports_names.append("dhcpd");
 
         service_names.append("nfs-server");
         pids_names.append("nfsd");
+        ports_names.append("nfs");
 
         installCommands.append("dnf install -y httpd php php-common");      //install Apache
         installCommands.append("dnf install -y dhcp-server");               //install dhcp-server
@@ -192,21 +244,27 @@ void main_widget::change_distribution()
     {
         service_names.append("apache2");
         pids_names.append("apache2");
+        ports_names.append("apache2");
 
         service_names.append("mysqld");
         pids_names.append("mysql");
+        ports_names.append("mysql");
 
         service_names.append("vsftpd");
         pids_names.append("vsftpd");
+        ports_names.append("vsftpd");
 
         service_names.append("smbd");
         pids_names.append("smbd");
+        ports_names.append("smbd");
 
         service_names.append("isc-dhcp-server");
         pids_names.append("dhcpd");
+        ports_names.append("dhcpd");
 
         service_names.append("nfs-server");
         pids_names.append("nfsd");
+        ports_names.append("nfs");
 
         installCommands.append("dnf install -y httpd php php-common");      //install Apache
         installCommands.append("dnf install -y dhcp-server");               //install dhcp-server
@@ -222,30 +280,71 @@ void main_widget::change_distribution()
 
         service_names.append("httpd");
         pids_names.append("httpd");
+        ports_names.append("httpd");
 
         service_names.append("mysqld");
         pids_names.append("mysql");
+        ports_names.append("mysql");
 
         service_names.append("vsftpd");
         pids_names.append("vsftpd");
+        ports_names.append("vsftpd");
 
         service_names.append("smbd");
         pids_names.append("smbd");
+        ports_names.append("smbd");
 
         service_names.append("dhcpd4");
         pids_names.append("dhcpd");
+        ports_names.append("dhcpd");
 
         service_names.append("nfs-server");
         pids_names.append("nfsd");
+        ports_names.append("nfs");
 
-        installCommands.append("pacman -S apache php-apache --noconfirm");      //install Apache
+        installCommands.append("pacman -S apache php-apache --noconfirm");  //install Apache
         installCommands.append("pacman -S dhcp --noconfirm");               //install dhcp-server
-        installCommands.append("pacman -S nfs-utils --noconfirm");                 //install nfs server
-        installCommands.append("pacman -S exo --noconfirm");                       //install exo
+        installCommands.append("pacman -S nfs-utils --noconfirm");          //install nfs server
+        installCommands.append("pacman -S exo --noconfirm");                //install exo
         installCommands.append("pacman -S mysql --noconfirm");              //install mysql server
-        installCommands.append("pacman -S vsftpd --noconfirm");                    //install ftp-server
-        installCommands.append("pacman -S samba --noconfirm");                     //install samba
-        installCommands.append("pacman -S phpmyadmin --noconfirm");                //install phpmyadmin
+        installCommands.append("pacman -S vsftpd --noconfirm");             //install ftp-server
+        installCommands.append("pacman -S samba --noconfirm");              //install samba
+        installCommands.append("pacman -S phpmyadmin --noconfirm");         //install phpmyadmin
+    }
+    else if(distribution == "debian")
+    {
+        service_names.append("apache2");
+        pids_names.append("apache2");
+        ports_names.append("apache2");
+
+        service_names.append("mysql");
+        pids_names.append("mysql");
+        ports_names.append("mysql");
+
+        service_names.append("vsftpd");
+        pids_names.append("vsftpd");
+        ports_names.append("vsftpd");
+
+        service_names.append("smbd");
+        pids_names.append("smbd");
+        ports_names.append("smbd");
+
+        service_names.append("isc-dhcp-server");
+        pids_names.append("dhcpd");
+        ports_names.append("dhcpd");
+
+        service_names.append("nfs-server");
+        pids_names.append("nfsd");
+        ports_names.append("nfs");
+
+        installCommands.append("apt -y install apache2 php7.0 libapache2-mod-php7.0");                    //install Apache
+        installCommands.append("apt -y install isc-dhcp-server");                                       //install dhcp-server
+        installCommands.append("apt -y install nfs-kernel-server");                                     //install nfs server
+        installCommands.append("apt -y install exo");                                                   //install exo
+        installCommands.append("export DEBIAN_FRONTEND=noninteractive; apt -y install mysql-server");   //install mysql server
+        installCommands.append("apt -y install vsftpd");                                                //install ftp-server
+        installCommands.append("apt -y install samba");                                                 //install samba
+        installCommands.append("apt -y install phpmyadmin");                                            //install phpmyadmin
     }
     // update information about services
     update_module_info();
@@ -256,7 +355,7 @@ void main_widget::root_setup()
     for(int i = 0; i < service_names.count(); i++)
     {
         pid_check(pids_names[i],i);
-        port_check(service_names[i],i);
+        port_check(ports_names[i],i);
         status_check(service_names[i],i);
     }
 }
@@ -421,10 +520,19 @@ void main_widget::port_check(QString service_name, int module_number)
         break;
 
     case 4:
-        check_command = "echo '[00017]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        check_command = "echo '[00017]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         break;
     case 5:
-        check_command = "echo '[00018]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        QSettings settings;
+        QString distribution = settings.value("distro").toString();
+        //if(distribution == "suse")
+        //{
+            check_command = "echo '[00018]'`rpcinfo -p | grep "+service_name+" | awk '{ print $4 }' | sed -n 1p`'[XXXXX]' \n";
+        //}
+        //else
+        //{
+        //    check_command = "echo '[00018]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        //}
         break;
     }
     bash_root->write(check_command.toStdString().c_str());
@@ -514,47 +622,47 @@ void main_widget::bash_output_processor(QString output_from_bash)
             break;
         case 19:
             pid_check(pids_names[0],0);//start apache
-            port_check(service_names[0],0);
+            port_check(ports_names[0],0);
             status_check(service_names[0],0);
             break;
         case 20:
             pid_check(pids_names[0],0);//stop apache
-            port_check(service_names[0],0);
+            port_check(ports_names[0],0);
             status_check(service_names[0],0);
             break;
         case 21:
             pid_check(pids_names[0],0);//restart apache
-            port_check(service_names[0],0);
+            port_check(ports_names[0],0);
             status_check(service_names[0],0);
             break;
         case 22:
             pid_check(pids_names[5],5);//start nfs
-            port_check(service_names[5],5);
+            port_check(ports_names[5],5);
             status_check(service_names[5],5);
             break;
         case 23:
             pid_check(pids_names[5],5);//stop nfs
-            port_check(service_names[5],5);
+            port_check(ports_names[5],5);
             status_check(service_names[5],5);
             break;
         case 24:
             pid_check(pids_names[5],5);//restart nfs
-            port_check(service_names[5],5);
+            port_check(ports_names[5],5);
             status_check(service_names[5],5);
             break;
         case 25:
             pid_check(pids_names[2],2);//start ftp
-            port_check(service_names[2],2);
+            port_check(ports_names[2],2);
             status_check(service_names[2],2);
             break;
         case 26:
             pid_check(pids_names[2],2);//stop ftp
-            port_check(service_names[2],2);
+            port_check(ports_names[2],2);
             status_check(service_names[2],2);
             break;
         case 27:
             pid_check(pids_names[2],2);//restart ftp
-            port_check(service_names[2],2);
+            port_check(ports_names[2],2);
             status_check(service_names[2],2);
             break;
         case 28:
@@ -601,47 +709,47 @@ void main_widget::bash_output_processor(QString output_from_bash)
             break;
         case 39:
             pid_check(pids_names[1],1);//start mysql
-            port_check(service_names[1],1);
+            port_check(ports_names[1],1);
             status_check(service_names[1],1);
             break;
         case 40:
             pid_check(pids_names[1],1);//stop mysql
-            port_check(service_names[1],1);
+            port_check(ports_names[1],1);
             status_check(service_names[1],1);
             break;
         case 41:
             pid_check(pids_names[1],1);//restart mysql
-            port_check(service_names[1],1);
+            port_check(ports_names[1],1);
             status_check(service_names[1],1);
             break;
         case 42:
             pid_check(pids_names[3],3);//start samba
-            port_check(service_names[3],3);
+            port_check(ports_names[3],3);
             status_check(service_names[3],3);
             break;
         case 43:
             pid_check(pids_names[3],3);//stop samba
-            port_check(service_names[3],3);
+            port_check(ports_names[3],3);
             status_check(service_names[3],3);
             break;
         case 44:
             pid_check(pids_names[3],3);//restart samba
-            port_check(service_names[3],3);
+            port_check(ports_names[3],3);
             status_check(service_names[3],3);
             break;
         case 45:
             pid_check(pids_names[4],4);//start dhcp
-            port_check(service_names[4],4);
+            port_check(ports_names[4],4);
             status_check(service_names[4],4);
             break;
         case 46:
             pid_check(pids_names[4],4);//stop dhcp
-            port_check(service_names[4],4);
+            port_check(ports_names[4],4);
             status_check(service_names[4],4);
             break;
         case 47:
             pid_check(pids_names[4],4);//restart dhcp
-            port_check(service_names[4],4);
+            port_check(ports_names[4],4);
             status_check(service_names[4],4);
             break;
         default:
@@ -998,6 +1106,7 @@ void main_widget::on_apache_start_clicked()
     ui->apache_start->setEnabled(false);
     ui->apache_stop->setEnabled(false);
     ui->apache_restart->setEnabled(false);
+    update_log("Starting apache ["+service_names[0]+"]");
 }
 
 void main_widget::on_apache_stop_clicked()
@@ -1007,6 +1116,7 @@ void main_widget::on_apache_stop_clicked()
     ui->apache_start->setEnabled(false);
     ui->apache_stop->setEnabled(false);
     ui->apache_restart->setEnabled(false);
+    update_log("Stopping apache ["+service_names[0]+"]");
 }
 
 void main_widget::on_apache_restart_clicked()
@@ -1016,6 +1126,7 @@ void main_widget::on_apache_restart_clicked()
     ui->apache_start->setEnabled(false);
     ui->apache_stop->setEnabled(false);
     ui->apache_restart->setEnabled(false);
+    update_log("Restarting apache ["+service_names[0]+"]");
 }
 
 void main_widget::on_apache_config_clicked()
@@ -1030,6 +1141,7 @@ void main_widget::on_nfs_start_clicked()
     ui->nfs_start->setEnabled(false);
     ui->nfs_stop->setEnabled(false);
     ui->nfs_restart->setEnabled(false);
+    update_log("Starting nfs server");
 }
 
 void main_widget::on_nfs_stop_clicked()
@@ -1039,6 +1151,7 @@ void main_widget::on_nfs_stop_clicked()
     ui->nfs_start->setEnabled(false);
     ui->nfs_stop->setEnabled(false);
     ui->nfs_restart->setEnabled(false);
+    update_log("Stopping nfs server");
 }
 
 void main_widget::on_nfs_restart_clicked()
@@ -1048,10 +1161,12 @@ void main_widget::on_nfs_restart_clicked()
     ui->nfs_start->setEnabled(false);
     ui->nfs_stop->setEnabled(false);
     ui->nfs_restart->setEnabled(false);
+    update_log("Restarting nfs server");
 }
 
 void main_widget::on_nfs_config_clicked()
 {
+    nfs_win->nfs_prepare_window();
     nfs_win->show();
 }
 
@@ -1062,6 +1177,7 @@ void main_widget::on_ftp_start_clicked()
     ui->ftp_start->setEnabled(false);
     ui->ftp_stop->setEnabled(false);
     ui->ftp_restart->setEnabled(false);
+    update_log("Starting vsftpd");
 }
 
 void main_widget::on_ftp_stop_clicked()
@@ -1071,6 +1187,7 @@ void main_widget::on_ftp_stop_clicked()
     ui->ftp_start->setEnabled(false);
     ui->ftp_stop->setEnabled(false);
     ui->ftp_restart->setEnabled(false);
+    update_log("Stopping vsftpd");
 }
 
 void main_widget::on_ftp_restart_clicked()
@@ -1080,6 +1197,7 @@ void main_widget::on_ftp_restart_clicked()
     ui->ftp_start->setEnabled(false);
     ui->ftp_stop->setEnabled(false);
     ui->ftp_restart->setEnabled(false);
+    update_log("Restarting vsftpd");
 }
 
 void main_widget::on_ftp_config_clicked()
@@ -1108,6 +1226,7 @@ void main_widget::on_mysql_start_clicked()
     ui->mysql_start->setEnabled(false);
     ui->mysql_stop->setEnabled(false);
     ui->mysql_restart->setEnabled(false);
+    update_log("Starting mysql");
 }
 
 void main_widget::on_mysql_stop_clicked()
@@ -1117,6 +1236,7 @@ void main_widget::on_mysql_stop_clicked()
     ui->mysql_start->setEnabled(false);
     ui->mysql_stop->setEnabled(false);
     ui->mysql_restart->setEnabled(false);
+    update_log("Stopping mysql");
 }
 
 void main_widget::on_mysql_restart_clicked()
@@ -1126,6 +1246,7 @@ void main_widget::on_mysql_restart_clicked()
     ui->mysql_start->setEnabled(false);
     ui->mysql_stop->setEnabled(false);
     ui->mysql_restart->setEnabled(false);
+    update_log("Restarting mysql");
 }
 
 void main_widget::on_mysql_config_clicked()
@@ -1140,6 +1261,7 @@ void main_widget::on_samba_start_clicked()
     ui->samba_start->setEnabled(false);
     ui->samba_stop->setEnabled(false);
     ui->samba_restart->setEnabled(false);
+    update_log("Starting samba");
 }
 
 void main_widget::on_samba_stop_clicked()
@@ -1149,6 +1271,7 @@ void main_widget::on_samba_stop_clicked()
     ui->samba_start->setEnabled(false);
     ui->samba_stop->setEnabled(false);
     ui->samba_restart->setEnabled(false);
+    update_log("Stopping samba");
 }
 
 void main_widget::on_samba_restart_clicked()
@@ -1158,6 +1281,7 @@ void main_widget::on_samba_restart_clicked()
     ui->samba_start->setEnabled(false);
     ui->samba_stop->setEnabled(false);
     ui->samba_restart->setEnabled(false);
+    update_log("Restarting samba");
 }
 
 void main_widget::on_samba_config_clicked()
@@ -1172,6 +1296,7 @@ void main_widget::on_dhcp_start_clicked()
     ui->dhcp_start->setEnabled(false);
     ui->dhcp_stop->setEnabled(false);
     ui->dhcp_restart->setEnabled(false);
+    update_log("Starting DHCP");
 }
 
 void main_widget::on_dhcp_stop_clicked()
@@ -1181,6 +1306,7 @@ void main_widget::on_dhcp_stop_clicked()
     ui->dhcp_start->setEnabled(false);
     ui->dhcp_stop->setEnabled(false);
     ui->dhcp_restart->setEnabled(false);
+    update_log("Stopping DHCP");
 }
 
 void main_widget::on_dhcp_restart_clicked()
@@ -1190,6 +1316,7 @@ void main_widget::on_dhcp_restart_clicked()
     ui->dhcp_start->setEnabled(false);
     ui->dhcp_stop->setEnabled(false);
     ui->dhcp_restart->setEnabled(false);
+    update_log("Restarting DHCP");
 }
 
 void main_widget::on_dhcp_config_clicked()
