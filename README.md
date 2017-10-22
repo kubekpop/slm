@@ -10,6 +10,7 @@ SLM uses following commands: netstat, systemctl, ps, iptables. Make sure to have
 * SUSE: net-tools-deprecated
 * ARCH:
 * FEDORA:
+* CENTOS: qt5-*
 * DEBIAN/UBUNTU:
 
 ### 2. USAGE
