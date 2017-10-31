@@ -81,10 +81,13 @@ void main_widget::startup()
 
     nfs_win = new nfs_window();
     nfs_win->bash_root = bash_root;
+    connect(nfs_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 
     settings_win = new settings_window();
     connect(settings_win, SIGNAL(distro_changed()),this, SLOT(change_distribution()));
     settings_win->bash_root = bash_root;
+
+    status_win = new status_window();
 }
 
 void main_widget::update_module_info()
@@ -752,6 +755,56 @@ void main_widget::bash_output_processor(QString output_from_bash)
             port_check(ports_names[4],4);
             status_check(service_names[4],4);
             break;
+        case 48:
+            update_log("NFS share added...");
+            on_nfs_config_clicked();
+            break;
+        case 49:
+            nfs_win->get_params(output);
+            break;
+        case 50:
+        {
+            QStringList paths_and_params;
+            if(output == "[paths_and_params]" || output == " [paths_and_params] ")
+            {
+                output = "";
+            }
+            else
+            {
+            paths_and_params = output.split("[paths_and_params]");
+            }
+            /*
+            int counter = 0;
+            QList<int> indexes_to_remove;
+            foreach (QString single_value, paths_and_params)
+            {
+                if(single_value == "" || single_value == " " || single_value == "\n")
+                {
+                    indexes_to_remove.append(counter);
+                }
+                counter++;
+            }
+            foreach (int index, indexes_to_remove)
+            {
+                paths_and_params.removeAt(index);
+            }
+            */
+            if(paths_and_params.size() > 1)
+            {
+            nfs_win->nfs_prepare_window(paths_and_params[0],paths_and_params[1]);
+            nfs_win->show();
+            }
+            else
+            {
+                nfs_win->nfs_prepare_window("","");
+                nfs_win->show();
+            }
+            break;
+        }
+        case 51:
+            update_log("NFS share modified...");
+            on_nfs_config_clicked();
+            break;
         default:
             // todo: error
             break;
@@ -1096,7 +1149,6 @@ void main_widget::on_config_clicked()
 void main_widget::on_info_clicked()
 {
     QMessageBox::information(this,tr("Information"),tr("Simple Linux Manager is 100% vegan <br/>No Tux has ever suffered while we got it built.<br/>More info, downloads and source code at <a href=\"https://slm.tuxdev.com\">slm.tuxdev.com</a> <br/><br/>Created by Kubix & kubekpop<br/>Support SLM project by donating <br/><a href=\"http://bit.do/xumppdonate\">Donate</a><br/><br/>Licence GNU LPG :P (to be exact LGPL v3)<br/>"));
-
 }
 
 void main_widget::on_apache_start_clicked()
@@ -1166,8 +1218,8 @@ void main_widget::on_nfs_restart_clicked()
 
 void main_widget::on_nfs_config_clicked()
 {
-    nfs_win->nfs_prepare_window();
-    nfs_win->show();
+    QString command_paths = "echo '[00049]'`sed -i '/^\\s*$/d' /etc/exports >/dev/null; grep -n -v '^\\#' /etc/exports | cut -d'(' -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
+    bash_root->write(command_paths.toStdString().c_str());
 }
 
 void main_widget::on_ftp_start_clicked()
@@ -1251,7 +1303,9 @@ void main_widget::on_mysql_restart_clicked()
 
 void main_widget::on_mysql_config_clicked()
 {
-
+    //exo-open --launch webbrowser
+    QProcess phpmyadmin;
+    phpmyadmin.startDetached("exo-open --launch webbrowser localhost/phpmyadmin");
 }
 
 void main_widget::on_samba_start_clicked()
@@ -1322,4 +1376,11 @@ void main_widget::on_dhcp_restart_clicked()
 void main_widget::on_dhcp_config_clicked()
 {
     dhcp_win->show();
+}
+
+
+
+void main_widget::on_status_button_clicked()
+{
+    status_win->show();
 }

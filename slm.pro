@@ -31,7 +31,9 @@ SOURCES += \
     settings_window.cpp \
     firewall_window.cpp \
     apache_window.cpp \
-    nfs_window.cpp
+    nfs_window.cpp \
+    raid_window.cpp \
+    status_window.cpp
 
 HEADERS += \
         main_widget.h \
@@ -40,7 +42,9 @@ HEADERS += \
     settings_window.h \
     firewall_window.h \
     apache_window.h \
-    nfs_window.h
+    nfs_window.h \
+    raid_window.h \
+    status_window.h
 
 FORMS += \
         main_widget.ui \
@@ -49,7 +53,9 @@ FORMS += \
     settings_window.ui \
     firewall_window.ui \
     apache_window.ui \
-    nfs_window.ui
+    nfs_window.ui \
+    raid_window.ui \
+    status_window.ui
 
 RESOURCES += \
     resources.qrc

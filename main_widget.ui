@@ -54,9 +54,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="status_button">
          <property name="text">
-          <string>Browse HTTP DIR</string>
+          <string>Status</string>
          </property>
         </widget>
        </item>

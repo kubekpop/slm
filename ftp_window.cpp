@@ -280,6 +280,6 @@ void ftp_window::on_chown_uploads_toggled(bool checked)
 
 void ftp_window::on_anonymous_root_editingFinished()
 {
-    ftpChange(ui->anonymous_root->text());
+    //ftpChange(ui->anonymous_root->text());
 }
 

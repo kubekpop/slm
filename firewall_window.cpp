@@ -13,6 +13,7 @@ firewall_window::firewall_window(QWidget *parent) :
 }
 void firewall_window::firewall_prepare_window(QString ifaces)
 {
+    ui->stackedWidget->setCurrentIndex(0);
     ui->source_interface->clear();
     ui->destination_interface->clear();
     ui->local_interface->clear();
@@ -52,3 +53,25 @@ void firewall_window::on_dnat_apply_clicked()
 {
    emit data_to_log("komenda");
 }
+
+void firewall_window::on_next_clicked()
+{
+    int current_index = ui->stackedWidget->currentIndex();
+    if(current_index < 2)
+    {
+        current_index++;
+        ui->stackedWidget->setCurrentIndex(current_index);
+    }
+}
+
+void firewall_window::on_back_clicked()
+{
+    int current_index = ui->stackedWidget->currentIndex();
+    if(current_index > 0)
+    {
+        current_index--;
+        ui->stackedWidget->setCurrentIndex(current_index);
+    }
+}
+
+

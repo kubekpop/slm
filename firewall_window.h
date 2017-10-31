@@ -24,6 +24,10 @@ signals:
 private slots:
     void on_dnat_apply_clicked();
 
+    void on_next_clicked();
+
+    void on_back_clicked();
+
 private:
     Ui::firewall_window *ui;
     QStringList interfaces;

@@ -15,6 +15,7 @@
 #include "ftp_window.h"
 #include "settings_window.h"
 #include "firewall_window.h"
+#include "status_window.h"
 
 namespace Ui {
 class main_widget;
@@ -122,6 +123,8 @@ private slots:
 
     void on_mysql_config_clicked();
 
+    void on_status_button_clicked();
+
 private:
     Ui::main_widget *ui;
     QScrollBar *log_scrollbar;
@@ -138,6 +141,7 @@ private:
     ftp_window *ftp_win;
     nfs_window *nfs_win;
     settings_window *settings_win;
+    status_window *status_win;
 };
 
 #endif // MAIN_WIDGET_H

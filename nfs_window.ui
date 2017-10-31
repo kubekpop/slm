@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>NFS</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/new/prefix2/resources/linux.svg</normaloff>:/new/prefix2/resources/linux.svg</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -42,12 +46,19 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="share_combobox">
-       <item>
-        <property name="text">
-         <string>new</string>
-        </property>
-       </item>
+      <widget class="QComboBox" name="share_combobox"/>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="delete_share">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Delete share?</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -253,6 +264,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

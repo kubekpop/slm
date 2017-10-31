@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Apache Hosts</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="3" column="1">
@@ -162,7 +162,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Apache Sites</string>
+      <string>Apache hosts</string>
      </property>
     </widget>
    </item>

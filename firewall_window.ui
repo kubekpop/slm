@@ -68,10 +68,11 @@
          </property>
          <property name="font">
           <font>
+           <family>DejaVu Sans</family>
            <pointsize>18</pointsize>
-           <weight>75</weight>
-           <italic>true</italic>
-           <bold>true</bold>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="text">
@@ -80,7 +81,68 @@
         </widget>
        </item>
        <item>
+        <widget class="Line" name="line_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QGridLayout" name="services_layout">
+         <item row="2" column="1">
+          <layout class="QGridLayout" name="rules_layout">
+           <item row="1" column="1">
+            <widget class="QPushButton" name="list_rules_ok">
+             <property name="text">
+              <string>List</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QComboBox" name="list_rules_chain">
+             <item>
+              <property name="text">
+               <string>INPUT</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>OUTPUT</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>FORWARD</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>NAT</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QLabel" name="list_rules_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>List rules for chain</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
          <item row="0" column="1">
           <layout class="QGridLayout" name="interface_layout">
            <item row="0" column="1">
@@ -96,17 +158,63 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
+            <widget class="QCheckBox" name="add_output_rule">
+             <property name="text">
+              <string>Add Output Rule</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
             <widget class="QPushButton" name="allowed_services_ok">
              <property name="text">
               <string>Ok</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QCheckBox" name="add_output_rule">
+          </layout>
+         </item>
+         <item row="2" column="0">
+          <layout class="QGridLayout" name="custom_port_layout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="custom_port_label">
              <property name="text">
-              <string>Add Otuput Rule</string>
+              <string>Custom port:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QComboBox" name="custom_port_interface">
+             <item>
+              <property name="text">
+               <string>all-interfaces</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="custom_port_value">
+             <property name="maximum">
+              <number>99999</number>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDialogButtonBox" name="button_box">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>130</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="standardButtons">
+              <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
              </property>
             </widget>
            </item>
@@ -160,100 +268,6 @@
            </item>
           </layout>
          </item>
-         <item row="2" column="1">
-          <layout class="QGridLayout" name="rules_layout">
-           <item row="1" column="1">
-            <widget class="QPushButton" name="list_rules_ok">
-             <property name="text">
-              <string>List</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QComboBox" name="list_rules_chain">
-             <item>
-              <property name="text">
-               <string>INPUT</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>OUTPUT</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>FORWARD</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>NAT</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QLabel" name="list_rules_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>List rules for chain</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="2" column="0">
-          <layout class="QGridLayout" name="custom_port_layout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="custom_port_label">
-             <property name="text">
-              <string>Custom port:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QComboBox" name="custom_port_interface">
-             <item>
-              <property name="text">
-               <string>all-interfaces</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QSpinBox" name="custom_port_value">
-             <property name="maximum">
-              <number>99999</number>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QDialogButtonBox" name="button_box">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>130</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="standardButtons">
-              <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
          <item row="1" column="0" colspan="2">
           <widget class="Line" name="services_line">
            <property name="orientation">
@@ -279,6 +293,45 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>DejaVu Sans</family>
+           <pointsize>18</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>IP Translation</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="routing_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>ROUTING</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
@@ -510,19 +563,6 @@
        </item>
       </layout>
      </widget>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="routing_label">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>ROUTING</string>
-     </property>
     </widget>
    </item>
   </layout>
