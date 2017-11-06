@@ -24,14 +24,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton">
+      <widget class="QRadioButton" name="format_tar">
        <property name="text">
         <string>tar</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_2">
+      <widget class="QRadioButton" name="format_targz">
        <property name="text">
         <string>tar.gz</string>
        </property>
@@ -61,7 +61,7 @@
    <item row="3" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QTextEdit" name="textEdit"/>
+      <widget class="QTextEdit" name="backup_directories"/>
      </item>
     </layout>
    </item>
@@ -75,7 +75,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="destination_directory"/>
      </item>
     </layout>
    </item>
@@ -89,21 +89,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_2"/>
+      <widget class="QLineEdit" name="file_name_prefix"/>
      </item>
     </layout>
    </item>
    <item row="9" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="save_cron">
        <property name="text">
         <string>Save to cron</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="run_now">
        <property name="text">
         <string>Run now</string>
        </property>
@@ -121,14 +121,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_5">
+      <widget class="QRadioButton" name="frequency_hourly">
        <property name="text">
         <string>hourly</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_3">
+      <widget class="QRadioButton" name="frequency_daily">
        <property name="text">
         <string>daily</string>
        </property>

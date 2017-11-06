@@ -17,6 +17,7 @@
 #include "settings_window.h"
 #include "firewall_window.h"
 #include "status_window.h"
+#include "backup_window.h"
 
 namespace Ui {
 class main_widget;
@@ -126,6 +127,8 @@ private slots:
 
     void on_status_button_clicked();
 
+    void on_backup_clicked();
+
 private:
     Ui::main_widget *ui;
     QScrollBar *log_scrollbar;
@@ -143,6 +146,7 @@ private:
     nfs_window *nfs_win;
     settings_window *settings_win;
     status_window *status_win;
+    backup_window *backup_win;
 };
 
 #endif // MAIN_WIDGET_H

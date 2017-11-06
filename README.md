@@ -6,7 +6,7 @@ Manager for most common services. Project website: https://slm.tuxdev.com
 Tuxdev team puts much effort into the code to have it working across all distributions, but some errors might occur and might damage your service/system. We take no responsibility for such situation. Please use sections marked as (testing) in a safe environment before working on production system.
 
 ### 1. DEPENDENCIES
-SLM uses following commands: netstat, systemctl, ps, iptables, awk. Make sure to have these available. Here is a brief list of packages not always installed by default with their distro-specific names:
+SLM uses following commands: netstat, systemctl, ps, iptables. Make sure to have these available. Here is a brief list of packages not always installed by default with their distro-specific names:
 * SUSE: net-tools-deprecated
 * ARCH:
 * FEDORA:
@@ -50,13 +50,6 @@ This panel is used for Apache configuration. Available features:
 #### Samba Configurator
 
 #### DHCP Configurator
-
-#### Backup Manager Configurator
-This panel modifies backup-manager config file. Available features:
-* Set directories to backup
-* Set destination directory
-* Set incremental backup frequency
-* Set file format
 
 ### 3. LOG FILES
 

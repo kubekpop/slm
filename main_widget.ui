@@ -61,6 +61,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="backup">
+         <property name="text">
+          <string>Backup Manager</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="config">
          <property name="text">
           <string>Settings</string>

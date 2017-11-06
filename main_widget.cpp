@@ -89,6 +89,9 @@ void main_widget::startup()
 
     status_win = new status_window();
     status_win->bash_root = bash_root;
+
+    backup_win = new backup_window();
+    backup_win->bash_root = bash_root;
 }
 
 void main_widget::update_module_info()
@@ -1390,4 +1393,10 @@ void main_widget::on_status_button_clicked()
 {
     status_win->show();
     status_win->status_prepare_window();
+}
+
+void main_widget::on_backup_clicked()
+{
+    backup_win->show();
+    backup_win->backup_prepare_window();
 }

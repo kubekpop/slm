@@ -13,6 +13,11 @@ backup_window::~backup_window()
     delete ui;
 }
 
+void backup_window::backup_prepare_window()
+{
+
+}
+
 /*
 GUI for backup-manager https://github.com/sukria/Backup-Manager
 -load backup directories from /etc/backup-manager.conf
@@ -63,3 +68,20 @@ export BM_TARBALL_TARGETS
 export BM_TARBALL_BLACKLIST="/dev /sys /proc /tmp"
 
 */
+
+
+
+void backup_window::on_run_now_clicked()
+{
+    QString backup_directories = ui->backup_directories->toPlainText();
+    QString destination_directory = ui->destination_directory->text();
+    QString file_name_prefix = ui->file_name_prefix->text();
+    QStringList backup_directories_list = backup_directories.split("\n");
+    backup_directories_list.removeDuplicates();
+    foreach (QString dir, backup_directories_list)
+    {
+        QMessageBox::information(this,tr("Dir"),dir);
+    }
+    //QMessageBox::information(this,tr("Information"),tr(""));
+
+}
