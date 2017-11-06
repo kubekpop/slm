@@ -8,6 +8,7 @@
 #include <QCloseEvent>
 #include <QSettings>
 #include <QScrollBar>
+#include <math.h>
 
 #include "nfs_window.h"
 #include "apache_window.h"

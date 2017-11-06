@@ -88,6 +88,7 @@ void main_widget::startup()
     settings_win->bash_root = bash_root;
 
     status_win = new status_window();
+    status_win->bash_root = bash_root;
 }
 
 void main_widget::update_module_info()
@@ -805,6 +806,11 @@ void main_widget::bash_output_processor(QString output_from_bash)
             update_log("NFS share modified...");
             on_nfs_config_clicked();
             break;
+        case 52:
+        {
+            status_win->update_cpu_bar(QString::number(std::round(output.toDouble())).toInt());
+            break;
+        }
         default:
             // todo: error
             break;
@@ -1383,4 +1389,5 @@ void main_widget::on_dhcp_config_clicked()
 void main_widget::on_status_button_clicked()
 {
     status_win->show();
+    status_win->status_prepare_window();
 }
