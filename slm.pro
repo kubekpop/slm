@@ -34,7 +34,8 @@ SOURCES += \
     nfs_window.cpp \
     raid_window.cpp \
     status_window.cpp \
-    backup_window.cpp
+    backup_window.cpp \
+    ssh_connect_window.cpp
 
 HEADERS += \
         main_widget.h \
@@ -46,7 +47,8 @@ HEADERS += \
     nfs_window.h \
     raid_window.h \
     status_window.h \
-    backup_window.h
+    backup_window.h \
+    ssh_connect_window.h
 
 FORMS += \
         main_widget.ui \
@@ -58,7 +60,8 @@ FORMS += \
     nfs_window.ui \
     raid_window.ui \
     status_window.ui \
-    backup_window.ui
+    backup_window.ui \
+    ssh_connect_window.ui
 
 RESOURCES += \
     resources.qrc

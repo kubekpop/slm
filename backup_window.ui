@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Backup Manager</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="7" column="0">
@@ -28,14 +28,73 @@
        <property name="text">
         <string>tar</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="format_targz">
+      <widget class="QRadioButton" name="format_tar_gz">
        <property name="text">
         <string>tar.gz</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="format_tar_bz2">
+       <property name="text">
+        <string>tar.bz2</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="format_tar_xz">
+       <property name="text">
+        <string>tar.xz</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="format_tar_lzma">
+       <property name="text">
+        <string>tar.lzma</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="format_dar">
+       <property name="text">
+        <string>dar</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="format_zip">
+       <property name="text">
+        <string>zip</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QTextEdit" name="backup_directories"/>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>File name prefix</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="file_name_prefix"/>
      </item>
     </layout>
    </item>
@@ -51,20 +110,6 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Directories to backup, new-line separated</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QTextEdit" name="backup_directories"/>
-     </item>
-    </layout>
-   </item>
    <item row="4" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
@@ -76,20 +121,6 @@
      </item>
      <item>
       <widget class="QLineEdit" name="destination_directory"/>
-     </item>
-    </layout>
-   </item>
-   <item row="5" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>File name prefix</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="file_name_prefix"/>
      </item>
     </layout>
    </item>
@@ -114,27 +145,55 @@
    <item row="8" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Frequency</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="frequency_hourly">
-       <property name="text">
-        <string>hourly</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="frequency_daily">
-       <property name="text">
-        <string>daily</string>
-       </property>
+      <widget class="QWidget" name="widget" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Frequency</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="frequency_daily">
+          <property name="text">
+           <string>daily</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="frequency_hourly">
+          <property name="text">
+           <string>hourly</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Directories to backup, new-line separated</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

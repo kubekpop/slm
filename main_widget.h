@@ -18,6 +18,7 @@
 #include "firewall_window.h"
 #include "status_window.h"
 #include "backup_window.h"
+#include "ssh_connect_window.h"
 
 namespace Ui {
 class main_widget;
@@ -33,7 +34,11 @@ public:
     void startup();
     void root_setup();
     QProcess *bash_root;
+    int local_bash_pid;
+    int ssh_bash_pid;
 
+signals:
+    void close_all_windows();
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -129,6 +134,20 @@ private slots:
 
     void on_backup_clicked();
 
+    void on_ssh_connect_clicked();
+
+    void connect_ssh(QString IP, QString password);
+
+    void check_ssh_connection();
+
+    void get_ssh_bash_pid();
+
+    void get_local_bash_pid();
+
+    void verify_bash_pid();
+
+    void ssh_connect_window_closed();
+
 private:
     Ui::main_widget *ui;
     QScrollBar *log_scrollbar;
@@ -147,6 +166,7 @@ private:
     settings_window *settings_win;
     status_window *status_win;
     backup_window *backup_win;
+
 };
 
 #endif // MAIN_WIDGET_H

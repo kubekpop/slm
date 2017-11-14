@@ -16,13 +16,15 @@ main_widget::~main_widget()
 
 void main_widget::closeEvent(QCloseEvent *event)
 {
-    event->accept();
+    emit close_all_windows();
     apache_win->close();
     dhcp_win->close();
     firewall_win->close();
     ftp_win->close();
     nfs_win->close();
     settings_win->close();
+    backup_win->close();
+    status_win->close();
     /*
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Sure?", "Exit XUMPP Lite?", QMessageBox::Yes | QMessageBox::No);
@@ -36,6 +38,7 @@ void main_widget::closeEvent(QCloseEvent *event)
     }
     */
     bash_root->close();
+    event->accept();
 }
 
 void main_widget::startup()
@@ -44,6 +47,7 @@ void main_widget::startup()
     bash_root = new QProcess(this);
     bash_root->start("/bin/bash");
     connect(bash_root, SIGNAL(readyRead()), this, SLOT(bash_root_reader()));
+    get_local_bash_pid();
 
     // get scrollbar
     log_scrollbar = ui->log->verticalScrollBar();
@@ -84,14 +88,15 @@ void main_widget::startup()
     connect(nfs_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 
     settings_win = new settings_window();
-    connect(settings_win, SIGNAL(distro_changed()),this, SLOT(change_distribution()));
     settings_win->bash_root = bash_root;
+    connect(settings_win, SIGNAL(distro_changed()),this, SLOT(change_distribution()));
 
     status_win = new status_window();
     status_win->bash_root = bash_root;
 
     backup_win = new backup_window();
     backup_win->bash_root = bash_root;
+    connect(backup_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 }
 
 void main_widget::update_module_info()
@@ -279,7 +284,7 @@ void main_widget::change_distribution()
         installCommands.append("dnf install -y exo");                       //install exo
         installCommands.append("dnf install -y mysql-server");              //install mysql server
         installCommands.append("dnf install -y vsftpd");                    //install ftp-server
-        installCommands.append("dnf install -y samba");                     //install samba
+        installCommands.append("apt -y install samba");                     //install samba
         installCommands.append("dnf install -y phpmyadmin");                //install phpmyadmin
     }
     else if(distribution == "arch")
@@ -380,11 +385,11 @@ void main_widget::authorisation(QString user)
     if(user == "root")
     {
         update_log("Authorization successful");
-
+        ui->ssh_connect->setEnabled(false);
+        ui->authorize->setEnabled(false);
         is_authorised = true;
         lock_interface(false);
         root_setup();
-        ui->authorize->setEnabled(false);
     }
     else
     {
@@ -814,6 +819,106 @@ void main_widget::bash_output_processor(QString output_from_bash)
             status_win->update_cpu_bar(QString::number(std::round(output.toDouble())).toInt());
             break;
         }
+        case 53:
+            if(output == "true")
+            {
+                QMessageBox::StandardButton reply;
+                reply = QMessageBox::information(this,tr("Obsolete config warning"),tr("Your backup-manager uses obsolete TARBALL_DIRECTORIES method. SLM is only intendend to be used with array method. Choosing YES will convert your config to new format. Backup will be generated under /etc/backup-manager.conf.slm. Continue?"),QMessageBox::No | QMessageBox::Yes);
+                if(reply == QMessageBox::Yes)
+                {
+                    QString obsolete_list_values = "echo '[00054]'`grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_DIRECTORIES=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_REPOSITORY_ROOT=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_FREQUENCY=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_PREFIX=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "`'[XXXXX]' \n";
+                    /*
+                     *
+                     * ; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_REPOSITORY_ROOT=' /etc/backup-manager.conf | cut -d= -f2
+                     * ; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_FREQUENCY=' /etc/backup-manager.conf | cut -d= -f2
+                     * ; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_PREFIX=' /etc/backup-manager.conf | cut -d= -f2
+                     * ; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2
+                     * ; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2
+                     *
+                    export BM_REPOSITORY_ROOT="/var/archives"
+                    export BM_ARCHIVE_FREQUENCY="daily"
+                    export BM_ARCHIVE_PREFIX="$HOSTNAME"
+                    export BM_TARBALL_NAMEFORMAT="long"
+                    export BM_TARBALL_FILETYPE="tar.gz"
+
+                    w taki sposób:
+                    grep '^[[:blank:]]*export[[:blank:]]*PARAMETR=' /etc/backup-manager.conf | cut -d= -f2
+                    */
+                    // listowanie parametrów z configa
+                    bash_root->write(obsolete_list_values.toStdString().c_str());
+                }
+            }
+            else
+            {
+                // listowanie parametrów z configa z tablicą folderów
+                QString array_method_list_values = "echo '[00054]'`grep '^[[:blank:]]*BM_TARBALL_TARGETS' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_REPOSITORY_ROOT=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_FREQUENCY=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_PREFIX=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "`'[XXXXX]' \n";
+                bash_root->write(array_method_list_values.toStdString().c_str());
+            }
+            break;
+        case 54:
+            if(output != "")
+            {
+            backup_win->show();
+            backup_win->backup_prepare_window(output);
+            //update_log(output);
+            }
+            else
+            {
+                update_log("Backup-manager config error");
+            }
+            break;
+        case 55:
+            // save backup-manager config
+            break;
+        case 56:
+            // verify connection and get ssh bash pid
+            output.replace(" ","");
+            if(!output.isEmpty() && output.toInt() != this->local_bash_pid && is_authorised == true)
+            {
+                this->ssh_bash_pid = output.toInt();
+                update_log("ssh connected new bash pid = "+QString::number(this->ssh_bash_pid));
+                QTimer *timer = new QTimer(this);
+                connect(timer, SIGNAL(timeout()), this, SLOT(verify_bash_pid()));
+                timer->start(5000);
+            }
+            // activate interface
+            this->setEnabled(true);
+            status_win->setEnabled(true);
+            settings_win->setEnabled(true);
+            break;
+        case 57:
+            //get local bash pid
+            output.replace(" ","");
+            if(!output.isEmpty())
+            {
+                this->local_bash_pid = output.toInt();
+                update_log("local bash pid = "+QString::number(this->local_bash_pid));
+            }
+            break;
+        case 58:
+            // check if ssh session stil active
+            output.replace(" ","");
+            if(output.toInt() != this->ssh_bash_pid)
+            {
+                update_log("critical error wrong bash pid: "+output+" expected: "+QString::number(this->ssh_bash_pid));
+                this->setEnabled(false);
+                status_win->setEnabled(false);
+                settings_win->setEnabled(false);
+            }
+            update_log("got bash pid: "+output+" expected: "+QString::number(this->ssh_bash_pid));
+            break;
         default:
             // todo: error
             break;
@@ -1397,6 +1502,64 @@ void main_widget::on_status_button_clicked()
 
 void main_widget::on_backup_clicked()
 {
-    backup_win->show();
-    backup_win->backup_prepare_window();
+    QString check_bm_tarball = "echo '[00053]'`grep '^[[:space:]]*export[[:space:]]*BM_TARBALL_DIRECTORIES.*$' /etc/backup-manager.conf >> /dev/null && echo true`'[XXXXX]' \n";
+    bash_root->write(check_bm_tarball.toStdString().c_str());
 }
+
+void main_widget::connect_ssh(QString IP, QString password)
+{
+    //  block interface
+    this->setEnabled(false);
+    status_win->setEnabled(false);
+    settings_win->setEnabled(false);
+    update_log("SSH connection attempt");
+    QString connect_ssh_command = "(sshpass -p'"+password+"' ssh -o UserKnownHostsFile=/dev/null -o ConnectTimeout=2 -o StrictHostKeyChecking=no -p 2222 root@"+IP+") || echo 'false' \n";
+    bash_root->write(connect_ssh_command.toStdString().c_str());
+    QTimer::singleShot(2000, this, SLOT(check_ssh_connection()));
+}
+
+void main_widget::on_ssh_connect_clicked()
+{
+    //  block interface
+    this->setEnabled(false);
+    status_win->setEnabled(false);
+    settings_win->setEnabled(false);
+
+    ssh_connect_window *ssh_connect_win = new ssh_connect_window();
+    connect(ssh_connect_win, SIGNAL(connect_ssh(QString,QString)), this, SLOT(connect_ssh(QString,QString)));
+    connect(ssh_connect_win, SIGNAL(connect_ssh(QString,QString)), ssh_connect_win, SLOT(deleteLater()));
+    connect(ssh_connect_win, SIGNAL(closed()), this, SLOT(ssh_connect_window_closed()));
+    connect(this, SIGNAL(close_all_windows()), ssh_connect_win, SLOT(close()));
+    ssh_connect_win->show();
+}
+
+void main_widget::ssh_connect_window_closed()
+{
+    //activate interface
+    this->setEnabled(true);
+    status_win->setEnabled(true);
+    settings_win->setEnabled(true);
+}
+
+void main_widget::check_ssh_connection()
+{
+    bash_root->write("echo '[00000]'`whoami`'[XXXXX]' \n");
+    QTimer::singleShot(500, this, SLOT(get_ssh_bash_pid()));
+}
+
+
+void main_widget::get_ssh_bash_pid()
+{
+    bash_root->write("echo '[00056]'`echo $$`'[XXXXX]' \n");
+}
+
+void main_widget::get_local_bash_pid()
+{
+    bash_root->write("echo '[00057]'`echo $$`'[XXXXX]' \n");
+}
+
+void main_widget::verify_bash_pid()
+{
+    bash_root->write("echo '[00058]'`echo $$`'[XXXXX]' \n");
+}
+
