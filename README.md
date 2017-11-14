@@ -7,10 +7,10 @@ Tuxdev team puts much effort into the code to have it working across all distrib
 
 ### 1. DEPENDENCIES
 SLM uses following commands: netstat, systemctl, ps, iptables, awk, sed, grep. Make sure to have these available. Here is a brief list of packages not always installed by default with their distro-specific names:
-* SUSE: net-tools-deprecated
-* ARCH:
-* FEDORA:
-* DEBIAN/UBUNTU:
+* SUSE: net-tools-deprecated sshpass
+* ARCH: sshpass
+* FEDORA: sshpass
+* DEBIAN/UBUNTU: sshpass
 
 ### 2. USAGE
 SLM is a GUI binary file either installed from rpm/deb package or run directly from an executable. It's supposed to run as a standard user. Advanced options appear after authenticating in a program.
