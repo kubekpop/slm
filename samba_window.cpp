@@ -35,7 +35,9 @@ Na tym etapie mamy w katalogu /tmp/samba-shares/ pliki share_pierwszalinia-ostat
         browseable = yes
         
 Z nich trzeba wziąć pierwszą linijkę i to jest nazwa udziału, na tym pliku dokonujemy zmian i potem wstawić ten plik do /etc/samba/smb.conf w miejsce linijek określonych w nazwie
-  */
+sed -i '1linia,ostatnialinia{s//zawartosc_pliku_z_sharem/g}' /etc/samba/smb.conf
+
+*/
 
 
 

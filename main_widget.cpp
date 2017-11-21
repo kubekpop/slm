@@ -97,6 +97,9 @@ void main_widget::startup()
     backup_win = new backup_window();
     backup_win->bash_root = bash_root;
     connect(backup_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
+
+    raid_win = new raid_window();
+
 }
 
 void main_widget::update_module_info()
@@ -888,7 +891,7 @@ void main_widget::bash_output_processor(QString output_from_bash)
             if(!output.isEmpty() && output.toInt() != this->local_bash_pid && is_authorised == true)
             {
                 this->ssh_bash_pid = output.toInt();
-                update_log("ssh connected new bash pid = "+QString::number(this->ssh_bash_pid));
+                update_log("Connected via ssh");
                 QTimer *timer = new QTimer(this);
                 connect(timer, SIGNAL(timeout()), this, SLOT(verify_bash_pid()));
                 timer->start(5000);
@@ -904,7 +907,7 @@ void main_widget::bash_output_processor(QString output_from_bash)
             if(!output.isEmpty())
             {
                 this->local_bash_pid = output.toInt();
-                update_log("local bash pid = "+QString::number(this->local_bash_pid));
+                //update_log("local bash pid = "+QString::number(this->local_bash_pid));
             }
             break;
         case 58:
@@ -912,12 +915,19 @@ void main_widget::bash_output_processor(QString output_from_bash)
             output.replace(" ","");
             if(output.toInt() != this->ssh_bash_pid)
             {
-                update_log("critical error wrong bash pid: "+output+" expected: "+QString::number(this->ssh_bash_pid));
+                update_log("Critical ssh connection error wrong bash pid: "+output+" expected: "+QString::number(this->ssh_bash_pid));
                 this->setEnabled(false);
                 status_win->setEnabled(false);
                 settings_win->setEnabled(false);
             }
-            update_log("got bash pid: "+output+" expected: "+QString::number(this->ssh_bash_pid));
+            //update_log("got bash pid: "+output+" expected: "+QString::number(this->ssh_bash_pid));
+            break;
+        case 59:
+            status_win->update_memory_info(output);
+            break;
+        case 60:
+            //update_log(output);
+            status_win->update_disk_info(output);
             break;
         default:
             // todo: error
@@ -1506,14 +1516,18 @@ void main_widget::on_backup_clicked()
     bash_root->write(check_bm_tarball.toStdString().c_str());
 }
 
-void main_widget::connect_ssh(QString IP, QString password)
+void main_widget::connect_ssh(QString IP, QString port, QString password)
 {
     //  block interface
     this->setEnabled(false);
     status_win->setEnabled(false);
     settings_win->setEnabled(false);
     update_log("SSH connection attempt");
-    QString connect_ssh_command = "(sshpass -p'"+password+"' ssh -o UserKnownHostsFile=/dev/null -o ConnectTimeout=2 -o StrictHostKeyChecking=no -p 2222 root@"+IP+") || echo 'false' \n";
+    if(port.isEmpty())
+    {
+        port = "22";
+    }
+    QString connect_ssh_command = "(sshpass -p'"+password+"' ssh -o UserKnownHostsFile=/dev/null -o ConnectTimeout=2 -o StrictHostKeyChecking=no -p "+port+" root@"+IP+") || echo 'false' \n";
     bash_root->write(connect_ssh_command.toStdString().c_str());
     QTimer::singleShot(2000, this, SLOT(check_ssh_connection()));
 }
@@ -1526,8 +1540,8 @@ void main_widget::on_ssh_connect_clicked()
     settings_win->setEnabled(false);
 
     ssh_connect_window *ssh_connect_win = new ssh_connect_window();
-    connect(ssh_connect_win, SIGNAL(connect_ssh(QString,QString)), this, SLOT(connect_ssh(QString,QString)));
-    connect(ssh_connect_win, SIGNAL(connect_ssh(QString,QString)), ssh_connect_win, SLOT(deleteLater()));
+    connect(ssh_connect_win, SIGNAL(connect_ssh(QString,QString,QString)), this, SLOT(connect_ssh(QString,QString,QString)));
+    connect(ssh_connect_win, SIGNAL(connect_ssh(QString,QString,QString)), ssh_connect_win, SLOT(deleteLater()));
     connect(ssh_connect_win, SIGNAL(closed()), this, SLOT(ssh_connect_window_closed()));
     connect(this, SIGNAL(close_all_windows()), ssh_connect_win, SLOT(close()));
     ssh_connect_win->show();
@@ -1563,3 +1577,8 @@ void main_widget::verify_bash_pid()
     bash_root->write("echo '[00058]'`echo $$`'[XXXXX]' \n");
 }
 
+
+void main_widget::on_raid_manager_clicked()
+{
+    raid_win->show();
+}

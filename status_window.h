@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QProcess>
 #include <QTimer>
+#include <QCloseEvent>
 
 namespace Ui {
 class status_window;
@@ -19,14 +20,20 @@ public:
     QProcess *bash_root;
     void status_prepare_window();
     void update_cpu_bar(int percent);
+    void update_memory_info(QString memory_info);
+    void update_disk_info(QString disk_info);
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 public slots:
-    void check_cpu();
+    void check_status();
 
 
 private:
     Ui::status_window *ui;
     QTimer *timer;
+    QString last_disk_status;
 };
 
 #endif // STATUS_WINDOW_H

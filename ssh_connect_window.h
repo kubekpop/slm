@@ -20,7 +20,7 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 signals :
-    void connect_ssh(QString IP, QString password);
+    void connect_ssh(QString IP, QString port, QString password);
     void closed();
 
     private slots:

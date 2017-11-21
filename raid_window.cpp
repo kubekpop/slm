@@ -21,3 +21,4 @@ raid_window::~raid_window()
 
 
 */
+//https://raid.wiki.kernel.org/index.php/Mdstat

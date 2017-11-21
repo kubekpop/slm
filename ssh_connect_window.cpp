@@ -16,9 +16,20 @@ ssh_connect_window::~ssh_connect_window()
 void ssh_connect_window::on_connect_clicked()
 {
     this->close();
-    QString IP = ui->IP_1->text()+"."+ui->IP_2->text()+"."+ui->IP_3->text()+"."+ui->IP_4->text();
+    QString IP = "127.0.0.1";
+    QString port = "22";
+    if(ui->server_ip_radio->isChecked())
+    {
+    IP = ui->IP_1->text()+"."+ui->IP_2->text()+"."+ui->IP_3->text()+"."+ui->IP_4->text();
+    port = ui->port->text();
+    }
+    if(ui->hostname_radio->isChecked())
+    {
+        IP = ui->hostname->text();
+        port = ui->hostame_port->text();
+    }
     QString password = ui->password->text();
-    emit connect_ssh(IP, password);
+    emit connect_ssh(IP, port, password);
 }
 
 void ssh_connect_window::closeEvent(QCloseEvent *event)

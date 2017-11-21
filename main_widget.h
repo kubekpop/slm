@@ -19,6 +19,7 @@
 #include "status_window.h"
 #include "backup_window.h"
 #include "ssh_connect_window.h"
+#include "raid_window.h"
 
 namespace Ui {
 class main_widget;
@@ -136,7 +137,7 @@ private slots:
 
     void on_ssh_connect_clicked();
 
-    void connect_ssh(QString IP, QString password);
+    void connect_ssh(QString IP, QString port, QString password);
 
     void check_ssh_connection();
 
@@ -147,6 +148,8 @@ private slots:
     void verify_bash_pid();
 
     void ssh_connect_window_closed();
+
+    void on_raid_manager_clicked();
 
 private:
     Ui::main_widget *ui;
@@ -166,6 +169,7 @@ private:
     settings_window *settings_win;
     status_window *status_win;
     backup_window *backup_win;
+    raid_window *raid_win;
 
 };
 

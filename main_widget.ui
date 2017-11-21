@@ -75,6 +75,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="raid_manager">
+         <property name="text">
+          <string>RAID™ Manager</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="config">
          <property name="text">
           <string>Settings</string>
@@ -211,7 +218,7 @@
           <x>0</x>
           <y>0</y>
           <width>927</width>
-          <height>275</height>
+          <height>271</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
