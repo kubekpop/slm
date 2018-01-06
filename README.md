@@ -40,7 +40,7 @@ This panel is used for firewall configuration. It uses iptables command. Availab
 * Open ports
 * List rules in chain and delete them
 
-#### Apache Configurator
+#### Apache Configurator (preview)
 This panel is used for Apache configuration. Available features:
 * Add new vhost
   * Root directory
@@ -50,9 +50,9 @@ This panel is used for Apache configuration. Available features:
   * Change root directory
   * Change server address
 
-#### Samba Configurator
+#### Samba Configurator (preview)
 
-#### DHCP Configurator
+#### DHCP Configurator (preview)
 
 #### Backup-Manager
 This panel is used for backup-manager configuration. It allows to modify following options in config file:
@@ -63,6 +63,20 @@ This panel is used for backup-manager configuration. It allows to modify followi
 * Directories to backup
 * Backup directory
 On first launch SLM checks what method of directory specification your config file uses. If it detects old method (BM_TARBALL_DIRECTORIES) it asks for permission to convert it to array method (BM_TARBALL_TARGETS). Not allowing it to do so will result in closing the window and denying functionality.
+
+#### DNS Configurator (preview)
+This panel is used to manage DNS server (bind). It allows to create and manage zones:
+* Create forward lookup zone
+* Create reverse lookup zone
+* Manage records in zones
+
+#### QEMU/KVM
+This panel is used to view and manage existing virtual machines (doesn't support creating new domains).
+* List machines
+* Show machine's status
+* Start machine
+* Stop machine
+* Restart machine
 
 ### 3. LOG FILES
 
