@@ -40,6 +40,12 @@ private slots:
 
     void on_install_exo_clicked();
 
+    void on_install_dns_clicked();
+
+    void on_install_libvirt_clicked();
+
+    void on_install_backupmanager_clicked();
+
 signals:
     void distro_changed();
 

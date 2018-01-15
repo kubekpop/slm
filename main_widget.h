@@ -20,6 +20,9 @@
 #include "backup_window.h"
 #include "ssh_connect_window.h"
 #include "raid_window.h"
+#include "samba_window.h"
+#include "dns_window.h"
+#include "qemu_window.h"
 
 namespace Ui {
 class main_widget;
@@ -151,6 +154,24 @@ private slots:
 
     void on_raid_manager_clicked();
 
+    void on_dns_config_clicked();
+
+    void on_dns_start_clicked();
+
+    void on_dns_stop_clicked();
+
+    void on_dns_restart_clicked();
+
+    void on_kvm_button_clicked();
+
+    void on_qemu_config_clicked();
+
+    void on_qemu_start_clicked();
+
+    void on_qemu_stop_clicked();
+
+    void on_qemu_restart_clicked();
+
 private:
     Ui::main_widget *ui;
     QScrollBar *log_scrollbar;
@@ -170,7 +191,9 @@ private:
     status_window *status_win;
     backup_window *backup_win;
     raid_window *raid_win;
-
+    samba_window *samba_win;
+    dns_window *dns_win;
+    qemu_window *qemu_win;
 };
 
 #endif // MAIN_WIDGET_H

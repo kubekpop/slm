@@ -2,6 +2,9 @@
 #include "ui_main_widget.h"
 #include "QMessageBox"
 #include "QTime"
+#define VER "1.0 DEV"
+QString version = VER;
+
 main_widget::main_widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::main_widget)
@@ -25,6 +28,10 @@ void main_widget::closeEvent(QCloseEvent *event)
     settings_win->close();
     backup_win->close();
     status_win->close();
+    dns_win->close();
+    raid_win->close();
+    samba_win->close();
+    qemu_win->close();
     /*
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Sure?", "Exit XUMPP Lite?", QMessageBox::Yes | QMessageBox::No);
@@ -52,8 +59,9 @@ void main_widget::startup()
     // get scrollbar
     log_scrollbar = ui->log->verticalScrollBar();
 
+    ui->spacer_top_label->setText(VER);
     // print version
-    update_log("SLM dev. [version]");
+    update_log("SLM "+version);
     bash_root->write("echo '[00036]'`uname -r`'[XXXXX]' \n");
     //setup interface before authorisation
     is_authorised = false;
@@ -100,6 +108,13 @@ void main_widget::startup()
 
     raid_win = new raid_window();
 
+    samba_win = new samba_window();
+
+    dns_win = new dns_window();
+
+    qemu_win = new qemu_window();
+    qemu_win->bash_root = bash_root;
+    connect(qemu_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 }
 
 void main_widget::update_module_info()
@@ -167,10 +182,14 @@ void main_widget::change_distribution()
         pids_names.append("dhcpd");
         ports_names.append("dhcpd");
 
-        service_names.append("nfs-server");
+        service_names.append("nfsserver");
         pids_names.append("nfsd");
         ports_names.append("nfs");
         //rpcinfo -p | grep nfs
+
+        service_names.append("named");
+        pids_names.append("named");
+        ports_names.append("named");
 
         installCommands.append("zypper install -y apache2 php7 php7-pear apache2-mod_php7");      //install Apache
         installCommands.append("zypper install -y dhcp-server");                                  //install dhcp-server
@@ -180,6 +199,7 @@ void main_widget::change_distribution()
         installCommands.append("zypper install -y vsftpd");                                       //install ftp-server
         installCommands.append("zypper install -y samba");                                        //install samba
         installCommands.append("zypper install -y phpMyAdmin");                                   //install phpmyadmin
+        installCommands.append("zypper install -y bind");                                   //install bind
     }
     else if(distribution == "fedora")
     {
@@ -207,14 +227,25 @@ void main_widget::change_distribution()
         pids_names.append("nfsd");
         ports_names.append("nfs");
 
-        installCommands.append("dnf install -y httpd php php-common");      //install Apache
-        installCommands.append("dnf install -y dhcp-server");               //install dhcp-server
-        installCommands.append("dnf install -y nfs-utils");                 //install nfs server
-        installCommands.append("dnf install -y exo");                       //install exo
-        installCommands.append("dnf install -y mysql-server");              //install mysql server
-        installCommands.append("dnf install -y vsftpd");                    //install ftp-server
-        installCommands.append("dnf install -y samba");                     //install samba
-        installCommands.append("dnf install -y phpmyadmin");                //install phpmyadmin
+        service_names.append("named");
+        pids_names.append("named");
+        ports_names.append("named");
+
+        service_names.append("libvirtd");
+        pids_names.append("libvirtd");
+        ports_names.append("libvirtd");
+
+        installCommands.append("dnf install -y httpd php php-common");                  //install Apache
+        installCommands.append("dnf install -y dhcp-server");                           //install dhcp-server
+        installCommands.append("dnf install -y nfs-utils");                             //install nfs server
+        installCommands.append("dnf install -y exo");                                   //install exo
+        installCommands.append("dnf install -y mysql-server");                          //install mysql server
+        installCommands.append("dnf install -y vsftpd");                                //install ftp-server
+        installCommands.append("dnf install -y samba");                                 //install samba
+        installCommands.append("dnf install -y phpmyadmin");                            //install phpmyadmin
+        installCommands.append("dnf install -y bind");                                  //install dns
+        installCommands.append("dnf group install --with-optional -y virtualization");  //install virtualization
+        installCommands.append("dnf install -y backup-manager");                        //install backup-manager
 
 
     }
@@ -317,6 +348,10 @@ void main_widget::change_distribution()
         pids_names.append("nfsd");
         ports_names.append("nfs");
 
+        service_names.append("named");
+        pids_names.append("named");
+        ports_names.append("named");
+
         installCommands.append("pacman -S apache php-apache --noconfirm");  //install Apache
         installCommands.append("pacman -S dhcp --noconfirm");               //install dhcp-server
         installCommands.append("pacman -S nfs-utils --noconfirm");          //install nfs server
@@ -325,6 +360,7 @@ void main_widget::change_distribution()
         installCommands.append("pacman -S vsftpd --noconfirm");             //install ftp-server
         installCommands.append("pacman -S samba --noconfirm");              //install samba
         installCommands.append("pacman -S phpmyadmin --noconfirm");         //install phpmyadmin
+        installCommands.append("pacman -S bind --noconfirm");         //install phpmyadmin
     }
     else if(distribution == "debian")
     {
@@ -422,6 +458,8 @@ void main_widget::lock_interface(bool interface_locked)
         ui->nfs_config->setDisabled(interface_locked);
         ui->dhcp_config->setDisabled(interface_locked);
         ui->ftp_config->setDisabled(interface_locked);
+        ui->dns_config->setDisabled(interface_locked);
+        ui->qemu_config->setDisabled(interface_locked);
 
         ui->apache_start->setDisabled(interface_locked);
         ui->mysql_start->setDisabled(interface_locked);
@@ -429,6 +467,8 @@ void main_widget::lock_interface(bool interface_locked)
         ui->nfs_start->setDisabled(interface_locked);
         ui->dhcp_start->setDisabled(interface_locked);
         ui->ftp_start->setDisabled(interface_locked);
+        ui->dns_start->setDisabled(interface_locked);
+        ui->qemu_start->setDisabled(interface_locked);
 
         ui->apache_stop->setDisabled(interface_locked);
         ui->mysql_stop->setDisabled(interface_locked);
@@ -436,6 +476,8 @@ void main_widget::lock_interface(bool interface_locked)
         ui->nfs_stop->setDisabled(interface_locked);
         ui->dhcp_stop->setDisabled(interface_locked);
         ui->ftp_stop->setDisabled(interface_locked);
+        ui->dns_stop->setDisabled(interface_locked);
+        ui->qemu_stop->setDisabled(interface_locked);
 
         ui->apache_restart->setDisabled(interface_locked);
         ui->mysql_restart->setDisabled(interface_locked);
@@ -443,6 +485,8 @@ void main_widget::lock_interface(bool interface_locked)
         ui->nfs_restart->setDisabled(interface_locked);
         ui->dhcp_restart->setDisabled(interface_locked);
         ui->ftp_restart->setDisabled(interface_locked);
+        ui->dns_restart->setDisabled(interface_locked);
+        ui->qemu_restart->setDisabled(interface_locked);
 
         ui->iptables->setDisabled(interface_locked);
 }
@@ -475,6 +519,13 @@ void main_widget::status_check(QString service_name, int module_number)
     case 5:
         check_command = "echo '[00011]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
+
+    case 6:
+        check_command = "echo '[00062]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        break;
+    case 7:
+        check_command = "echo '[00079]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        break;
     }
     bash_root->write(check_command.toStdString().c_str());
     // jump to function bash_root_reader();
@@ -485,7 +536,7 @@ void main_widget::pid_check(QString service_name, int module_number)
     QString check_command;
     switch(module_number)
     {
-    case 0:
+     case 0:
         check_command = "echo '[00006]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         break;
 
@@ -507,6 +558,16 @@ void main_widget::pid_check(QString service_name, int module_number)
 
     case 5:
         check_command = "echo '[00012]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        break;
+
+    case 6:
+        check_command = "echo '[00067]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        //update_log(check_command);
+        break;
+
+    case 7:
+        check_command = "echo '[00080]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        //update_log(check_command);
         break;
     }
     bash_root->write(check_command.toStdString().c_str());
@@ -538,16 +599,12 @@ void main_widget::port_check(QString service_name, int module_number)
         check_command = "echo '[00017]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         break;
     case 5:
-        QSettings settings;
-        QString distribution = settings.value("distro").toString();
-        //if(distribution == "suse")
-        //{
-            check_command = "echo '[00018]'`rpcinfo -p | grep "+service_name+" | awk '{ print $4 }' | sed -n 1p`'[XXXXX]' \n";
-        //}
-        //else
-        //{
-        //    check_command = "echo '[00018]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
-        //}
+
+        check_command = "echo '[00018]'`rpcinfo -p | grep "+service_name+" | awk '{ print $4 }' | sed -n 1p`'[XXXXX]' \n";
+        break;
+    case 6:
+        check_command = "echo '[00063]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        //update_log(check_command);
         break;
     }
     bash_root->write(check_command.toStdString().c_str());
@@ -578,6 +635,9 @@ void main_widget::bash_output_processor(QString output_from_bash)
         output.remove(0, 7);
         switch(tag_number)
         {
+        case -1:
+            //log appender
+            break;
         case 0:
             authorisation(output);
             break;
@@ -836,24 +896,6 @@ void main_widget::bash_output_processor(QString output_from_bash)
                                                    "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2"
                                                    "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2"
                                                    "`'[XXXXX]' \n";
-                    /*
-                     *
-                     * ; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_REPOSITORY_ROOT=' /etc/backup-manager.conf | cut -d= -f2
-                     * ; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_FREQUENCY=' /etc/backup-manager.conf | cut -d= -f2
-                     * ; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_PREFIX=' /etc/backup-manager.conf | cut -d= -f2
-                     * ; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2
-                     * ; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2
-                     *
-                    export BM_REPOSITORY_ROOT="/var/archives"
-                    export BM_ARCHIVE_FREQUENCY="daily"
-                    export BM_ARCHIVE_PREFIX="$HOSTNAME"
-                    export BM_TARBALL_NAMEFORMAT="long"
-                    export BM_TARBALL_FILETYPE="tar.gz"
-
-                    w taki sposób:
-                    grep '^[[:blank:]]*export[[:blank:]]*PARAMETR=' /etc/backup-manager.conf | cut -d= -f2
-                    */
-                    // listowanie parametrów z configa
                     bash_root->write(obsolete_list_values.toStdString().c_str());
                 }
             }
@@ -928,6 +970,88 @@ void main_widget::bash_output_processor(QString output_from_bash)
         case 60:
             //update_log(output);
             status_win->update_disk_info(output);
+            break;
+        case 61:
+            update_log(output);//dns install
+            break;
+        case 62:
+            set_status(output, 6);//status check for dns
+            break;
+        case 63:
+            set_port(output,6);//port check for dns
+            update_log(output);
+            break;
+        case 64:
+            pid_check(pids_names[6],6);//start dns
+            port_check(ports_names[6],6);
+            status_check(service_names[6],6);
+            break;
+        case 65:
+            pid_check(pids_names[6],6);//stop dns
+            port_check(ports_names[6],6);
+            status_check(service_names[6],6);
+            break;
+        case 66:
+            pid_check(pids_names[6],6);//restart dns
+            port_check(ports_names[6],6);
+            status_check(service_names[6],6);
+            break;
+        case 67:
+            set_pids(output, 6);//pid check for dns
+            break;
+        case 68:
+            update_log("Opening WINDOW PLZ WAIT 4EVR");
+            qemu_win->on_load(output);
+            break;
+        case 69:
+            qemu_win->set_status(output);
+            break;
+        case 70:
+            qemu_win->set_xml(output);
+            break;
+        case 71:
+            update_log("Restarting guest");
+            qemu_win->check_status();
+            break;
+        case 72:
+            update_log("Stopping guest");
+            qemu_win->check_status();
+            break;
+        case 73:
+            update_log("Starting guest");
+            qemu_win->check_status();
+            break;
+        case 74:
+            update_log("XML: "+output);
+            qemu_win->set_xml(output);
+            break;
+        case 75:
+            pid_check(pids_names[7],7);//start libvirt
+            port_check(ports_names[7],7);
+            status_check(service_names[7],7);
+            break;
+        case 76:
+            pid_check(pids_names[7],7);//stop libvirt
+            port_check(ports_names[7],7);
+            status_check(service_names[7],7);
+            break;
+        case 77:
+            pid_check(pids_names[7],7);//restart libvirt
+            port_check(ports_names[7],7);
+            status_check(service_names[7],7);
+            break;
+        case 78:
+            update_log(output);//libvirt install
+            break;
+        case 79:
+            set_status(output,7);//status check for libvirt
+            break;
+        case 80:
+            set_pids(output,7);//pid check for libvirt
+            //update_log(output);
+            break;
+        case 81:
+            update_log(output);//libvirt install
             break;
         default:
             // todo: error
@@ -1181,6 +1305,80 @@ void main_widget::set_status(QString status, int module_number)
             }
         }
         break;
+    case 6:
+        ui->dns_status->setText(status);
+        ui->dns_status->setStyleSheet(status_style_sheet);
+        if(status == "Not installed")
+        {
+            ui->dns_start->setEnabled(false);
+            ui->dns_stop->setEnabled(false);
+            ui->dns_restart->setEnabled(false);
+            ui->dns_config->setEnabled(false);
+            ui->dns_ports->setText("N/A");
+            ui->dns_pids->setText("N/A");
+        }
+        if(is_authorised == true)
+        {
+            if(status == "Running")
+            {
+                ui->dns_start->setEnabled(false);
+                ui->dns_stop->setEnabled(true);
+                ui->dns_restart->setEnabled(true);
+                ui->dns_config->setEnabled(true);
+            }
+            if(status == "Not running")
+            {
+                ui->dns_start->setEnabled(true);
+                ui->dns_stop->setEnabled(false);
+                ui->dns_restart->setEnabled(false);
+                ui->dns_config->setEnabled(true);
+            }
+            if(status == "Failed")
+            {
+                ui->dns_start->setEnabled(true);
+                ui->dns_stop->setEnabled(false);
+                ui->dns_restart->setEnabled(false);
+                ui->dns_config->setEnabled(true);
+            }
+        }
+        break;
+    case 7:
+        ui->qemu_status->setText(status);
+        ui->qemu_status->setStyleSheet(status_style_sheet);
+        if(status == "Not installed")
+        {
+            ui->qemu_start->setEnabled(false);
+            ui->qemu_stop->setEnabled(false);
+            ui->qemu_restart->setEnabled(false);
+            ui->qemu_config->setEnabled(false);
+            ui->qemu_ports->setText("N/A");
+            ui->qemu_pids->setText("N/A");
+        }
+        if(is_authorised == true)
+        {
+            if(status == "Running")
+            {
+                ui->qemu_start->setEnabled(false);
+                ui->qemu_stop->setEnabled(true);
+                ui->qemu_restart->setEnabled(true);
+                ui->qemu_config->setEnabled(true);
+            }
+            if(status == "Not running")
+            {
+                ui->qemu_start->setEnabled(true);
+                ui->qemu_stop->setEnabled(false);
+                ui->qemu_restart->setEnabled(false);
+                ui->qemu_config->setEnabled(true);
+            }
+            if(status == "Failed")
+            {
+                ui->qemu_start->setEnabled(true);
+                ui->qemu_stop->setEnabled(false);
+                ui->qemu_restart->setEnabled(false);
+                ui->qemu_config->setEnabled(true);
+            }
+        }
+        break;
     default:
         break;
 
@@ -1213,6 +1411,11 @@ void main_widget::set_pids(QString pids, int module_number)
     case 5:
         ui->nfs_pids->setText(pids);
         break;
+    case 6:
+        ui->dns_pids->setText(pids);
+    case 7:
+        ui->qemu_pids->setText(pids);
+        break;
     default:
         break;
 
@@ -1244,6 +1447,9 @@ void main_widget::set_port(QString port, int module_number)
         break;
     case 5:
         ui->nfs_port->setText(port);
+        break;
+    case 6:
+        ui->dns_ports->setText(port);
         break;
     default:
         break;
@@ -1393,6 +1599,7 @@ void main_widget::on_pushButton_clicked()
     ui->nfs_config->setEnabled(true);
     is_authorised = true;
     ui->iptables->setEnabled(true);
+    ui->dns_config->setEnabled(true);
 }
 
 void main_widget::on_mysql_start_clicked()
@@ -1464,7 +1671,7 @@ void main_widget::on_samba_restart_clicked()
 
 void main_widget::on_samba_config_clicked()
 {
-
+    samba_win->show();
 }
 
 void main_widget::on_dhcp_start_clicked()
@@ -1581,4 +1788,93 @@ void main_widget::verify_bash_pid()
 void main_widget::on_raid_manager_clicked()
 {
     raid_win->show();
+}
+
+void main_widget::on_dns_config_clicked()
+{
+    dns_win->show();
+}
+
+void main_widget::on_dns_start_clicked()
+{
+    QString start_comand = "echo '[00064]'`systemctl start "+service_names[6]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->dns_start->setEnabled(false);
+    ui->dns_stop->setEnabled(true);
+    ui->dns_restart->setEnabled(false);
+    update_log("Starting DNS Server");
+}
+
+
+void main_widget::on_dns_stop_clicked()
+{
+    QString start_comand = "echo '[00065]'`systemctl stop "+service_names[6]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->dns_start->setEnabled(true);
+    ui->dns_stop->setEnabled(false);
+    ui->dns_restart->setEnabled(false);
+    update_log("Stopping DNS Server");
+}
+
+void main_widget::on_dns_restart_clicked()
+{
+    QString start_comand = "echo '[00066]'`systemctl restart "+service_names[6]+"`'[XXXXX]' \n";
+    bash_root->write(start_comand.toStdString().c_str());
+    ui->dns_start->setEnabled(false);
+    ui->dns_stop->setEnabled(true);
+    ui->dns_restart->setEnabled(true);
+    update_log("Restarting DNS Server");
+}
+
+void main_widget::on_kvm_button_clicked()
+{
+    //qemu_win->show();
+    update_log("CLICKK");
+    //qemu_win->on_load("tu bedzie zwrot");
+    //--connect qemu:///system
+    QString command = "echo [00068]`virsh --connect qemu:///system list --all | awk '{ print $2 }' | sed -n 3,999p | sed ':a;N;$!ba;s/\\n/=/g' | rev | cut -d= -f2-999 | rev`[XXXXX]";
+    update_log(command);
+    bash_root->write(command.toStdString().c_str());
+}
+
+void main_widget::on_qemu_config_clicked()
+{
+    //qemu_win->show();
+    //update_log("CLICKK");
+    //qemu_win->on_load("tu bedzie zwrot");
+    //--connect qemu:///system
+    QString command = "echo [00068]`virsh --connect qemu:///system list --all | awk '{ print $2 }' | sed -n 3,999p | sed ':a;N;$!ba;s/\\n/=/g' | rev | cut -d= -f2-999 | rev`[XXXXX]";
+    //update_log(command);
+    bash_root->write(command.toStdString().c_str());
+}
+
+void main_widget::on_qemu_start_clicked()
+{
+    QString command = "echo [00075]`systemctl start "+service_names[7]+"`[XXXXX]";
+    bash_root->write(command.toStdString().c_str());
+    ui->qemu_start->setEnabled(false);
+    ui->qemu_stop->setEnabled(true);
+    ui->qemu_restart->setEnabled(true);
+    update_log("Starting "+service_names[7]);
+}
+
+
+void main_widget::on_qemu_stop_clicked()
+{
+    QString command = "echo [00076]`systemctl stop "+service_names[7]+"`[XXXXX]";
+    bash_root->write(command.toStdString().c_str());
+    ui->qemu_start->setEnabled(true);
+    ui->qemu_stop->setEnabled(false);
+    ui->qemu_restart->setEnabled(false);
+    update_log("Stopping "+service_names[7]);
+}
+
+void main_widget::on_qemu_restart_clicked()
+{
+    QString command = "echo [00077]`systemctl restart "+service_names[7]+"`[XXXXX]";
+    bash_root->write(command.toStdString().c_str());
+    ui->qemu_start->setEnabled(false);
+    ui->qemu_stop->setEnabled(true);
+    ui->qemu_restart->setEnabled(true);
+    update_log("Restarting "+service_names[7]);
 }

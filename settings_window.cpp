@@ -145,3 +145,22 @@ void settings_window::on_install_exo_clicked()
     QString command = "echo '[00035]'`"+installCommands[3]+" > /var/log/slm.log && echo 'Successfully installed exo' || echo 'Failed to install exo'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
+
+void settings_window::on_install_dns_clicked()
+{
+    QString command = "echo '[00061]'`"+installCommands[8]+" > /var/log/slm.log && echo 'Successfully installed dns server' || echo 'Failed to install dns-server'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}
+
+void settings_window::on_install_libvirt_clicked()
+{
+    QString command = "echo '[00078]'`"+installCommands[9]+" > /var/log/slm.log && echo 'Successfully installed Virtualization set' || echo 'Failed to install Virtualization set'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}
+
+
+void settings_window::on_install_backupmanager_clicked()
+{
+    QString command = "echo '[00081]'`"+installCommands[10]+" > /var/log/slm.log && echo 'Successfully installed backup-manager' || echo 'Failed to install backup-manager'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}

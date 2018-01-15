@@ -142,6 +142,9 @@
        <property name="text">
         <string>write_enable</string>
        </property>
+       <property name="tristate">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
      <item row="1" column="0">
@@ -158,7 +161,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Configure your FTP server:</string>
+        <string>FTP options:</string>
        </property>
       </widget>
      </item>

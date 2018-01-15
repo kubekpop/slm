@@ -119,6 +119,16 @@
     </layout>
    </item>
    <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>This sets proper service names according to your distribution.</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="install_label">
      <property name="font">
       <font>
@@ -135,23 +145,17 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QPushButton" name="install_apache">
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="install_dhcp">
        <property name="text">
-        <string>Apache2</string>
+        <string>DHCP</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="install_ftp">
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
+     <item row="1" column="3">
+      <widget class="QPushButton" name="install_exo">
        <property name="text">
-        <string>vsftpd</string>
+        <string>exo</string>
        </property>
       </widget>
      </item>
@@ -165,13 +169,20 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="install_mysql">
+     <item row="1" column="1">
+      <widget class="QPushButton" name="install_samba">
+       <property name="text">
+        <string>Samba</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="install_ftp">
        <property name="styleSheet">
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>MySQL</string>
+        <string>vsftpd</string>
        </property>
       </widget>
      </item>
@@ -182,24 +193,44 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="install_samba">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="install_apache">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <property name="text">
-        <string>Samba</string>
+        <string>Apache2</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="2">
-      <widget class="QPushButton" name="install_dhcp">
+     <item row="0" column="1">
+      <widget class="QPushButton" name="install_mysql">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <property name="text">
-        <string>DHCP</string>
+        <string>MySQL</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="3">
-      <widget class="QPushButton" name="install_exo">
+     <item row="2" column="0">
+      <widget class="QPushButton" name="install_dns">
        <property name="text">
-        <string>Exo</string>
+        <string>DNS</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QPushButton" name="install_libvirt">
+       <property name="text">
+        <string>Virtualization</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="install_backupmanager">
+       <property name="text">
+        <string>backup-manager</string>
        </property>
       </widget>
      </item>
