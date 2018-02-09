@@ -36,7 +36,9 @@ SOURCES += \
     status_window.cpp \
     backup_window.cpp \
     ssh_connect_window.cpp \
-    samba_window.cpp
+    samba_window.cpp \
+    dns_window.cpp \
+    qemu_window.cpp
 
 HEADERS += \
         main_widget.h \
@@ -50,7 +52,9 @@ HEADERS += \
     status_window.h \
     backup_window.h \
     ssh_connect_window.h \
-    samba_window.h
+    samba_window.h \
+    dns_window.h \
+    qemu_window.h
 
 FORMS += \
         main_widget.ui \
@@ -64,7 +68,9 @@ FORMS += \
     status_window.ui \
     backup_window.ui \
     ssh_connect_window.ui \
-    samba_window.ui
+    samba_window.ui \
+    dns_window.ui \
+    qemu_window.ui
 
 RESOURCES += \
     resources.qrc

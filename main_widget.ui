@@ -54,13 +54,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="shell">
-         <property name="text">
-          <string>Shell</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="status_button">
          <property name="text">
           <string>Status</string>
@@ -71,13 +64,6 @@
         <widget class="QPushButton" name="backup">
          <property name="text">
           <string>Backup Manager</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="kvm_button">
-         <property name="text">
-          <string>QEMU/KVM</string>
          </property>
         </widget>
        </item>
@@ -224,8 +210,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>927</width>
-          <height>276</height>
+          <width>931</width>
+          <height>342</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">

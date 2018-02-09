@@ -28,6 +28,8 @@ private slots:
 
     void on_back_clicked();
 
+    void on_routing_apply_clicked();
+
 private:
     Ui::firewall_window *ui;
     QStringList interfaces;

@@ -26,6 +26,9 @@ void settings_window::settings_prepare_window()
         ui->install_ftp->setDisabled(false);
         ui->install_mysql->setDisabled(false);
         ui->install_samba->setDisabled(false);
+        ui->install_backupmanager->setDisabled(false);
+        ui->install_dns->setDisabled(false);
+        ui->install_libvirt->setDisabled(false);
     }
     else
     {
@@ -37,6 +40,9 @@ void settings_window::settings_prepare_window()
         ui->install_ftp->setDisabled(true);
         ui->install_mysql->setDisabled(true);
         ui->install_samba->setDisabled(true);
+        ui->install_backupmanager->setDisabled(true);
+        ui->install_dns->setDisabled(true);
+        ui->install_libvirt->setDisabled(true);
     }
 
     QSettings settings;

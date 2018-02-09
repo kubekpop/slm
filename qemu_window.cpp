@@ -59,7 +59,7 @@ void qemu_window::on_qemu_combobox_currentIndexChanged(const QString &arg1)
 {
     check_status();
     QString command = "echo [00074]`virsh --connect qemu:///system dumpxml "+arg1+"`[XXXXX]";
-    emit data_to_log(command);
+    //emit data_to_log(command);
     bash_root->write(command.toStdString().c_str());
 }
 void qemu_window::check_status()

@@ -352,6 +352,10 @@ void main_widget::change_distribution()
         pids_names.append("named");
         ports_names.append("named");
 
+        service_names.append("libvirtd");
+        pids_names.append("libvirtd");
+        ports_names.append("libvirtd");
+
         installCommands.append("pacman -S apache php-apache --noconfirm");  //install Apache
         installCommands.append("pacman -S dhcp --noconfirm");               //install dhcp-server
         installCommands.append("pacman -S nfs-utils --noconfirm");          //install nfs server
@@ -360,7 +364,8 @@ void main_widget::change_distribution()
         installCommands.append("pacman -S vsftpd --noconfirm");             //install ftp-server
         installCommands.append("pacman -S samba --noconfirm");              //install samba
         installCommands.append("pacman -S phpmyadmin --noconfirm");         //install phpmyadmin
-        installCommands.append("pacman -S bind --noconfirm");         //install phpmyadmin
+        installCommands.append("pacman -S bind --noconfirm");               //install phpmyadmin
+        installCommands.append("pacman -S libvirt qemu --noconfirm");       //install libvirt
     }
     else if(distribution == "debian")
     {
@@ -1000,7 +1005,7 @@ void main_widget::bash_output_processor(QString output_from_bash)
             set_pids(output, 6);//pid check for dns
             break;
         case 68:
-            update_log("Opening WINDOW PLZ WAIT 4EVR");
+            //update_log("Opening WINDOW PLZ WAIT 4EVR");
             qemu_win->on_load(output);
             break;
         case 69:
