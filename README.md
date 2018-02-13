@@ -24,10 +24,16 @@ This panel is used for vsftpd server configuration. Available options are:
 * anonymous_enable
 * local_enable
 * chroot_local_user
-* 
+* write_enable
+* anon_mkdir_write_enable
+* anon_upload_enable
+* anonymous_root
+* chown_uploads
+* chown_username
  
 #### NFS Configurator
 This panel is used for nfs server configuration. It allows to manage most common export options:
+* path
 * squash
 * rw/ro permissions
 * access permissions
@@ -37,8 +43,8 @@ This panel is used for nfs server configuration. It allows to manage most common
 This panel is used for firewall configuration. It uses iptables command. Available features (only adding and deleting, no edit available yet
 * DNAT port forwarding
 * Masquerade LAN to WAN
-* Open ports
-* List rules in chain and delete them
+* Open ports (preview)
+* List rules in chain and delete them (preview)
 
 #### Apache Configurator (preview)
 This panel is used for Apache configuration. Available features:
@@ -53,6 +59,10 @@ This panel is used for Apache configuration. Available features:
 #### Samba Configurator (preview)
 
 #### DHCP Configurator (preview)
+
+#### DNS Configurator (preview)
+* Manage existing zones
+* Create new zones
 
 #### Backup-Manager
 This panel is used for backup-manager configuration. It allows to modify following options in config file:
@@ -77,8 +87,10 @@ This panel is used to view and manage existing virtual machines (doesn't support
 * Start machine
 * Stop machine
 * Restart machine
+* Show domain's XML (preview)
 
-### 3. LOG FILES
+### 3. LOG FILES (preview)
+SLM stores most effective commands in a log file located in /var/logs/slm.log. 
 
 ### 4. MISC
 
