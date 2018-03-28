@@ -124,3 +124,23 @@ md1 : active raid1 sde1[6](F) sdg1[1] sdb1[4] sdd1[3] sdc1[2]
       [6/4] - should be 6, but currently 4 are active
 
 */
+
+
+
+void status_window::on_update_check_clicked()
+{
+    QString updateCheckCommand = "echo '[00099]'`pacman -Qu 2>/dev/null | wc -l`'[XXXXX]'";
+    bash_root->write(updateCheckCommand.toStdString().c_str());
+}
+
+void status_window::setUpdates(QString count)
+{
+    ui->update_check_label->setText(count);
+}
+
+void status_window::on_update_clicked()
+{
+    QString updateCheckCommand = "echo '[00098]'`pacman -Syu --noconfirm 2>/dev/null`'[XXXXX]'";
+    //update_log("Starting system upgrade");
+    bash_root->write(updateCheckCommand.toStdString().c_str());
+}

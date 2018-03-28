@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>DNS Manager</string>
+   <string>DNS Manager (preview)</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -256,14 +256,14 @@
             <item>
              <widget class="QRadioButton" name="radioButton_5">
               <property name="text">
-               <string>Slave</string>
+               <string>Sla&amp;ve</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QRadioButton" name="radioButton_4">
               <property name="text">
-               <string>Caching</string>
+               <string>Cach&amp;ing</string>
               </property>
              </widget>
             </item>

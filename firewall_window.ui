@@ -206,7 +206,29 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="source_ip"/>
+          <widget class="QLineEdit" name="source_ip">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="statusTip">
+            <string/>
+           </property>
+           <property name="whatsThis">
+            <string/>
+           </property>
+           <property name="accessibleName">
+            <string/>
+           </property>
+           <property name="accessibleDescription">
+            <string/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="placeholderText">
+            <string>External IP</string>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label">
@@ -216,7 +238,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="destination_ip"/>
+          <widget class="QLineEdit" name="destination_ip">
+           <property name="placeholderText">
+            <string>Internal IP</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -230,7 +256,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="source_port"/>
+          <widget class="QLineEdit" name="source_port">
+           <property name="placeholderText">
+            <string>External port (eg. 2222)</string>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_2">
@@ -240,7 +270,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="destination_port"/>
+          <widget class="QLineEdit" name="destination_port">
+           <property name="placeholderText">
+            <string>Internal port (eg. 22)</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

@@ -22,6 +22,7 @@ public:
     void update_cpu_bar(int percent);
     void update_memory_info(QString memory_info);
     void update_disk_info(QString disk_info);
+    void setUpdates(QString count);
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -29,6 +30,11 @@ protected:
 public slots:
     void check_status();
 
+
+private slots:
+    void on_update_check_clicked();
+
+    void on_update_clicked();
 
 private:
     Ui::status_window *ui;

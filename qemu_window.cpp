@@ -64,7 +64,7 @@ void qemu_window::on_qemu_combobox_currentIndexChanged(const QString &arg1)
 }
 void qemu_window::check_status()
 {
-    QString statusCommand = "echo [00069]`virsh --connect qemu:///system list --all | grep "+ui->qemu_combobox->currentText()+" | awk '{ print $3 }'`[XXXXX]";
+    QString statusCommand = "echo [00069]`export LC_MESSAGES=en_US.utf8; virsh --connect qemu:///system list --all | grep "+ui->qemu_combobox->currentText()+" | awk '{ print $3 }'`[XXXXX]";
     bash_root->write(statusCommand.toStdString().c_str());
     //set_xml("lol");
     qDebug() << statusCommand;

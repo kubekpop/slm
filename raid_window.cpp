@@ -6,6 +6,18 @@ raid_window::raid_window(QWidget *parent) :
     ui(new Ui::raid_window)
 {
     ui->setupUi(this);
+
+    QString array = "/dev/md0";
+    int level = 1;
+    QStringList members;
+    members.append("/dev/sda1");
+    members.append("/dev/sdb1");
+    QString status = "cos";
+    //ui->raid_status->
+
+
+
+
 }
 
 raid_window::~raid_window()

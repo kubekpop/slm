@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Apache Hosts</string>
+   <string>Apache Hosts (preview)</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="3" column="1">
@@ -227,7 +227,7 @@
         <item>
          <widget class="QRadioButton" name="require_granted">
           <property name="text">
-           <string>granted</string>
+           <string>&amp;granted</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -237,7 +237,7 @@
         <item>
          <widget class="QRadioButton" name="require_denied">
           <property name="text">
-           <string>denied</string>
+           <string>den&amp;ied</string>
           </property>
          </widget>
         </item>

@@ -156,7 +156,8 @@ void ftp_window::ftpOptionCheck()
 {
     for(int i = 0; i<7;i++)
     {
-        QString result= ftpCheck(QString::fromStdString(akcje[i]));
+        //QString ftpParam = akcje[i];
+        QString result = ftpCheck(QString::fromStdString(akcje[i]));
         bool state = false;
         if(result == "YES" || result == "yes")
         {

@@ -38,7 +38,8 @@ SOURCES += \
     ssh_connect_window.cpp \
     samba_window.cpp \
     dns_window.cpp \
-    qemu_window.cpp
+    qemu_window.cpp \
+    docker_window.cpp
 
 HEADERS += \
         main_widget.h \
@@ -54,7 +55,8 @@ HEADERS += \
     ssh_connect_window.h \
     samba_window.h \
     dns_window.h \
-    qemu_window.h
+    qemu_window.h \
+    docker_window.h
 
 FORMS += \
         main_widget.ui \
@@ -70,7 +72,8 @@ FORMS += \
     ssh_connect_window.ui \
     samba_window.ui \
     dns_window.ui \
-    qemu_window.ui
+    qemu_window.ui \
+    docker_window.ui
 
 RESOURCES += \
     resources.qrc

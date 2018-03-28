@@ -23,6 +23,7 @@
 #include "samba_window.h"
 #include "dns_window.h"
 #include "qemu_window.h"
+#include "docker_window.h"
 
 namespace Ui {
 class main_widget;
@@ -58,7 +59,7 @@ private slots:
 
     void on_iptables_clicked();
 
-    void on_shell_clicked();
+    //void on_shell_clicked();
 
     void on_config_clicked();
 
@@ -69,6 +70,10 @@ private slots:
     void pid_check(QString service_name, int module_number);
 
     void port_check(QString service_name, int module_number);
+
+    void enable_check(QString service_name, int module_number);
+
+    void set_enabled(bool enabled, int module_number);
 
     void bash_root_reader();
 
@@ -162,7 +167,7 @@ private slots:
 
     void on_dns_restart_clicked();
 
-    void on_kvm_button_clicked();
+    //void on_kvm_button_clicked();
 
     void on_qemu_config_clicked();
 
@@ -171,6 +176,42 @@ private slots:
     void on_qemu_stop_clicked();
 
     void on_qemu_restart_clicked();
+
+    void on_apache_enable_toggled(bool checked);
+
+    void enableService(bool state, int service);
+
+    void on_qemu_enable_toggled(bool checked);
+
+    void on_mysql_enable_toggled(bool checked);
+
+    void on_ftp_enable_toggled(bool checked);
+
+    void on_samba_enable_toggled(bool checked);
+
+    void on_dhcp_enable_toggled(bool checked);
+
+    void on_nfs_enable_toggled(bool checked);
+
+    void on_dns_enable_toggled(bool checked);
+
+    void on_nfs_enable_clicked(bool checked);
+
+    void on_apache_enable_clicked(bool checked);
+
+    void on_mysql_enable_clicked(bool checked);
+
+    void on_ftp_enable_clicked(bool checked);
+
+    void on_samba_enable_clicked(bool checked);
+
+    void on_dhcp_enable_clicked(bool checked);
+
+    void on_dns_enable_clicked(bool checked);
+
+    void on_qemu_enable_clicked(bool checked);
+
+    void on_docker_config_clicked();
 
 private:
     Ui::main_widget *ui;
@@ -194,6 +235,7 @@ private:
     samba_window *samba_win;
     dns_window *dns_win;
     qemu_window *qemu_win;
+    docker_window *docker_win;
 };
 
 #endif // MAIN_WIDGET_H

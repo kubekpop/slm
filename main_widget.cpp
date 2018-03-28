@@ -32,6 +32,7 @@ void main_widget::closeEvent(QCloseEvent *event)
     raid_win->close();
     samba_win->close();
     qemu_win->close();
+    docker_win->close();
     /*
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Sure?", "Exit XUMPP Lite?", QMessageBox::Yes | QMessageBox::No);
@@ -115,6 +116,21 @@ void main_widget::startup()
     qemu_win = new qemu_window();
     qemu_win->bash_root = bash_root;
     connect(qemu_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
+
+    docker_win = new docker_window();
+    docker_win->bash_root = bash_root;
+
+
+    QTimer *bash_unlocker = new QTimer(this);
+    connect(bash_unlocker, &QTimer::timeout, [=] () {bash_root->write("echo '[99999][XXXXX]' \n");});
+    bash_unlocker->start(2000);
+/*
+    QString command="echo '[90000]'`bash -c \"export LC_MESSAGES=en_US.utf8\"`'[XXXXX]'";
+    update_log("Setting locale to en_US.utf8 before");
+    bash_root->write(command.toStdString().c_str());
+    update_log(command);
+    update_log("Setting locale to en_US.utf8 after");
+    */
 }
 
 void main_widget::update_module_info()
@@ -127,6 +143,7 @@ void main_widget::update_module_info()
             pid_check(pids_names[i],i);
             status_check(service_names[i],i);
             port_check(ports_names[i],i);
+            enable_check(service_names[i],i);
             update_log("Done checks for module: "+service_names[i]);
 
         }
@@ -137,11 +154,14 @@ void main_widget::update_module_info()
         {
             pid_check(pids_names[i],i);
             status_check(service_names[i],i);
+            enable_check(service_names[i],i);
             update_log("Done checks for module: "+service_names[i]);
 
         }
     }
     update_log("Done module checking");
+
+
 }
 
 void main_widget::change_distribution()
@@ -191,6 +211,14 @@ void main_widget::change_distribution()
         pids_names.append("named");
         ports_names.append("named");
 
+        service_names.append("libvirtd");
+        pids_names.append("libvirtd");
+        ports_names.append("libvirtd");
+
+        service_names.append("docker");
+        pids_names.append("docker");
+        ports_names.append("docker");
+
         installCommands.append("zypper install -y apache2 php7 php7-pear apache2-mod_php7");      //install Apache
         installCommands.append("zypper install -y dhcp-server");                                  //install dhcp-server
         installCommands.append("zypper install -y nfs-kernel-server");                            //install nfs server
@@ -200,6 +228,9 @@ void main_widget::change_distribution()
         installCommands.append("zypper install -y samba");                                        //install samba
         installCommands.append("zypper install -y phpMyAdmin");                                   //install phpmyadmin
         installCommands.append("zypper install -y bind");                                   //install bind
+        installCommands.append("dnf group install --with-optional -y virtualization");  //install virtualization
+        installCommands.append("zypper install -y backup-manager");                        //install backup-manager
+        installCommands.append("zypper install -y docker");                        //install backup-manager
     }
     else if(distribution == "fedora")
     {
@@ -356,6 +387,10 @@ void main_widget::change_distribution()
         pids_names.append("libvirtd");
         ports_names.append("libvirtd");
 
+        service_names.append("docker");
+        pids_names.append("docker");
+        ports_names.append("docker");
+
         installCommands.append("pacman -S apache php-apache --noconfirm");  //install Apache
         installCommands.append("pacman -S dhcp --noconfirm");               //install dhcp-server
         installCommands.append("pacman -S nfs-utils --noconfirm");          //install nfs server
@@ -366,6 +401,17 @@ void main_widget::change_distribution()
         installCommands.append("pacman -S phpmyadmin --noconfirm");         //install phpmyadmin
         installCommands.append("pacman -S bind --noconfirm");               //install phpmyadmin
         installCommands.append("pacman -S libvirt qemu --noconfirm");       //install libvirt
+        installCommands.append("pacman -S backup-manager --noconfirm");     //install backup-manager
+        installCommands.append("pacman -S docker --noconfirm");             //install docker
+
+        //QString updateCommand = "pacman -Qu 2>/dev/null | wc -l";
+        /*
+         * updateCommand = "echo n | pacman -Syu";
+         * pacman -Qu
+         *
+         *
+         *
+         */
     }
     else if(distribution == "debian")
     {
@@ -413,7 +459,11 @@ void main_widget::root_setup()
         pid_check(pids_names[i],i);
         port_check(ports_names[i],i);
         status_check(service_names[i],i);
+        enable_check(service_names[i],i);
+
     }
+    QString command="echo [00127]`ls /etc/backup-manager.conf`[XXXXX]`";
+    bash_root->write(command.toStdString().c_str());
 }
 
 void main_widget::on_authorize_clicked()
@@ -434,6 +484,7 @@ void main_widget::authorisation(QString user)
         is_authorised = true;
         lock_interface(false);
         root_setup();
+
     }
     else
     {
@@ -465,6 +516,7 @@ void main_widget::lock_interface(bool interface_locked)
         ui->ftp_config->setDisabled(interface_locked);
         ui->dns_config->setDisabled(interface_locked);
         ui->qemu_config->setDisabled(interface_locked);
+        ui->docker_config->setDisabled(interface_locked);
 
         ui->apache_start->setDisabled(interface_locked);
         ui->mysql_start->setDisabled(interface_locked);
@@ -474,6 +526,7 @@ void main_widget::lock_interface(bool interface_locked)
         ui->ftp_start->setDisabled(interface_locked);
         ui->dns_start->setDisabled(interface_locked);
         ui->qemu_start->setDisabled(interface_locked);
+        ui->docker_start->setDisabled(interface_locked);
 
         ui->apache_stop->setDisabled(interface_locked);
         ui->mysql_stop->setDisabled(interface_locked);
@@ -483,6 +536,7 @@ void main_widget::lock_interface(bool interface_locked)
         ui->ftp_stop->setDisabled(interface_locked);
         ui->dns_stop->setDisabled(interface_locked);
         ui->qemu_stop->setDisabled(interface_locked);
+        ui->docker_stop->setDisabled(interface_locked);
 
         ui->apache_restart->setDisabled(interface_locked);
         ui->mysql_restart->setDisabled(interface_locked);
@@ -492,8 +546,68 @@ void main_widget::lock_interface(bool interface_locked)
         ui->ftp_restart->setDisabled(interface_locked);
         ui->dns_restart->setDisabled(interface_locked);
         ui->qemu_restart->setDisabled(interface_locked);
+        ui->docker_restart->setDisabled(interface_locked);
 
         ui->iptables->setDisabled(interface_locked);
+        ui->backup->setDisabled(interface_locked);
+
+        ui->apache_enable->setDisabled(interface_locked);
+        ui->mysql_enable->setDisabled(interface_locked);
+        ui->ftp_enable->setDisabled(interface_locked);
+        ui->dhcp_enable->setDisabled(interface_locked);
+        ui->samba_enable->setDisabled(interface_locked);
+        ui->nfs_enable->setDisabled(interface_locked);
+        ui->dns_enable->setDisabled(interface_locked);
+        ui->qemu_enable->setDisabled(interface_locked);
+        ui->docker_enable->setDisabled(interface_locked);
+}
+
+void main_widget::enable_check(QString service_name, int module_number)
+{
+    QString check_command;
+    switch(module_number)
+    {
+    case 0:
+        check_command = "echo '[00083]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        break;
+
+    case 1:
+        check_command = "echo '[00084]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        break;
+
+    case 2:
+        check_command = "echo '[00085]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        break;
+
+    case 3:
+        check_command = "echo '[00086]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        break;
+
+    case 4:
+        check_command = "echo '[00087]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        break;
+
+    case 5:
+        check_command = "echo '[00088]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        //update_log(check_command);
+        break;
+
+    case 6:
+        check_command = "echo '[00089]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        break;
+
+    case 7:
+        check_command = "echo '[00090]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        //update_log(check_command);
+        break;
+
+    case 8:
+        check_command = "echo '[00120]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        //update_log(check_command);
+        break;
+    }
+    bash_root->write(check_command.toStdString().c_str());
+    // jump to function bash_root_reader();
 }
 
 void main_widget::status_check(QString service_name, int module_number)
@@ -530,6 +644,9 @@ void main_widget::status_check(QString service_name, int module_number)
         break;
     case 7:
         check_command = "echo '[00079]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        break;
+    case 8:
+        check_command = "echo '[00117]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
     }
     bash_root->write(check_command.toStdString().c_str());
@@ -574,6 +691,10 @@ void main_widget::pid_check(QString service_name, int module_number)
         check_command = "echo '[00080]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         //update_log(check_command);
         break;
+    case 8:
+        check_command = "echo '[00118]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        //update_log(check_command);
+        break;
     }
     bash_root->write(check_command.toStdString().c_str());
     // jump to function bash_root_reader();
@@ -611,6 +732,16 @@ void main_widget::port_check(QString service_name, int module_number)
         check_command = "echo '[00063]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         //update_log(check_command);
         break;
+
+    case 7:
+        check_command = "echo '[00121]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        //update_log(check_command);
+        break;
+
+    case 8:
+        check_command = "echo '[00063]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        //update_log(check_command);
+        break;
     }
     bash_root->write(check_command.toStdString().c_str());
     // jump to function bash_root_reader();
@@ -633,11 +764,13 @@ void main_widget::bash_output_processor(QString output_from_bash)
     {
         if(output.startsWith("["))
         {
+            //update_log(output);
         QString tag = output.left(7);
         tag.replace("[","");
         tag.replace("]","");
         int tag_number = tag.toInt();
         output.remove(0, 7);
+        //update_log("Current tag: "+tag);
         switch(tag_number)
         {
         case -1:
@@ -1058,8 +1191,172 @@ void main_widget::bash_output_processor(QString output_from_bash)
         case 81:
             update_log(output);//libvirt install
             break;
+
+        case 82://ftp check options
+            //ftpParam - variable to identify which param is being checked, set in ftp_window::ftpOptionCheck function before writing to bash_root
+            //ftp_win->set_param(ftpParam, output)
+            break;
+
+        case 83://apache enable check
+            //update_log("Enable check for apache "+output);
+            if(output == "enabled")
+            {
+                set_enabled(true, 0);
+            }
+            else
+            {
+                set_enabled(false, 0);
+             }
+            break;
+
+        case 84://mysql enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 1);
+            }
+            else
+            {
+                set_enabled(false, 1);
+            }
+            break;
+
+        case 85://ftp enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 2);
+            }
+            else
+            {
+                set_enabled(false, 2);
+            }
+            break;
+
+        case 86://samba enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 3);
+            }
+            else
+            {
+                set_enabled(false, 3);
+            }
+            break;
+
+        case 87://dhcp enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 4);
+            }
+            else
+            {
+                set_enabled(false, 4);
+            }
+            break;
+
+        case 88://nfs enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 5);
+            }
+            else
+            {
+                set_enabled(false, 5);
+            }
+            break;
+
+        case 89://dns enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 6);
+            }
+            else
+            {
+                set_enabled(false, 6);
+            }
+            break;
+
+        case 90://libvirt enable check
+            //update_log("Enable check for libvirtd "+output);
+            if(output == "enabled")
+            {
+                set_enabled(true, 7);
+            }
+            else
+            {
+                set_enabled(false, 7);
+            }
+            break;
+        case 91://enabling services
+            update_module_info();
+            break;
+
+        case 98://update system
+            update_log(output);
+            update_log("Updating system complete");
+            break;
+        case 99://set updates
+            status_win->setUpdates(output + " update(s) available");
+            update_log("Checking updates: "+output);
+            break;
+
+        case 115://
+            docker_win->load_data(output);
+            docker_win->show();
+            update_log("Dockers: "+output);
+            break;
+        case 116://get docker ports
+            docker_win->setPorts(output);
+            break;
+
+        case 117:
+            set_status(output,8);//status check for libvirt
+            break;
+        case 118:
+            set_pids(output,8);//pid check for libvirt
+            //update_log(output);
+            break;
+        case 119://get docker ports
+            docker_win->setStatus(output);
+            update_log("Stauts of docker: "+output);
+            break;
+        case 120://docker enable check
+            //update_log("Enable check for libvirtd "+output);
+            if(output == "enabled")
+            {
+                set_enabled(true, 8);
+            }
+            else
+            {
+                set_enabled(false, 8);
+            }
+            break;
+        case 121:
+            set_port(output,7);//port check for libvirt
+            update_log(output);
+            break;
+        case 122:
+            set_port(output,8);//port check for docker
+            update_log(output);
+            break;
+        case 123://start container
+
+        case 124://stop container
+            update_log("Stopping container: "+output);
+
+        case 127://check backup-manager status
+            update_log("BM CHECK: "+output);
+            if(output == "/etc/backup-manager.conf")
+            {
+                ui->backup->setDisabled(false);
+            }
+            else
+            {
+                ui->backup->setDisabled(true);
+            }
+
+
         default:
-            // todo: error
+            // do nothing
             break;
         }
         }
@@ -1384,10 +1681,90 @@ void main_widget::set_status(QString status, int module_number)
             }
         }
         break;
+
+    case 8:
+        ui->docker_status->setText(status);
+               ui->docker_status->setStyleSheet(status_style_sheet);
+               if(status == "Not installed")
+               {
+                   ui->docker_start->setEnabled(false);
+                   ui->docker_stop->setEnabled(false);
+                   ui->docker_restart->setEnabled(false);
+                   ui->docker_config->setEnabled(false);
+                   ui->docker_ports->setText("N/A");
+                   ui->docker_pids->setText("N/A");
+               }
+               if(is_authorised == true)
+               {
+                   if(status == "Running")
+                   {
+                       ui->docker_start->setEnabled(false);
+                       ui->docker_stop->setEnabled(true);
+                       ui->docker_restart->setEnabled(true);
+                       ui->docker_config->setEnabled(true);
+                   }
+                   if(status == "Not running")
+                   {
+                       ui->docker_start->setEnabled(true);
+                       ui->docker_stop->setEnabled(false);
+                       ui->docker_restart->setEnabled(false);
+                       ui->docker_config->setEnabled(true);
+                   }
+                   if(status == "Failed")
+                   {
+                       ui->docker_start->setEnabled(true);
+                       ui->docker_stop->setEnabled(false);
+                       ui->docker_restart->setEnabled(false);
+                       ui->docker_config->setEnabled(true);
+                   }
+               }
+        break;
     default:
         break;
 
     }
+}
+
+void main_widget::set_enabled(bool enabled, int module_number)
+{
+
+    switch(module_number)
+    {
+        case 0:
+            ui->apache_enable->setChecked(enabled);
+            break;
+    case 1:
+        ui->mysql_enable->setChecked(enabled);
+        break;
+    case 2:
+        ui->ftp_enable->setChecked(enabled);
+        break;
+    case 3:
+        ui->samba_enable->setChecked(enabled);
+        break;
+    case 4:
+        ui->dhcp_enable->setChecked(enabled);
+        break;
+    case 5:
+        ui->nfs_enable->setChecked(enabled);
+        break;
+    case 6:
+        ui->dns_enable->setChecked(enabled);
+        break;
+    case 7:
+        //update_log("Setting enabled for libvirt");
+        ui->qemu_enable->setChecked(enabled);
+        break;
+    case 8:
+        //update_log("Setting enabled for libvirt");
+        ui->docker_enable->setChecked(enabled);
+        break;
+
+    default:
+break;
+    }
+
+
 }
 
 void main_widget::set_pids(QString pids, int module_number)
@@ -1420,6 +1797,9 @@ void main_widget::set_pids(QString pids, int module_number)
         ui->dns_pids->setText(pids);
     case 7:
         ui->qemu_pids->setText(pids);
+        break;
+    case 8:
+        ui->docker_pids->setText(pids);
         break;
     default:
         break;
@@ -1468,10 +1848,7 @@ void main_widget::on_iptables_clicked()
     bash_root->write("echo '[00037]'`ls -A1 /sys/class/net | sed ':a;N;$!ba;s/\\n/-separate-/g'`'[XXXXX]' \n");
 }
 
-void main_widget::on_shell_clicked()
-{
 
-}
 
 void main_widget::on_config_clicked()
 {
@@ -1567,6 +1944,7 @@ void main_widget::on_ftp_start_clicked()
     update_log("Starting vsftpd");
 }
 
+
 void main_widget::on_ftp_stop_clicked()
 {
     QString start_comand = "echo '[00026]'`systemctl stop "+service_names[2]+"`'[XXXXX]' \n";
@@ -1605,6 +1983,7 @@ void main_widget::on_pushButton_clicked()
     is_authorised = true;
     ui->iptables->setEnabled(true);
     ui->dns_config->setEnabled(true);
+    ui->docker_config->setEnabled(true);
 }
 
 void main_widget::on_mysql_start_clicked()
@@ -1741,6 +2120,13 @@ void main_widget::connect_ssh(QString IP, QString port, QString password)
     }
     QString connect_ssh_command = "(sshpass -p'"+password+"' ssh -o UserKnownHostsFile=/dev/null -o ConnectTimeout=2 -o StrictHostKeyChecking=no -p "+port+" root@"+IP+") || echo 'false' \n";
     bash_root->write(connect_ssh_command.toStdString().c_str());
+/*
+    QString command="echo '[90000]'`bash -c \"export LC_MESSAGES=en_US.utf8\"`'[XXXXX]'";
+    update_log("Setting ssh locale to en_US.utf8 before");
+    bash_root->write(command.toStdString().c_str());
+    update_log(command);
+    update_log("Setting ssh locale to en_US.utf8 after");
+*/
     QTimer::singleShot(2000, this, SLOT(check_ssh_connection()));
 }
 
@@ -1831,17 +2217,6 @@ void main_widget::on_dns_restart_clicked()
     update_log("Restarting DNS Server");
 }
 
-void main_widget::on_kvm_button_clicked()
-{
-    //qemu_win->show();
-    update_log("CLICKK");
-    //qemu_win->on_load("tu bedzie zwrot");
-    //--connect qemu:///system
-    QString command = "echo [00068]`virsh --connect qemu:///system list --all | awk '{ print $2 }' | sed -n 3,999p | sed ':a;N;$!ba;s/\\n/=/g' | rev | cut -d= -f2-999 | rev`[XXXXX]";
-    update_log(command);
-    bash_root->write(command.toStdString().c_str());
-}
-
 void main_widget::on_qemu_config_clicked()
 {
     //qemu_win->show();
@@ -1882,4 +2257,120 @@ void main_widget::on_qemu_restart_clicked()
     ui->qemu_stop->setEnabled(true);
     ui->qemu_restart->setEnabled(true);
     update_log("Restarting "+service_names[7]);
+}
+
+
+
+void main_widget::enableService(bool state, int service)
+{
+    QString command = "";
+    if(state == true)
+    {
+        command = "echo '[00091]'`systemctl enable "+service_names[service]+"`'[XXXXX]'";
+        update_log("Enabling "+service_names[service]);
+    }
+    else
+    {
+        command = "echo '[00091]'`systemctl disable "+service_names[service]+"`'[XXXXX]'";
+        update_log("Disabling "+service_names[service]);
+    }
+
+    //update_log("Komenda ato: "+command);
+    bash_root->write(command.toStdString().c_str());
+}
+
+void main_widget::on_qemu_enable_toggled(bool checked)
+{
+    //enableService(checked, 7);
+}
+
+void main_widget::on_apache_enable_toggled(bool checked)
+{
+    //tutaj funkcja enable/disable
+    //enableService(checked, 0);
+}
+
+void main_widget::on_mysql_enable_toggled(bool checked)
+{
+    //enableService(checked, 1);
+}
+
+void main_widget::on_ftp_enable_toggled(bool checked)
+{
+    //enableService(checked, 2);
+}
+
+
+void main_widget::on_samba_enable_toggled(bool checked)
+{
+    //enableService(checked, 3);
+}
+
+void main_widget::on_dhcp_enable_toggled(bool checked)
+{
+    //enableService(checked, 4);
+}
+
+void main_widget::on_nfs_enable_toggled(bool checked)
+{
+    //enableService(checked, 5);
+}
+
+void main_widget::on_dns_enable_toggled(bool checked)
+{
+    //enableService(checked, 6);
+}
+
+
+
+
+void main_widget::on_apache_enable_clicked(bool checked)
+{
+     enableService(checked, 0);
+}
+
+void main_widget::on_mysql_enable_clicked(bool checked)
+{
+    enableService(checked, 1);
+}
+
+void main_widget::on_ftp_enable_clicked(bool checked)
+{
+    enableService(checked, 2);
+}
+
+void main_widget::on_samba_enable_clicked(bool checked)
+{
+    enableService(checked, 3);
+}
+
+void main_widget::on_dhcp_enable_clicked(bool checked)
+{
+    enableService(checked, 4);
+}
+
+void main_widget::on_nfs_enable_clicked(bool checked)
+{
+    enableService(checked, 5);
+}
+
+void main_widget::on_dns_enable_clicked(bool checked)
+{
+    enableService(checked, 6);
+}
+
+void main_widget::on_qemu_enable_clicked(bool checked)
+{
+    enableService(checked, 7);
+}
+
+
+
+void main_widget::on_docker_config_clicked()
+{
+    QString command = "echo [00115]`docker ps -a --format '{{.Names}}' | sed ':a;N;$!ba;s/\\n/=/g'`[XXXXX]";
+    //update_log(command);
+    bash_root->write(command.toStdString().c_str());
+    //docker_win->load_data();
+    //docker_win->show();
 }
