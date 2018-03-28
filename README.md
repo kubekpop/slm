@@ -89,6 +89,14 @@ This panel is used to view and manage existing virtual machines (doesn't support
 * Restart machine
 * Show domain's XML (preview)
 
+#### Docker
+This panel is used to manage existing Docker containers (doesn't support creating new containers - YET)
+* Show status
+* List existing containers
+* List port mapping
+* List directory mapping
+* Start/Stop/Restart(not yet)/Delete(not yet)
+
 ### 3. LOG FILES (preview)
 SLM stores most effective commands in a log file located in /var/logs/slm.log. 
 
