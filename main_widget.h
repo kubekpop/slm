@@ -213,6 +213,14 @@ private slots:
 
     void on_docker_config_clicked();
 
+    void on_docker_start_clicked();
+
+    void on_docker_stop_clicked();
+
+    void on_docker_restart_clicked();
+
+    void on_docker_enable_clicked(bool checked);
+
 private:
     Ui::main_widget *ui;
     QScrollBar *log_scrollbar;

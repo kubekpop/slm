@@ -462,7 +462,7 @@ void main_widget::root_setup()
         enable_check(service_names[i],i);
 
     }
-    QString command="echo [00127]`ls /etc/backup-manager.conf`[XXXXX]`";
+    QString command="echo '[00127]'`ls /etc/backup-manager.conf`'[XXXXX]'";
     bash_root->write(command.toStdString().c_str());
 }
 
@@ -1303,6 +1303,7 @@ void main_widget::bash_output_processor(QString output_from_bash)
             docker_win->load_data(output);
             docker_win->show();
             update_log("Dockers: "+output);
+
             break;
         case 116://get docker ports
             docker_win->setPorts(output);
@@ -1353,6 +1354,22 @@ void main_widget::bash_output_processor(QString output_from_bash)
             {
                 ui->backup->setDisabled(true);
             }
+
+        case 128:
+            pid_check(pids_names[8],8);//start docker
+            port_check(ports_names[8],8);
+            status_check(service_names[8],8);
+            break;
+        case 129:
+            pid_check(pids_names[8],8);//stop docker
+            port_check(ports_names[8],8);
+            status_check(service_names[8],8);
+            break;
+        case 130:
+            pid_check(pids_names[8],8);//restart docker
+            port_check(ports_names[8],8);
+            status_check(service_names[8],8);
+            break;
 
 
         default:
@@ -2363,14 +2380,49 @@ void main_widget::on_qemu_enable_clicked(bool checked)
 {
     enableService(checked, 7);
 }
-
+void main_widget::on_docker_enable_clicked(bool checked)
+{
+    enableService(checked, 8);
+}
 
 
 void main_widget::on_docker_config_clicked()
 {
     QString command = "echo [00115]`docker ps -a --format '{{.Names}}' | sed ':a;N;$!ba;s/\\n/=/g'`[XXXXX]";
-    //update_log(command);
+    update_log(command);
     bash_root->write(command.toStdString().c_str());
     //docker_win->load_data();
     //docker_win->show();
 }
+
+void main_widget::on_docker_start_clicked()
+{
+    QString command = "echo [00128]`systemctl start "+service_names[8]+"`[XXXXX]";
+    bash_root->write(command.toStdString().c_str());
+    ui->docker_start->setEnabled(false);
+    ui->docker_stop->setEnabled(true);
+    ui->docker_restart->setEnabled(true);
+    update_log("Starting "+service_names[8]);
+}
+
+void main_widget::on_docker_stop_clicked()
+{
+    QString command = "echo [00129]`systemctl stop "+service_names[8]+"`[XXXXX]";
+    bash_root->write(command.toStdString().c_str());
+    ui->docker_start->setEnabled(true);
+    ui->docker_stop->setEnabled(false);
+    ui->docker_restart->setEnabled(false);
+    update_log("Stopping "+service_names[8]);
+}
+
+void main_widget::on_docker_restart_clicked()
+{
+    QString command = "echo [00130]`systemctl restart "+service_names[8]+"`[XXXXX]";
+    bash_root->write(command.toStdString().c_str());
+    ui->docker_start->setEnabled(false);
+    ui->docker_stop->setEnabled(true);
+    ui->docker_restart->setEnabled(true);
+    update_log("Restarting "+service_names[8]);
+}
+
+
