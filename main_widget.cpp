@@ -4,7 +4,7 @@
 #include "QTime"
 #define VER "1.0 DEV"
 QString version = VER;
-
+bool backup_manager = false;
 main_widget::main_widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::main_widget)
@@ -462,7 +462,7 @@ void main_widget::root_setup()
         enable_check(service_names[i],i);
 
     }
-    QString command="echo '[00127]'`ls /etc/backup-manager.conf`'[XXXXX]'";
+    QString command="echo '[00127]'`ls -1 /etc/backup-manager.conf`'[XXXXX]'";
     bash_root->write(command.toStdString().c_str());
 }
 
@@ -549,8 +549,14 @@ void main_widget::lock_interface(bool interface_locked)
         ui->docker_restart->setDisabled(interface_locked);
 
         ui->iptables->setDisabled(interface_locked);
-        ui->backup->setDisabled(interface_locked);
-
+        if (backup_manager == true)
+        {
+            ui->backup->setDisabled(interface_locked);
+        }
+        else
+        {
+            ui->backup->setDisabled(true);
+        }
         ui->apache_enable->setDisabled(interface_locked);
         ui->mysql_enable->setDisabled(interface_locked);
         ui->ftp_enable->setDisabled(interface_locked);
@@ -1349,10 +1355,12 @@ void main_widget::bash_output_processor(QString output_from_bash)
             if(output == "/etc/backup-manager.conf")
             {
                 ui->backup->setDisabled(false);
+                backup_manager = true;
             }
             else
             {
                 ui->backup->setDisabled(true);
+                backup_manager = false;
             }
 
         case 128:
