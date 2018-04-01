@@ -15,7 +15,7 @@ class docker_window : public QWidget
 public:
     explicit docker_window(QWidget *parent = 0);
     ~docker_window();
-    void load_data(QString containers);
+    void load_data(int operation, QString containers);
     QProcess *bash_root;
     void setPorts(QString ports);
     void setStatus(QString status);
@@ -27,6 +27,12 @@ private slots:
     void on_docker_stop_clicked();
 
     void on_docker_start_clicked();
+
+    void on_tabWidget_currentChanged(int index);
+
+    void createContainer();
+
+    void on_createButton_clicked();
 
 private:
     Ui::docker_window *ui;

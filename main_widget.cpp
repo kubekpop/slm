@@ -1305,10 +1305,12 @@ void main_widget::bash_output_processor(QString output_from_bash)
             update_log("Checking updates: "+output);
             break;
 
-        case 115://
-            docker_win->load_data(output);
+        case 115://load docker containers
+            docker_win->load_data(1, output);
+
+            update_log("Loading docker window with following containers available: "+output);
             docker_win->show();
-            update_log("Dockers: "+output);
+
 
             break;
         case 116://get docker ports
@@ -1349,9 +1351,9 @@ void main_widget::bash_output_processor(QString output_from_bash)
 
         case 124://stop container
             update_log("Stopping container: "+output);
-
+            break;
         case 127://check backup-manager status
-            update_log("BM CHECK: "+output);
+            //update_log("BM CHECK: "+output);
             if(output == "/etc/backup-manager.conf")
             {
                 ui->backup->setDisabled(false);
@@ -1362,6 +1364,7 @@ void main_widget::bash_output_processor(QString output_from_bash)
                 ui->backup->setDisabled(true);
                 backup_manager = false;
             }
+            break;
 
         case 128:
             pid_check(pids_names[8],8);//start docker
@@ -1378,7 +1381,11 @@ void main_widget::bash_output_processor(QString output_from_bash)
             port_check(ports_names[8],8);
             status_check(service_names[8],8);
             break;
+        case 131:
+            update_log("Loading new container window with following images available: "+output);
+            docker_win->load_data(2, output);
 
+            break;
 
         default:
             // do nothing
@@ -2397,8 +2404,13 @@ void main_widget::on_docker_enable_clicked(bool checked)
 void main_widget::on_docker_config_clicked()
 {
     QString command = "echo [00115]`docker ps -a --format '{{.Names}}' | sed ':a;N;$!ba;s/\\n/=/g'`[XXXXX]";
-    update_log(command);
+    //update_log(command);
     bash_root->write(command.toStdString().c_str());
+
+    //QString command2 = "echo [00131]`docker image ls | sed -n 2,99p | awk '{ print $1 }' | sed ':a;N;$!ba;s/\\n/=/g'`[XXXXX]";
+    //update_log(command2);
+    //bash_root->write(command2.toStdString().c_str());
+
     //docker_win->load_data();
     //docker_win->show();
 }
