@@ -16,9 +16,7 @@ public:
     ~dhcp_window();
 
 private slots:
-    void on_next_clicked();
 
-    void on_back_clicked();
 
 private:
     Ui::dhcp_window *ui;

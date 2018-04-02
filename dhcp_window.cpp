@@ -13,22 +13,3 @@ dhcp_window::~dhcp_window()
     delete ui;
 }
 
-void dhcp_window::on_next_clicked()
-{
-    int current_index = ui->content->currentIndex();
-    if(current_index < 2)
-    {
-        current_index++;
-        ui->content->setCurrentIndex(current_index);
-    }
-}
-
-void dhcp_window::on_back_clicked()
-{
-    int current_index = ui->content->currentIndex();
-    if(current_index > 0)
-    {
-        current_index--;
-        ui->content->setCurrentIndex(current_index);
-    }
-}
