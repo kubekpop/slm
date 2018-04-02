@@ -1324,7 +1324,7 @@ void main_widget::bash_output_processor(QString output_from_bash)
             set_pids(output,8);//pid check for libvirt
             //update_log(output);
             break;
-        case 119://get docker ports
+        case 119://get docker status
             docker_win->setStatus(output);
             update_log("Stauts of docker: "+output);
             break;
@@ -1386,6 +1386,10 @@ void main_widget::bash_output_processor(QString output_from_bash)
             docker_win->load_data(2, output);
 
             break;
+        case 222:
+            update_log("Creating container "+output);
+            break;
+
 
         default:
             // do nothing

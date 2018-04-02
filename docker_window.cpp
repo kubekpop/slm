@@ -19,14 +19,17 @@ void docker_window::load_data(int operation, QString containers)
     {
         // load data here
         QStringList containers_splitted = containers.split("=");
+        ui->container_combobox->clear();
         for (int i = 0; i < containers_splitted.size(); ++i)
         {
             ui->container_combobox->addItem(containers_splitted.at(i));
+
         }
     }
     else
     {
         QStringList images_splitted = containers.split("=");
+        ui->image_combobox->clear();
         for (int i = 0; i < images_splitted.size(); ++i)
         {
             ui->image_combobox->addItem(images_splitted.at(i));
@@ -51,6 +54,14 @@ void docker_window::check_status(QString container)
     bash_root->write(commandPorts.toStdString().c_str());
     //bash_root->write("echo DDSAWE");
     bash_root->write(commandStatus.toStdString().c_str());
+
+    if(ui->portMappings->text() == "")
+    {
+        commandPorts = "sleep .5; echo [00116]`docker inspect -f '{{ .HostConfig.PortBindings }}' "+container+"`[XXXXX]";
+        bash_root->write(commandPorts.toStdString().c_str());
+
+    }
+
 }
 void docker_window::on_container_combobox_currentTextChanged(const QString &arg1)//FinishedAt
 {
@@ -86,6 +97,12 @@ void docker_window::on_tabWidget_currentChanged(int index)
         //update_log(command2);
         bash_root->write(command2.toStdString().c_str());
     }
+    else
+    {
+        QString command = "echo [00115]`docker ps -a --format '{{.Names}}' | sed ':a;N;$!ba;s/\\n/=/g'`[XXXXX]";
+        //update_log(command);
+        bash_root->write(command.toStdString().c_str());
+    }
 }
 
 void docker_window::createContainer()
@@ -97,7 +114,7 @@ void docker_window::createContainer()
 
 void docker_window::on_createButton_clicked()
 {
-    QString command = "docker run";
+    QString command = "echo '[00222]`docker run";
     if(ui->new_name->text() != "")
     {
         command += " --name "+ui->new_name->text();
@@ -127,4 +144,6 @@ void docker_window::on_createButton_clicked()
     }
     command += " " + ui->image_combobox->currentText();
     //ui->command_placeholder->setText(command);
+    command += "` "+ui->new_name->text()+"'[XXXXX]'";
+    bash_root->write(command.toStdString().c_str());
 }
