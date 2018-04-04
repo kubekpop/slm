@@ -1144,7 +1144,6 @@ void main_widget::bash_output_processor(QString output_from_bash)
             set_pids(output, 6);//pid check for dns
             break;
         case 68:
-            //update_log("Opening WINDOW PLZ WAIT 4EVR");
             qemu_win->on_load(output);
             break;
         case 69:
@@ -1192,7 +1191,6 @@ void main_widget::bash_output_processor(QString output_from_bash)
             break;
         case 80:
             set_pids(output,7);//pid check for libvirt
-            //update_log(output);
             break;
         case 81:
             update_log(output);//libvirt install
@@ -1204,7 +1202,6 @@ void main_widget::bash_output_processor(QString output_from_bash)
             break;
 
         case 83://apache enable check
-            //update_log("Enable check for apache "+output);
             if(output == "enabled")
             {
                 set_enabled(true, 0);
@@ -1282,7 +1279,6 @@ void main_widget::bash_output_processor(QString output_from_bash)
             break;
 
         case 90://libvirt enable check
-            //update_log("Enable check for libvirtd "+output);
             if(output == "enabled")
             {
                 set_enabled(true, 7);
@@ -1307,29 +1303,23 @@ void main_widget::bash_output_processor(QString output_from_bash)
 
         case 115://load docker containers
             docker_win->load_data(1, output);
-
-            update_log("Loading docker window with following containers available: "+output);
+            //DEVupdate_log("Loading docker window with following containers available: "+output);
             docker_win->show();
-
-
             break;
         case 116://get docker ports
             docker_win->setPorts(output);
             break;
-
         case 117:
             set_status(output,8);//status check for libvirt
             break;
         case 118:
             set_pids(output,8);//pid check for libvirt
-            //update_log(output);
             break;
         case 119://get docker status
             docker_win->setStatus(output);
             update_log("Stauts of docker: "+output);
             break;
         case 120://docker enable check
-            //update_log("Enable check for libvirtd "+output);
             if(output == "enabled")
             {
                 set_enabled(true, 8);
@@ -1353,7 +1343,7 @@ void main_widget::bash_output_processor(QString output_from_bash)
             update_log("Stopping container: "+output);
             break;
         case 127://check backup-manager status
-            //update_log("BM CHECK: "+output);
+            //DEVupdate_log("BM CHECK: "+output);
             if(output == "/etc/backup-manager.conf")
             {
                 ui->backup->setDisabled(false);
@@ -1382,7 +1372,7 @@ void main_widget::bash_output_processor(QString output_from_bash)
             status_check(service_names[8],8);
             break;
         case 131:
-            update_log("Loading new container window with following images available: "+output);
+            //DEVupdate_log("Loading new container window with following images available: "+output);
             docker_win->load_data(2, output);
 
             break;
@@ -1766,9 +1756,9 @@ void main_widget::set_enabled(bool enabled, int module_number)
 
     switch(module_number)
     {
-        case 0:
-            ui->apache_enable->setChecked(enabled);
-            break;
+    case 0:
+        ui->apache_enable->setChecked(enabled);
+        break;
     case 1:
         ui->mysql_enable->setChecked(enabled);
         break;
@@ -1788,19 +1778,15 @@ void main_widget::set_enabled(bool enabled, int module_number)
         ui->dns_enable->setChecked(enabled);
         break;
     case 7:
-        //update_log("Setting enabled for libvirt");
         ui->qemu_enable->setChecked(enabled);
         break;
     case 8:
-        //update_log("Setting enabled for libvirt");
         ui->docker_enable->setChecked(enabled);
         break;
 
     default:
-break;
+        break;
     }
-
-
 }
 
 void main_widget::set_pids(QString pids, int module_number)
@@ -1831,6 +1817,7 @@ void main_widget::set_pids(QString pids, int module_number)
         break;
     case 6:
         ui->dns_pids->setText(pids);
+        break;
     case 7:
         ui->qemu_pids->setText(pids);
         break;
@@ -1839,7 +1826,6 @@ void main_widget::set_pids(QString pids, int module_number)
         break;
     default:
         break;
-
     }
 }
 
@@ -1874,7 +1860,6 @@ void main_widget::set_port(QString port, int module_number)
         break;
     default:
         break;
-
     }
 }
 
@@ -1883,8 +1868,6 @@ void main_widget::on_iptables_clicked()
 {
     bash_root->write("echo '[00037]'`ls -A1 /sys/class/net | sed ':a;N;$!ba;s/\\n/-separate-/g'`'[XXXXX]' \n");
 }
-
-
 
 void main_widget::on_config_clicked()
 {
@@ -2129,8 +2112,6 @@ void main_widget::on_dhcp_config_clicked()
     dhcp_win->show();
 }
 
-
-
 void main_widget::on_status_button_clicked()
 {
     status_win->show();
@@ -2156,13 +2137,6 @@ void main_widget::connect_ssh(QString IP, QString port, QString password)
     }
     QString connect_ssh_command = "(sshpass -p'"+password+"' ssh -o UserKnownHostsFile=/dev/null -o ConnectTimeout=2 -o StrictHostKeyChecking=no -p "+port+" root@"+IP+") || echo 'false' \n";
     bash_root->write(connect_ssh_command.toStdString().c_str());
-/*
-    QString command="echo '[90000]'`bash -c \"export LC_MESSAGES=en_US.utf8\"`'[XXXXX]'";
-    update_log("Setting ssh locale to en_US.utf8 before");
-    bash_root->write(command.toStdString().c_str());
-    update_log(command);
-    update_log("Setting ssh locale to en_US.utf8 after");
-*/
     QTimer::singleShot(2000, this, SLOT(check_ssh_connection()));
 }
 
@@ -2255,12 +2229,7 @@ void main_widget::on_dns_restart_clicked()
 
 void main_widget::on_qemu_config_clicked()
 {
-    //qemu_win->show();
-    //update_log("CLICKK");
-    //qemu_win->on_load("tu bedzie zwrot");
-    //--connect qemu:///system
     QString command = "echo [00068]`virsh --connect qemu:///system list --all | awk '{ print $2 }' | sed -n 3,999p | sed ':a;N;$!ba;s/\\n/=/g' | rev | cut -d= -f2-999 | rev`[XXXXX]";
-    //update_log(command);
     bash_root->write(command.toStdString().c_str());
 }
 
@@ -2310,55 +2279,8 @@ void main_widget::enableService(bool state, int service)
         command = "echo '[00091]'`systemctl disable "+service_names[service]+"`'[XXXXX]'";
         update_log("Disabling "+service_names[service]);
     }
-
-    //update_log("Komenda ato: "+command);
     bash_root->write(command.toStdString().c_str());
 }
-
-void main_widget::on_qemu_enable_toggled(bool checked)
-{
-    //enableService(checked, 7);
-}
-
-void main_widget::on_apache_enable_toggled(bool checked)
-{
-    //tutaj funkcja enable/disable
-    //enableService(checked, 0);
-}
-
-void main_widget::on_mysql_enable_toggled(bool checked)
-{
-    //enableService(checked, 1);
-}
-
-void main_widget::on_ftp_enable_toggled(bool checked)
-{
-    //enableService(checked, 2);
-}
-
-
-void main_widget::on_samba_enable_toggled(bool checked)
-{
-    //enableService(checked, 3);
-}
-
-void main_widget::on_dhcp_enable_toggled(bool checked)
-{
-    //enableService(checked, 4);
-}
-
-void main_widget::on_nfs_enable_toggled(bool checked)
-{
-    //enableService(checked, 5);
-}
-
-void main_widget::on_dns_enable_toggled(bool checked)
-{
-    //enableService(checked, 6);
-}
-
-
-
 
 void main_widget::on_apache_enable_clicked(bool checked)
 {

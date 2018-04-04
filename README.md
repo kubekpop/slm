@@ -3,7 +3,7 @@ Manager for most common services. Project website: https://slm.tuxdev.com
 
 ## README
 ### 0. WARNING
-Tuxdev team puts much effort into the code to have it working across all distributions, but some errors might occur and might damage your service/system. We take no responsibility for such situation. Please use sections marked as (testing) in a safe environment before working on production system.
+Tuxdev team puts much effort into the code to have it working across all distributions, but some errors might occur and might damage your service/system. We take no responsibility for such situation. Please use sections marked as (testing) in a safe environment before working on production system. Sections marked as (Preview) are yet to be implemented, but only basic functionality (mostly GUI) is ready at the moment.
 
 ### 1. DEPENDENCIES
 SLM uses following commands: netstat, systemctl, ps, iptables, awk, sed, grep. Make sure to have these available. Here is a brief list of packages not always installed by default with their distro-specific names:
@@ -39,7 +39,7 @@ This panel is used for nfs server configuration. It allows to manage most common
 * access permissions
 * other options in plain text edit field
 
-#### Firewall Configurator
+#### Firewall Configurator (preview, WIP)
 This panel is used for firewall configuration. It uses iptables command. Available features (only adding and deleting, no edit available yet
 * DNAT port forwarding
 * Masquerade LAN to WAN
@@ -87,14 +87,15 @@ This panel is used to view and manage existing virtual machines (doesn't support
 * Start machine
 * Stop machine
 * Restart machine
-* Show domain's XML (preview)
+* Show domain's XML (not yet)
 
 #### Docker
-This panel is used to manage existing Docker containers (doesn't support creating new containers - YET)
+This panel is used to manage Docker containers
 * Show status
 * List existing containers
 * List port mapping
 * List directory mapping
+* Create new container on existing image
 * Start/Stop/Restart(not yet)/Delete(not yet)
 
 ### 3. LOG FILES (preview)

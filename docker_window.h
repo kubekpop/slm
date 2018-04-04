@@ -30,8 +30,6 @@ private slots:
 
     void on_tabWidget_currentChanged(int index);
 
-    void createContainer();
-
     void on_createButton_clicked();
 
 private:

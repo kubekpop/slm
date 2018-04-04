@@ -167,8 +167,6 @@ private slots:
 
     void on_dns_restart_clicked();
 
-    //void on_kvm_button_clicked();
-
     void on_qemu_config_clicked();
 
     void on_qemu_start_clicked();
@@ -177,23 +175,7 @@ private slots:
 
     void on_qemu_restart_clicked();
 
-    void on_apache_enable_toggled(bool checked);
-
     void enableService(bool state, int service);
-
-    void on_qemu_enable_toggled(bool checked);
-
-    void on_mysql_enable_toggled(bool checked);
-
-    void on_ftp_enable_toggled(bool checked);
-
-    void on_samba_enable_toggled(bool checked);
-
-    void on_dhcp_enable_toggled(bool checked);
-
-    void on_nfs_enable_toggled(bool checked);
-
-    void on_dns_enable_toggled(bool checked);
 
     void on_nfs_enable_clicked(bool checked);
 
