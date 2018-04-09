@@ -20,6 +20,11 @@ public:
     void setPorts(QString ports);
     void setStatus(QString status);
     void check_status(QString container);
+    void bash_output_interpreter(QString output);
+
+signals:
+    void data_to_log(QString new_content);
+
 
 private slots:
     void on_container_combobox_currentTextChanged(const QString &arg1);

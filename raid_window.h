@@ -14,6 +14,11 @@ class raid_window : public QWidget
 public:
     explicit raid_window(QWidget *parent = 0);
     ~raid_window();
+    void bash_output_interpreter(QString output);
+
+signals:
+    void data_to_log(QString new_content);
+
 
 private:
     Ui::raid_window *ui;

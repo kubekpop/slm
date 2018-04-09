@@ -15,6 +15,7 @@ class ssh_connect_window : public QWidget
 public:
     explicit ssh_connect_window(QWidget *parent = 0);
     ~ssh_connect_window();
+    void bash_output_interpreter(QString output);
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -22,6 +23,8 @@ protected:
 signals :
     void connect_ssh(QString IP, QString port, QString password);
     void closed();
+    void data_to_log(QString new_content);
+
 
     private slots:
     void on_connect_clicked();

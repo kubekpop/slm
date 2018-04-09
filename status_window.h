@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <QCloseEvent>
+#include <cmath>
 
 namespace Ui {
 class status_window;
@@ -23,6 +24,11 @@ public:
     void update_memory_info(QString memory_info);
     void update_disk_info(QString disk_info);
     void setUpdates(QString count);
+    void bash_output_interpreter(QString output);
+
+signals:
+    void data_to_log(QString new_content);
+
 
 protected:
     void closeEvent(QCloseEvent *event);

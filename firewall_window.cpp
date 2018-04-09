@@ -11,6 +11,28 @@ firewall_window::firewall_window(QWidget *parent) :
 
 
 }
+
+void firewall_window::bash_output_interpreter(QString output)
+{
+    if(output.startsWith("["))
+    {
+        QString tag = output.left(7);
+        tag.replace("[","");
+        tag.replace("]","");
+        int tag_number = tag.toInt();
+        output.remove(0, 7);
+        switch(tag_number)
+        {
+        case 1:
+            this->firewall_prepare_window(output);//gets interfaces and opens firewall
+            this->show();
+            break;
+        default:
+            break;
+        }
+    }
+}
+
 void firewall_window::firewall_prepare_window(QString ifaces)
 {
     ui->stackedWidget->setCurrentIndex(0);
@@ -40,13 +62,7 @@ void firewall_window::firewall_prepare_window(QString ifaces)
         }
     }
 }
-/*
-firewall_window::dnat()
-{
-    bash_root->write();
-    emit data_to_log("komenda");
-}
-*/
+
 firewall_window::~firewall_window()
 {
     delete ui;

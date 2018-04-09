@@ -14,6 +14,49 @@ qemu_window::~qemu_window()
     delete ui;
 }
 
+void qemu_window::bash_output_interpreter(QString output)
+{
+    if(output.startsWith("["))
+    {
+        QString tag = output.left(7);
+        tag.replace("[","");
+        tag.replace("]","");
+        int tag_number = tag.toInt();
+        output.remove(0, 7);
+        switch(tag_number)
+        {
+
+        case 1://68
+            this->on_load(output);
+            break;
+        case 2://69
+            this->set_status(output);
+            break;
+        case 3://70
+            this->set_xml(output);
+            break;
+        case 4://71
+            //emit data_to_log("Restarting guest");
+            this->check_status();
+            break;
+        case 5://72
+            //emit data_to_log("Stopping guest");
+            this->check_status();
+            break;
+        case 6://73
+            //emit data_to_log("Starting guest");
+            this->check_status();
+            break;
+        case 7://xml
+            this->set_xml(output);
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
 void qemu_window::on_load(QString machines)
 {
     ui->qemu_combobox->clear();
@@ -58,13 +101,13 @@ void qemu_window::on_load(QString machines)
 void qemu_window::on_qemu_combobox_currentIndexChanged(const QString &arg1)
 {
     check_status();
-    QString command = "echo [00074]`virsh --connect qemu:///system dumpxml "+arg1+"`[XXXXX]";
+    QString command = "echo [qemu][00007]`virsh --connect qemu:///system dumpxml "+arg1+"`[XXXXX]";
     //emit data_to_log(command);
     bash_root->write(command.toStdString().c_str());
 }
 void qemu_window::check_status()
 {
-    QString statusCommand = "echo [00069]`export LC_MESSAGES=en_US.utf8; virsh --connect qemu:///system list --all | grep "+ui->qemu_combobox->currentText()+" | awk '{ print $3 }'`[XXXXX]";
+    QString statusCommand = "echo [qemu][00002]`export LC_MESSAGES=en_US.utf8; virsh --connect qemu:///system list --all | grep "+ui->qemu_combobox->currentText()+" | awk '{ print $3 }'`[XXXXX]";
     bash_root->write(statusCommand.toStdString().c_str());
     //set_xml("lol");
     qDebug() << statusCommand;
@@ -84,18 +127,18 @@ void qemu_window::set_xml(QString xml)
 
 void qemu_window::on_qemu_restart_clicked()
 {
-    QString restart = "echo [00071]`virsh --connect qemu:///system reset "+ui->qemu_combobox->currentText()+"`[XXXXX]";
+    QString restart = "echo [qemu][00004]`virsh --connect qemu:///system reset "+ui->qemu_combobox->currentText()+"`[XXXXX]";
     bash_root->write(restart.toStdString().c_str());
 }
 
 void qemu_window::on_qemu_stop_clicked()
 {
-    QString forceOff = "echo [00072]`virsh --connect qemu:///system managedsave "+ui->qemu_combobox->currentText()+" --running`[XXXXX]";
+    QString forceOff = "echo [qemu][00005]`virsh --connect qemu:///system managedsave "+ui->qemu_combobox->currentText()+" --running`[XXXXX]";
     bash_root->write(forceOff.toStdString().c_str());
 }
 
 void qemu_window::on_qemu_start_clicked()
 {
-    QString start = "echo [00073]`virsh --connect qemu:///system start "+ui->qemu_combobox->currentText()+"`[XXXXX]";
+    QString start = "echo [qemu][00006]`virsh --connect qemu:///system start "+ui->qemu_combobox->currentText()+"`[XXXXX]";
     bash_root->write(start.toStdString().c_str());
 }

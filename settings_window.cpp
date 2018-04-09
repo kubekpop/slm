@@ -14,6 +14,28 @@ settings_window::~settings_window()
 
 }
 
+void settings_window::bash_output_interpreter(QString output)
+{
+    if(output.startsWith("["))
+    {
+        QString tag = output.left(7);
+        tag.replace("[","");
+        tag.replace("]","");
+        int tag_number = tag.toInt();
+        output.remove(0, 7);
+        switch(tag_number)
+        {
+        case 1:
+            emit data_to_log(output);//install
+            emit(update_module_info());
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
 void settings_window::settings_prepare_window()
 {
     if(is_authorised== true)
@@ -77,17 +99,7 @@ void settings_window::settings_prepare_window()
     }
 }
 
-void settings_window::on_install_phpmyadmin_clicked()
-{
-    QString command = "echo '[00029]'`"+installCommands[7]+" > /var/log/slm.log && echo 'Successfully installed phpmyadmin' || echo 'Failed to install phpmyadmin'`'[XXXXX]' \n";
-    bash_root->write(command.toStdString().c_str());
-}
 
-void settings_window::on_install_apache_clicked()
-{
-    QString command = "echo '[00028]'`"+installCommands[0]+" > /var/log/slm.log && echo 'Successfully installed Apache' || echo 'Failed to install Apache'`'[XXXXX]' \n";
-    bash_root->write(command.toStdString().c_str());
-}
 
 void settings_window::on_distribution_select_currentIndexChanged(int index)
 {
@@ -116,57 +128,69 @@ void settings_window::on_distribution_select_currentIndexChanged(int index)
     emit distro_changed();
 }
 
+void settings_window::on_install_phpmyadmin_clicked()
+{
+    QString command = "echo '[sett][00001]'`"+installCommands[7]+" > /var/log/slm.log && echo 'Successfully installed phpmyadmin' || echo 'Failed to install phpmyadmin'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}
+
+void settings_window::on_install_apache_clicked()
+{
+    QString command = "echo '[sett][00001]'`"+installCommands[0]+" > /var/log/slm.log && echo 'Successfully installed Apache' || echo 'Failed to install Apache'`'[XXXXX]' \n";
+    bash_root->write(command.toStdString().c_str());
+}
+
 void settings_window::on_install_nfs_clicked()
 {
-    QString command = "echo '[00030]'`"+installCommands[2]+" > /var/log/slm.log && echo 'Successfully installed nfs' || echo 'Failed to install nfs'`'[XXXXX]' \n";
+    QString command = "echo '[sett][00001]'`"+installCommands[2]+" > /var/log/slm.log && echo 'Successfully installed nfs' || echo 'Failed to install nfs'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
 
 void settings_window::on_install_mysql_clicked()
 {
-    QString command = "echo '[00031]'`"+installCommands[4]+" > /var/log/slm.log && echo 'Successfully installed mysql' || echo 'Failed to install mysql'`'[XXXXX]' \n";
+    QString command = "echo '[sett][00001]'`"+installCommands[4]+" > /var/log/slm.log && echo 'Successfully installed mysql' || echo 'Failed to install mysql'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
 
 void settings_window::on_install_samba_clicked()
 {
-    QString command = "echo '[00032]'`"+installCommands[6]+" > /var/log/slm.log && echo 'Successfully installed samba' || echo 'Failed to install samba'`'[XXXXX]' \n";
+    QString command = "echo '[sett][00001]'`"+installCommands[6]+" > /var/log/slm.log && echo 'Successfully installed samba' || echo 'Failed to install samba'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
 
 void settings_window::on_install_dhcp_clicked()
 {
-    QString command = "echo '[00033]'`"+installCommands[1]+" > /var/log/slm.log && echo 'Successfully installed dhcp' || echo 'Failed to install dhcp'`'[XXXXX]' \n";
+    QString command = "echo '[sett][00001]'`"+installCommands[1]+" > /var/log/slm.log && echo 'Successfully installed dhcp' || echo 'Failed to install dhcp'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
 
 void settings_window::on_install_ftp_clicked()
 {
-    QString command = "echo '[00034]'`"+installCommands[5]+" > /var/log/slm.log && echo 'Successfully installed ftp' || echo 'Failed to install ftp'`'[XXXXX]' \n";
+    QString command = "echo '[sett][00001]'`"+installCommands[5]+" > /var/log/slm.log && echo 'Successfully installed ftp' || echo 'Failed to install ftp'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
 
 void settings_window::on_install_exo_clicked()
 {
-    QString command = "echo '[00035]'`"+installCommands[3]+" > /var/log/slm.log && echo 'Successfully installed exo' || echo 'Failed to install exo'`'[XXXXX]' \n";
+    QString command = "echo '[sett][00001]'`"+installCommands[3]+" > /var/log/slm.log && echo 'Successfully installed exo' || echo 'Failed to install exo'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
 
 void settings_window::on_install_dns_clicked()
 {
-    QString command = "echo '[00061]'`"+installCommands[8]+" > /var/log/slm.log && echo 'Successfully installed dns server' || echo 'Failed to install dns-server'`'[XXXXX]' \n";
+    QString command = "echo '[sett][00001]'`"+installCommands[8]+" > /var/log/slm.log && echo 'Successfully installed dns server' || echo 'Failed to install dns-server'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
 
 void settings_window::on_install_libvirt_clicked()
 {
-    QString command = "echo '[00078]'`"+installCommands[9]+" > /var/log/slm.log && echo 'Successfully installed Virtualization set' || echo 'Failed to install Virtualization set'`'[XXXXX]' \n";
+    QString command = "echo '[sett][00001]'`"+installCommands[9]+" > /var/log/slm.log && echo 'Successfully installed Virtualization set' || echo 'Failed to install Virtualization set'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }
 
 
 void settings_window::on_install_backupmanager_clicked()
 {
-    QString command = "echo '[00081]'`"+installCommands[10]+" > /var/log/slm.log && echo 'Successfully installed backup-manager' || echo 'Failed to install backup-manager'`'[XXXXX]' \n";
+    QString command = "echo '[sett][00001]'`"+installCommands[10]+" > /var/log/slm.log && echo 'Successfully installed backup-manager' || echo 'Failed to install backup-manager'`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
 }

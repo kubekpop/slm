@@ -14,6 +14,11 @@ class dns_window : public QWidget
 public:
     explicit dns_window(QWidget *parent = 0);
     ~dns_window();
+    void bash_output_interpreter(QString output);
+
+signals:
+    void data_to_log(QString new_content);
+
 
 private slots:
 

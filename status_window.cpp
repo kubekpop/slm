@@ -15,11 +15,49 @@ status_window::~status_window()
     delete ui;
 }
 
+void status_window::bash_output_interpreter(QString output)
+{
+    if(output.startsWith("["))
+    {
+        QString tag = output.left(7);
+        tag.replace("[","");
+        tag.replace("]","");
+        int tag_number = tag.toInt();
+        output.remove(0, 7);
+        switch(tag_number)
+        {
+        case 1://52
+        {
+            this->update_cpu_bar(QString::number(std::round(output.toDouble())).toInt());
+            break;
+        }
+        case 2://59
+            this->update_memory_info(output);
+            break;
+        case 3://60
+            //update_log(output);
+            this->update_disk_info(output);
+            break;
+        case 4://98//update system
+            //emit data_to_log(output);
+            emit data_to_log("Updating system complete");
+            break;
+        case 5://99//set updates
+            this->setUpdates(output + " update(s) available");
+            //emit data_to_log("Checking updates: "+output);
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
 void status_window::status_prepare_window()
 {
     last_disk_status = "";
     timer->start(3000);
-    //przygotowanie interfejsu
+    //prepare interface
 }
 
 
@@ -31,15 +69,15 @@ void status_window::closeEvent(QCloseEvent *event)
 
 void status_window::check_status()
 {
-    QString check_cpu_command = "echo '[00052]'`awk -v a=\"$(awk '/cpu /{print $2+$4,$2+$4+$5}' /proc/stat; sleep .5)\" '/cpu /{split(a,b,\" \"); print 100*($2+$4-b[1])/($2+$4+$5-b[2])}'  /proc/stat`'[XXXXX]' \n";
-   // QString check_cpu_command = "echo '[00052]'`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage \"\"}'`'[XXXXX]' \n";
+    QString check_cpu_command = "echo '[stat][00001]'`awk -v a=\"$(awk '/cpu /{print $2+$4,$2+$4+$5}' /proc/stat; sleep .5)\" '/cpu /{split(a,b,\" \"); print 100*($2+$4-b[1])/($2+$4+$5-b[2])}'  /proc/stat`'[XXXXX]' \n";
+   // QString check_cpu_command = "echo '[stat][00001]'`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage \"\"}'`'[XXXXX]' \n";
     bash_root->write(check_cpu_command.toStdString().c_str());
 
-    QString check_memory_command = "echo '[00059]'`free --mega | sed -n 2p | awk '{ print $3\"/\"$2 }'`'[XXXXX]' \n";
+    QString check_memory_command = "echo '[stat][00002]'`free --mega | sed -n 2p | awk '{ print $3\"/\"$2 }'`'[XXXXX]' \n";
     bash_root->write(check_memory_command.toStdString().c_str());
 
-    //QString  check_disk_usage = "echo '[00060]'`df -h | grep -v ^tmpfs | grep -v ^udev | grep -v ^Filesystem | awk '{ print $1\"(\"$6\"):\"$3\"/\"$2\" (\"$5\")\" }' | sed ':a;N;$!ba;s/\\n/[delimiter]/g'`'[XXXXX]' \n";
-    QString  check_disk_usage = "echo '[00060]'`df -h | grep -v ^tmpfs | grep -v ^udev | sed -n 2,99p | awk '{ print $1\"(\"$6\"):\"$3\"/\"$2\" (\"$5\")\" }' | sed ':a;N;$!ba;s/\\n/[delimiter]/g'`'[XXXXX]' \n";
+    //QString  check_disk_usage = "echo '[stat][00003]'`df -h | grep -v ^tmpfs | grep -v ^udev | grep -v ^Filesystem | awk '{ print $1\"(\"$6\"):\"$3\"/\"$2\" (\"$5\")\" }' | sed ':a;N;$!ba;s/\\n/[delimiter]/g'`'[XXXXX]' \n";
+    QString  check_disk_usage = "echo '[stat][00003]'`df -h | grep -v ^tmpfs | grep -v ^udev | sed -n 2,99p | awk '{ print $1\"(\"$6\"):\"$3\"/\"$2\" (\"$5\")\" }' | sed ':a;N;$!ba;s/\\n/[delimiter]/g'`'[XXXXX]' \n";
 
     bash_root->write(check_disk_usage.toStdString().c_str());
 }
@@ -129,7 +167,7 @@ md1 : active raid1 sde1[6](F) sdg1[1] sdb1[4] sdd1[3] sdc1[2]
 
 void status_window::on_update_check_clicked()
 {
-    QString updateCheckCommand = "echo '[00099]'`pacman -Qu 2>/dev/null | wc -l`'[XXXXX]'";
+    QString updateCheckCommand = "echo '[stat][00005]'`pacman -Qu 2>/dev/null | wc -l`'[XXXXX]'";
     bash_root->write(updateCheckCommand.toStdString().c_str());
 }
 
@@ -140,7 +178,7 @@ void status_window::setUpdates(QString count)
 
 void status_window::on_update_clicked()
 {
-    QString updateCheckCommand = "echo '[00098]'`pacman -Syu --noconfirm 2>/dev/null`'[XXXXX]'";
+    QString updateCheckCommand = "echo '[stat][00004]'`pacman -Syu --noconfirm 2>/dev/null`'[XXXXX]'";
     //update_log("Starting system upgrade");
     bash_root->write(updateCheckCommand.toStdString().c_str());
 }

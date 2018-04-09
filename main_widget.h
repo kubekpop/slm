@@ -79,6 +79,8 @@ private slots:
 
     void bash_output_processor(QString output_from_bash);
 
+    void bash_output_interpreter(QString output);
+
     void set_status(QString status, int module_number);
 
     void set_pids(QString pids, int module_number);

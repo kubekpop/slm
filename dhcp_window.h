@@ -14,6 +14,11 @@ class dhcp_window : public QWidget
 public:
     explicit dhcp_window(QWidget *parent = 0);
     ~dhcp_window();
+    void bash_output_interpreter(QString output);
+
+signals:
+    void data_to_log(QString new_content);
+
 
 private slots:
 

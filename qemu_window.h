@@ -16,6 +16,8 @@ public:
     explicit qemu_window(QWidget *parent = 0);
     ~qemu_window();
     QProcess *bash_root;
+    void bash_output_interpreter(QString output);
+
 public slots:
     void on_load(QString machines);
     void set_status(QString status);

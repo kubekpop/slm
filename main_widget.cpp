@@ -35,7 +35,7 @@ void main_widget::closeEvent(QCloseEvent *event)
     docker_win->close();
     /*
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Sure?", "Exit XUMPP Lite?", QMessageBox::Yes | QMessageBox::No);
+    reply = QMessageBox::question(this, "Sure?", "Exit Simple Linux Manager?", QMessageBox::Yes | QMessageBox::No);
     if(reply == QMessageBox::Yes)
     {
         event->accept();
@@ -55,7 +55,7 @@ void main_widget::startup()
     bash_root = new QProcess(this);
     bash_root->start("/bin/bash");
     connect(bash_root, SIGNAL(readyRead()), this, SLOT(bash_root_reader()));
-    get_local_bash_pid();
+    get_local_bash_pid(); // to tylko jesli platform = linux
 
     // get scrollbar
     log_scrollbar = ui->log->verticalScrollBar();
@@ -63,7 +63,7 @@ void main_widget::startup()
     ui->spacer_top_label->setText(VER);
     // print version
     update_log("SLM "+version);
-    bash_root->write("echo '[00036]'`uname -r`'[XXXXX]' \n");
+    bash_root->write("echo '[main][00028]'`uname -r`'[XXXXX]' \n");
     //setup interface before authorisation
     is_authorised = false;
     lock_interface(true);
@@ -82,8 +82,11 @@ void main_widget::startup()
     //windows
 
     apache_win = new apache_window();
+    connect(apache_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 
     dhcp_win = new dhcp_window();
+    connect(dhcp_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
+
 
     firewall_win = new firewall_window();
     firewall_win->bash_root = bash_root;
@@ -91,6 +94,7 @@ void main_widget::startup()
 
     ftp_win = new ftp_window();
     ftp_win->bash_root = bash_root;
+    connect(ftp_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 
     nfs_win = new nfs_window();
     nfs_win->bash_root = bash_root;
@@ -99,19 +103,25 @@ void main_widget::startup()
     settings_win = new settings_window();
     settings_win->bash_root = bash_root;
     connect(settings_win, SIGNAL(distro_changed()),this, SLOT(change_distribution()));
+    connect(settings_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
+    connect(settings_win, SIGNAL(update_module_info()), this, SLOT(update_module_info()));
 
     status_win = new status_window();
     status_win->bash_root = bash_root;
+    connect(status_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 
     backup_win = new backup_window();
     backup_win->bash_root = bash_root;
     connect(backup_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 
     raid_win = new raid_window();
+    connect(raid_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 
     samba_win = new samba_window();
+    connect(samba_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 
     dns_win = new dns_window();
+    connect(dns_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 
     qemu_win = new qemu_window();
     qemu_win->bash_root = bash_root;
@@ -119,18 +129,12 @@ void main_widget::startup()
 
     docker_win = new docker_window();
     docker_win->bash_root = bash_root;
+    connect(docker_win, SIGNAL(data_to_log(QString)), this, SLOT(update_log(QString)));
 
 
     QTimer *bash_unlocker = new QTimer(this);
-    connect(bash_unlocker, &QTimer::timeout, [=] () {bash_root->write("echo '[99999][XXXXX]' \n");});
+    connect(bash_unlocker, &QTimer::timeout, [=] () {bash_root->write("echo '[main][99999][XXXXX]' \n");});
     bash_unlocker->start(2000);
-/*
-    QString command="echo '[90000]'`bash -c \"export LC_MESSAGES=en_US.utf8\"`'[XXXXX]'";
-    update_log("Setting locale to en_US.utf8 before");
-    bash_root->write(command.toStdString().c_str());
-    update_log(command);
-    update_log("Setting locale to en_US.utf8 after");
-    */
 }
 
 void main_widget::update_module_info()
@@ -448,8 +452,7 @@ void main_widget::change_distribution()
         installCommands.append("apt -y install samba");                                                 //install samba
         installCommands.append("apt -y install phpmyadmin");                                            //install phpmyadmin
     }
-    // update information about services
-    update_module_info();
+    update_module_info();// update information about services
 }
 
 void main_widget::root_setup()
@@ -462,7 +465,7 @@ void main_widget::root_setup()
         enable_check(service_names[i],i);
 
     }
-    QString command="echo '[00127]'`ls -1 /etc/backup-manager.conf`'[XXXXX]'";
+    QString command="echo '[main][00066]'`ls -1 /etc/backup-manager.conf`'[XXXXX]'";
     bash_root->write(command.toStdString().c_str());
 }
 
@@ -471,7 +474,7 @@ void main_widget::on_authorize_clicked()
 
     bash_root->write("pkexec su \n");
     bash_root->waitForBytesWritten();
-    bash_root->write("echo '[00000]'`whoami`'[XXXXX]' \n");
+    bash_root->write("echo '[main][00000]'`whoami`'[XXXXX]' \n");
 }
 
 void main_widget::authorisation(QString user)
@@ -574,41 +577,41 @@ void main_widget::enable_check(QString service_name, int module_number)
     switch(module_number)
     {
     case 0:
-        check_command = "echo '[00083]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        check_command = "echo '[main][00052]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
         break;
 
     case 1:
-        check_command = "echo '[00084]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        check_command = "echo '[main][00053]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
         break;
 
     case 2:
-        check_command = "echo '[00085]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        check_command = "echo '[main][00054]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
         break;
 
     case 3:
-        check_command = "echo '[00086]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        check_command = "echo '[main][00055]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
         break;
 
     case 4:
-        check_command = "echo '[00087]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        check_command = "echo '[main][00056]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
         break;
 
     case 5:
-        check_command = "echo '[00088]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        check_command = "echo '[main][00057]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
         //update_log(check_command);
         break;
 
     case 6:
-        check_command = "echo '[00089]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        check_command = "echo '[main][00058]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
         break;
 
     case 7:
-        check_command = "echo '[00090]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        check_command = "echo '[main][00059]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
         //update_log(check_command);
         break;
 
     case 8:
-        check_command = "echo '[00120]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
+        check_command = "echo '[main][00060]'`(systemctl status "+service_name+" | grep 'Loaded.*enabled.*vendor.*$') > /dev/null && echo enabled || echo disabled`'[XXXXX]' \n";
         //update_log(check_command);
         break;
     }
@@ -622,37 +625,37 @@ void main_widget::status_check(QString service_name, int module_number)
     switch(module_number)
     {
     case 0:
-        check_command = "echo '[00001]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        check_command = "echo '[main][00001]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
 
     case 1:
-        check_command = "echo '[00002]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        check_command = "echo '[main][00002]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
 
     case 2:
-        check_command = "echo '[00003]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        check_command = "echo '[main][00003]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
 
     case 3:
-        check_command = "echo '[00004]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        check_command = "echo '[main][00004]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
 
     case 4:
-        check_command = "echo '[00005]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        check_command = "echo '[main][00005]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
 
     case 5:
-        check_command = "echo '[00011]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        check_command = "echo '[main][00011]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
 
     case 6:
-        check_command = "echo '[00062]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        check_command = "echo '[main][00041]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
     case 7:
-        check_command = "echo '[00079]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        check_command = "echo '[main][00050]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
     case 8:
-        check_command = "echo '[00117]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
+        check_command = "echo '[main][00062]'`service='"+service_name+"'; if [[ $(systemctl status $service) == '' ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Loaded:.*not-found.*$') ]];then echo 'Not installed'; elif [[ $(systemctl status $service | egrep '^.*Active:.*failed.*$') ]];then echo 'Failed'; elif [[ $(systemctl status $service | egrep '^.*active.*(running).*$') || $(systemctl status $service | egrep '^.*active.*(exited).*$') ]];then echo 'Running'; else echo 'Not running'; fi`'[XXXXX]' \n";
         break;
     }
     bash_root->write(check_command.toStdString().c_str());
@@ -665,40 +668,40 @@ void main_widget::pid_check(QString service_name, int module_number)
     switch(module_number)
     {
      case 0:
-        check_command = "echo '[00006]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        check_command = "echo '[main][00006]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         break;
 
     case 1:
-        check_command = "echo '[00007]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        check_command = "echo '[main][00007]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         break;
 
     case 2:
-        check_command = "echo '[00008]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        check_command = "echo '[main][00008]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         break;
 
     case 3:
-        check_command = "echo '[00009]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        check_command = "echo '[main][00009]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         break;
 
     case 4:
-        check_command = "echo '[00010]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        check_command = "echo '[main][00010]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         break;
 
     case 5:
-        check_command = "echo '[00012]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        check_command = "echo '[main][00012]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         break;
 
     case 6:
-        check_command = "echo '[00067]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        check_command = "echo '[main][00046]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         //update_log(check_command);
         break;
 
     case 7:
-        check_command = "echo '[00080]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        check_command = "echo '[main][00051]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         //update_log(check_command);
         break;
     case 8:
-        check_command = "echo '[00118]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
+        check_command = "echo '[main][00063]'`IN=$(ps aux | grep "+service_name+" | grep -v grep | echo $(xargs -L1 echo|awk '{ print $2}'));echo $IN | sed 's/ /,/g'`'[XXXXX]' \n";
         //update_log(check_command);
         break;
     }
@@ -712,40 +715,40 @@ void main_widget::port_check(QString service_name, int module_number)
     switch(module_number)
     {
     case 0:
-        check_command = "echo '[00013]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        check_command = "echo '[main][00013]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         break;
 
     case 1:
-        check_command = "echo '[00014]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        check_command = "echo '[main][00014]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         break;
 
     case 2:
-        check_command = "echo '[00015]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        check_command = "echo '[main][00015]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         break;
 
     case 3:
-        check_command = "echo '[00016]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        check_command = "echo '[main][00016]'`netstat -lnp | grep "+service_name+" | grep tcp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         break;
 
     case 4:
-        check_command = "echo '[00017]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        check_command = "echo '[main][00017]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         break;
     case 5:
 
-        check_command = "echo '[00018]'`rpcinfo -p | grep "+service_name+" | awk '{ print $4 }' | sed -n 1p`'[XXXXX]' \n";
+        check_command = "echo '[main][00018]'`rpcinfo -p | grep "+service_name+" | awk '{ print $4 }' | sed -n 1p`'[XXXXX]' \n";
         break;
     case 6:
-        check_command = "echo '[00063]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        check_command = "echo '[main][00042]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         //update_log(check_command);
         break;
 
     case 7:
-        check_command = "echo '[00121]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        check_command = "echo '[main][00064]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         //update_log(check_command);
         break;
 
     case 8:
-        check_command = "echo '[00063]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
+        check_command = "echo '[main][00042]'`netstat -lnp | grep "+service_name+" | grep udp | awk '{ print $4 }' | awk -F':' ' { print $NF } '`'[XXXXX]' \n";
         //update_log(check_command);
         break;
     }
@@ -770,621 +773,70 @@ void main_widget::bash_output_processor(QString output_from_bash)
     {
         if(output.startsWith("["))
         {
-            //update_log(output);
-        QString tag = output.left(7);
-        tag.replace("[","");
-        tag.replace("]","");
-        int tag_number = tag.toInt();
-        output.remove(0, 7);
-        //update_log("Current tag: "+tag);
-        switch(tag_number)
-        {
-        case -1:
-            //log appender
-            break;
-        case 0:
-            authorisation(output);
-            break;
-        case 1:
-            set_status(output, 0);//status check for Apache
-            break;
-        case 2:
-            set_status(output, 1);//status check for mysql
-            break;
-        case 3:
-            set_status(output, 2);//status check for ftp
-            break;
-        case 4:
-            set_status(output, 3);//status check for samba
-            break;
-        case 5:
-            set_status(output, 4);//status check for dhcp
-            break;
-        case 6:
-            set_pids(output, 0);//pid check for apache
-            break;
-        case 7:
-            set_pids(output, 1);//pid check for mysql
-            break;
-        case 8:
-            set_pids(output, 2);//pid check for ftp
-            break;
-        case 9:
-            set_pids(output, 3);//pid check for samba
-            break;
-        case 10:
-            set_pids(output, 4);//pid check for dhcp
-            break;
-        case 11:
-            set_status(output, 5);//status check for nfs
-            break;
-        case 12:
-            set_pids(output, 5);//pid check for nfs
-            break;
-        case 13:
-            set_port(output,0);//port check for apache
-            break;
-        case 14:
-            set_port(output,1);//port check for mysql
-            break;
-        case 15:
-            set_port(output,2);//port check for ftp
-            break;
-        case 16:
-            set_port(output,3);//port check for samba
-            break;
-        case 17:
-            set_port(output,4);//port check for dhcp
-            break;
-        case 18:
-            set_port(output,5);//port check for nfs
-            break;
-        case 19:
-            pid_check(pids_names[0],0);//start apache
-            port_check(ports_names[0],0);
-            status_check(service_names[0],0);
-            break;
-        case 20:
-            pid_check(pids_names[0],0);//stop apache
-            port_check(ports_names[0],0);
-            status_check(service_names[0],0);
-            break;
-        case 21:
-            pid_check(pids_names[0],0);//restart apache
-            port_check(ports_names[0],0);
-            status_check(service_names[0],0);
-            break;
-        case 22:
-            pid_check(pids_names[5],5);//start nfs
-            port_check(ports_names[5],5);
-            status_check(service_names[5],5);
-            break;
-        case 23:
-            pid_check(pids_names[5],5);//stop nfs
-            port_check(ports_names[5],5);
-            status_check(service_names[5],5);
-            break;
-        case 24:
-            pid_check(pids_names[5],5);//restart nfs
-            port_check(ports_names[5],5);
-            status_check(service_names[5],5);
-            break;
-        case 25:
-            pid_check(pids_names[2],2);//start ftp
-            port_check(ports_names[2],2);
-            status_check(service_names[2],2);
-            break;
-        case 26:
-            pid_check(pids_names[2],2);//stop ftp
-            port_check(ports_names[2],2);
-            status_check(service_names[2],2);
-            break;
-        case 27:
-            pid_check(pids_names[2],2);//restart ftp
-            port_check(ports_names[2],2);
-            status_check(service_names[2],2);
-            break;
-        case 28:
-            update_log(output);//apache install
-            update_module_info();
-            break;
-        case 29:
-            update_log(output);//phpmyadmin install
-            update_module_info();
-            break;
-        case 30:
-            update_log(output);//ftp install
-            update_module_info();
-            break;
-        case 31:
-            update_log(output);//samba install
-            update_module_info();
-            break;
-        case 32:
-            update_log(output);//dhcp install
-            update_module_info();
-            break;
-        case 33:
-            update_log(output);//nfs install
-            update_module_info();
-            break;
-        case 34:
-            update_log(output);//mysql install
-            update_module_info();
-            break;
-        case 35:
-            update_log(output);//exo install
-            update_module_info();
-            break;
-        case 36:
-            update_log("Current kernel: "+output);//kernel info
-            break;
-        case 37:
-            firewall_win->firewall_prepare_window(output);//gets interfaces and opens firewall
-            firewall_win->show();
-            break;
-        case 38:
-            update_log("Dnat command applied: "+output);
-            break;
-        case 39:
-            pid_check(pids_names[1],1);//start mysql
-            port_check(ports_names[1],1);
-            status_check(service_names[1],1);
-            break;
-        case 40:
-            pid_check(pids_names[1],1);//stop mysql
-            port_check(ports_names[1],1);
-            status_check(service_names[1],1);
-            break;
-        case 41:
-            pid_check(pids_names[1],1);//restart mysql
-            port_check(ports_names[1],1);
-            status_check(service_names[1],1);
-            break;
-        case 42:
-            pid_check(pids_names[3],3);//start samba
-            port_check(ports_names[3],3);
-            status_check(service_names[3],3);
-            break;
-        case 43:
-            pid_check(pids_names[3],3);//stop samba
-            port_check(ports_names[3],3);
-            status_check(service_names[3],3);
-            break;
-        case 44:
-            pid_check(pids_names[3],3);//restart samba
-            port_check(ports_names[3],3);
-            status_check(service_names[3],3);
-            break;
-        case 45:
-            pid_check(pids_names[4],4);//start dhcp
-            port_check(ports_names[4],4);
-            status_check(service_names[4],4);
-            break;
-        case 46:
-            pid_check(pids_names[4],4);//stop dhcp
-            port_check(ports_names[4],4);
-            status_check(service_names[4],4);
-            break;
-        case 47:
-            pid_check(pids_names[4],4);//restart dhcp
-            port_check(ports_names[4],4);
-            status_check(service_names[4],4);
-            break;
-        case 48:
-            update_log("NFS share added...");
-            on_nfs_config_clicked();
-            break;
-        case 49:
-            nfs_win->get_params(output);
-            break;
-        case 50:
-        {
-            QStringList paths_and_params;
-            if(output == "[paths_and_params]" || output == " [paths_and_params] ")
+            QString class_tag = output.left(6);
+            class_tag.replace("[","");
+            class_tag.replace("]","");
+            output.remove(0, 6);
+            if(class_tag == "main")
             {
-                output = "";
+                bash_output_interpreter(output);
             }
-            else
+            else if(class_tag ==  "apac")
             {
-            paths_and_params = output.split("[paths_and_params]");
+                apache_win->bash_output_interpreter(output);
             }
-            /*
-            int counter = 0;
-            QList<int> indexes_to_remove;
-            foreach (QString single_value, paths_and_params)
+            else if(class_tag ==  "back")
             {
-                if(single_value == "" || single_value == " " || single_value == "\n")
-                {
-                    indexes_to_remove.append(counter);
-                }
-                counter++;
+                backup_win->bash_output_interpreter(output);
             }
-            foreach (int index, indexes_to_remove)
+            else if(class_tag ==  "dhcp")
             {
-                paths_and_params.removeAt(index);
+                dhcp_win->bash_output_interpreter(output);
             }
-            */
-            if(paths_and_params.size() > 1)
+            else if(class_tag ==  "name")
             {
-            nfs_win->nfs_prepare_window(paths_and_params[0],paths_and_params[1]);
-            nfs_win->show();
+                dns_win->bash_output_interpreter(output);
             }
-            else
+            else if(class_tag ==  "dckr")
             {
-                nfs_win->nfs_prepare_window("","");
-                nfs_win->show();
+                docker_win->bash_output_interpreter(output);
             }
-            break;
-        }
-        case 51:
-            update_log("NFS share modified...");
-            on_nfs_config_clicked();
-            break;
-        case 52:
-        {
-            status_win->update_cpu_bar(QString::number(std::round(output.toDouble())).toInt());
-            break;
-        }
-        case 53:
-            if(output == "true")
+            else if(class_tag ==  "fire")
             {
-                QMessageBox::StandardButton reply;
-                reply = QMessageBox::information(this,tr("Obsolete config warning"),tr("Your backup-manager uses obsolete TARBALL_DIRECTORIES method. SLM is only intendend to be used with array method. Choosing YES will convert your config to new format. Backup will be generated under /etc/backup-manager.conf.slm. Continue?"),QMessageBox::No | QMessageBox::Yes);
-                if(reply == QMessageBox::Yes)
-                {
-                    QString obsolete_list_values = "echo '[00054]'`grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_DIRECTORIES=' /etc/backup-manager.conf | cut -d= -f2"
-                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_REPOSITORY_ROOT=' /etc/backup-manager.conf | cut -d= -f2"
-                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_FREQUENCY=' /etc/backup-manager.conf | cut -d= -f2"
-                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_PREFIX=' /etc/backup-manager.conf | cut -d= -f2"
-                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2"
-                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2"
-                                                   "`'[XXXXX]' \n";
-                    bash_root->write(obsolete_list_values.toStdString().c_str());
-                }
+                firewall_win->bash_output_interpreter(output);
             }
-            else
+            else if(class_tag ==  "ftpd")
             {
-                // listowanie parametrów z configa z tablicą folderów
-                QString array_method_list_values = "echo '[00054]'`grep '^[[:blank:]]*BM_TARBALL_TARGETS' /etc/backup-manager.conf | cut -d= -f2"
-                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_REPOSITORY_ROOT=' /etc/backup-manager.conf | cut -d= -f2"
-                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_FREQUENCY=' /etc/backup-manager.conf | cut -d= -f2"
-                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_PREFIX=' /etc/backup-manager.conf | cut -d= -f2"
-                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2"
-                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2"
-                                               "`'[XXXXX]' \n";
-                bash_root->write(array_method_list_values.toStdString().c_str());
+                ftp_win->bash_output_interpreter(output);
             }
-            break;
-        case 54:
-            if(output != "")
+            else if(class_tag ==  "nfsd")
             {
-            backup_win->show();
-            backup_win->backup_prepare_window(output);
-            //update_log(output);
+               nfs_win->bash_output_interpreter(output);
             }
-            else
+            else if(class_tag ==  "qemu")
             {
-                update_log("Backup-manager config error");
+                qemu_win->bash_output_interpreter(output);
             }
-            break;
-        case 55:
-            // save backup-manager config
-            break;
-        case 56:
-            // verify connection and get ssh bash pid
-            output.replace(" ","");
-            if(!output.isEmpty() && output.toInt() != this->local_bash_pid && is_authorised == true)
+            else if(class_tag ==  "raid")
             {
-                this->ssh_bash_pid = output.toInt();
-                update_log("Connected via ssh");
-                QTimer *timer = new QTimer(this);
-                connect(timer, SIGNAL(timeout()), this, SLOT(verify_bash_pid()));
-                timer->start(5000);
+                raid_win->bash_output_interpreter(output);
             }
-            // activate interface
-            this->setEnabled(true);
-            status_win->setEnabled(true);
-            settings_win->setEnabled(true);
-            break;
-        case 57:
-            //get local bash pid
-            output.replace(" ","");
-            if(!output.isEmpty())
+            else if(class_tag ==  "smbd")
             {
-                this->local_bash_pid = output.toInt();
-                //update_log("local bash pid = "+QString::number(this->local_bash_pid));
+                samba_win->bash_output_interpreter(output);
             }
-            break;
-        case 58:
-            // check if ssh session stil active
-            output.replace(" ","");
-            if(output.toInt() != this->ssh_bash_pid)
+            else if(class_tag ==  "sett")
             {
-                update_log("Critical ssh connection error wrong bash pid: "+output+" expected: "+QString::number(this->ssh_bash_pid));
-                this->setEnabled(false);
-                status_win->setEnabled(false);
-                settings_win->setEnabled(false);
+                settings_win->bash_output_interpreter(output);
             }
-            //update_log("got bash pid: "+output+" expected: "+QString::number(this->ssh_bash_pid));
-            break;
-        case 59:
-            status_win->update_memory_info(output);
-            break;
-        case 60:
-            //update_log(output);
-            status_win->update_disk_info(output);
-            break;
-        case 61:
-            update_log(output);//dns install
-            break;
-        case 62:
-            set_status(output, 6);//status check for dns
-            break;
-        case 63:
-            set_port(output,6);//port check for dns
-            update_log(output);
-            break;
-        case 64:
-            pid_check(pids_names[6],6);//start dns
-            port_check(ports_names[6],6);
-            status_check(service_names[6],6);
-            break;
-        case 65:
-            pid_check(pids_names[6],6);//stop dns
-            port_check(ports_names[6],6);
-            status_check(service_names[6],6);
-            break;
-        case 66:
-            pid_check(pids_names[6],6);//restart dns
-            port_check(ports_names[6],6);
-            status_check(service_names[6],6);
-            break;
-        case 67:
-            set_pids(output, 6);//pid check for dns
-            break;
-        case 68:
-            qemu_win->on_load(output);
-            break;
-        case 69:
-            qemu_win->set_status(output);
-            break;
-        case 70:
-            qemu_win->set_xml(output);
-            break;
-        case 71:
-            update_log("Restarting guest");
-            qemu_win->check_status();
-            break;
-        case 72:
-            update_log("Stopping guest");
-            qemu_win->check_status();
-            break;
-        case 73:
-            update_log("Starting guest");
-            qemu_win->check_status();
-            break;
-        case 74:
-            update_log("XML: "+output);
-            qemu_win->set_xml(output);
-            break;
-        case 75:
-            pid_check(pids_names[7],7);//start libvirt
-            port_check(ports_names[7],7);
-            status_check(service_names[7],7);
-            break;
-        case 76:
-            pid_check(pids_names[7],7);//stop libvirt
-            port_check(ports_names[7],7);
-            status_check(service_names[7],7);
-            break;
-        case 77:
-            pid_check(pids_names[7],7);//restart libvirt
-            port_check(ports_names[7],7);
-            status_check(service_names[7],7);
-            break;
-        case 78:
-            update_log(output);//libvirt install
-            break;
-        case 79:
-            set_status(output,7);//status check for libvirt
-            break;
-        case 80:
-            set_pids(output,7);//pid check for libvirt
-            break;
-        case 81:
-            update_log(output);//libvirt install
-            break;
-
-        case 82://ftp check options
-            //ftpParam - variable to identify which param is being checked, set in ftp_window::ftpOptionCheck function before writing to bash_root
-            //ftp_win->set_param(ftpParam, output)
-            break;
-
-        case 83://apache enable check
-            if(output == "enabled")
+            else if(class_tag ==  "stat")
             {
-                set_enabled(true, 0);
+                status_win->bash_output_interpreter(output);
             }
-            else
+            else if(class_tag ==  "sshc")
             {
-                set_enabled(false, 0);
-             }
-            break;
-
-        case 84://mysql enable check
-            if(output == "enabled")
-            {
-                set_enabled(true, 1);
+                // todo: co to wgle jest i jak to dziaua
             }
-            else
-            {
-                set_enabled(false, 1);
-            }
-            break;
-
-        case 85://ftp enable check
-            if(output == "enabled")
-            {
-                set_enabled(true, 2);
-            }
-            else
-            {
-                set_enabled(false, 2);
-            }
-            break;
-
-        case 86://samba enable check
-            if(output == "enabled")
-            {
-                set_enabled(true, 3);
-            }
-            else
-            {
-                set_enabled(false, 3);
-            }
-            break;
-
-        case 87://dhcp enable check
-            if(output == "enabled")
-            {
-                set_enabled(true, 4);
-            }
-            else
-            {
-                set_enabled(false, 4);
-            }
-            break;
-
-        case 88://nfs enable check
-            if(output == "enabled")
-            {
-                set_enabled(true, 5);
-            }
-            else
-            {
-                set_enabled(false, 5);
-            }
-            break;
-
-        case 89://dns enable check
-            if(output == "enabled")
-            {
-                set_enabled(true, 6);
-            }
-            else
-            {
-                set_enabled(false, 6);
-            }
-            break;
-
-        case 90://libvirt enable check
-            if(output == "enabled")
-            {
-                set_enabled(true, 7);
-            }
-            else
-            {
-                set_enabled(false, 7);
-            }
-            break;
-        case 91://enabling services
-            update_module_info();
-            break;
-
-        case 98://update system
-            update_log(output);
-            update_log("Updating system complete");
-            break;
-        case 99://set updates
-            status_win->setUpdates(output + " update(s) available");
-            update_log("Checking updates: "+output);
-            break;
-
-        case 115://load docker containers
-            docker_win->load_data(1, output);
-            //DEVupdate_log("Loading docker window with following containers available: "+output);
-            docker_win->show();
-            break;
-        case 116://get docker ports
-            docker_win->setPorts(output);
-            break;
-        case 117:
-            set_status(output,8);//status check for libvirt
-            break;
-        case 118:
-            set_pids(output,8);//pid check for libvirt
-            break;
-        case 119://get docker status
-            docker_win->setStatus(output);
-            update_log("Stauts of docker: "+output);
-            break;
-        case 120://docker enable check
-            if(output == "enabled")
-            {
-                set_enabled(true, 8);
-            }
-            else
-            {
-                set_enabled(false, 8);
-            }
-            break;
-        case 121:
-            set_port(output,7);//port check for libvirt
-            update_log(output);
-            break;
-        case 122:
-            set_port(output,8);//port check for docker
-            update_log(output);
-            break;
-        case 123://start container
-
-        case 124://stop container
-            update_log("Stopping container: "+output);
-            break;
-        case 127://check backup-manager status
-            //DEVupdate_log("BM CHECK: "+output);
-            if(output == "/etc/backup-manager.conf")
-            {
-                ui->backup->setDisabled(false);
-                backup_manager = true;
-            }
-            else
-            {
-                ui->backup->setDisabled(true);
-                backup_manager = false;
-            }
-            break;
-
-        case 128:
-            pid_check(pids_names[8],8);//start docker
-            port_check(ports_names[8],8);
-            status_check(service_names[8],8);
-            break;
-        case 129:
-            pid_check(pids_names[8],8);//stop docker
-            port_check(ports_names[8],8);
-            status_check(service_names[8],8);
-            break;
-        case 130:
-            pid_check(pids_names[8],8);//restart docker
-            port_check(ports_names[8],8);
-            status_check(service_names[8],8);
-            break;
-        case 131:
-            //DEVupdate_log("Loading new container window with following images available: "+output);
-            docker_win->load_data(2, output);
-
-            break;
-        case 222:
-            update_log("Creating container "+output);
-            break;
-
-
-        default:
-            // do nothing
-            break;
-        }
         }
     }
 }
@@ -1866,7 +1318,7 @@ void main_widget::set_port(QString port, int module_number)
 
 void main_widget::on_iptables_clicked()
 {
-    bash_root->write("echo '[00037]'`ls -A1 /sys/class/net | sed ':a;N;$!ba;s/\\n/-separate-/g'`'[XXXXX]' \n");
+    bash_root->write("echo '[fire][00001]'`ls -A1 /sys/class/net | sed ':a;N;$!ba;s/\\n/-separate-/g'`'[XXXXX]' \n");
 }
 
 void main_widget::on_config_clicked()
@@ -1884,7 +1336,7 @@ void main_widget::on_info_clicked()
 
 void main_widget::on_apache_start_clicked()
 {
-    QString start_comand = "echo '[00019]'`systemctl start "+service_names[0]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00019]'`systemctl start "+service_names[0]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->apache_start->setEnabled(false);
     ui->apache_stop->setEnabled(false);
@@ -1894,7 +1346,7 @@ void main_widget::on_apache_start_clicked()
 
 void main_widget::on_apache_stop_clicked()
 {
-    QString stop_comand = "echo '[00020]'`systemctl stop "+service_names[0]+"`'[XXXXX]' \n";
+    QString stop_comand = "echo '[main][00020]'`systemctl stop "+service_names[0]+"`'[XXXXX]' \n";
     bash_root->write(stop_comand.toStdString().c_str());
     ui->apache_start->setEnabled(false);
     ui->apache_stop->setEnabled(false);
@@ -1904,7 +1356,7 @@ void main_widget::on_apache_stop_clicked()
 
 void main_widget::on_apache_restart_clicked()
 {
-    QString restart_comand = "echo '[00021]'`systemctl restart "+service_names[0]+"`'[XXXXX]' \n";
+    QString restart_comand = "echo '[main][00021]'`systemctl restart "+service_names[0]+"`'[XXXXX]' \n";
     bash_root->write(restart_comand.toStdString().c_str());
     ui->apache_start->setEnabled(false);
     ui->apache_stop->setEnabled(false);
@@ -1919,7 +1371,7 @@ void main_widget::on_apache_config_clicked()
 
 void main_widget::on_nfs_start_clicked()
 {
-    QString start_comand = "echo '[00022]'`systemctl start "+service_names[5]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00022]'`systemctl start "+service_names[5]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->nfs_start->setEnabled(false);
     ui->nfs_stop->setEnabled(false);
@@ -1929,7 +1381,7 @@ void main_widget::on_nfs_start_clicked()
 
 void main_widget::on_nfs_stop_clicked()
 {
-    QString stop_comand = "echo '[00023]'`systemctl stop "+service_names[5]+"`'[XXXXX]' \n";
+    QString stop_comand = "echo '[main][00023]'`systemctl stop "+service_names[5]+"`'[XXXXX]' \n";
     bash_root->write(stop_comand.toStdString().c_str());
     ui->nfs_start->setEnabled(false);
     ui->nfs_stop->setEnabled(false);
@@ -1939,7 +1391,7 @@ void main_widget::on_nfs_stop_clicked()
 
 void main_widget::on_nfs_restart_clicked()
 {
-    QString restart_comand = "echo '[00024]'`systemctl restart "+service_names[5]+"`'[XXXXX]' \n";
+    QString restart_comand = "echo '[main][00024]'`systemctl restart "+service_names[5]+"`'[XXXXX]' \n";
     bash_root->write(restart_comand.toStdString().c_str());
     ui->nfs_start->setEnabled(false);
     ui->nfs_stop->setEnabled(false);
@@ -1949,13 +1401,13 @@ void main_widget::on_nfs_restart_clicked()
 
 void main_widget::on_nfs_config_clicked()
 {
-    QString command_paths = "echo '[00049]'`sed -i '/^\\s*$/d' /etc/exports >/dev/null; grep -n -v '^\\#' /etc/exports | cut -d'(' -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
+    QString command_paths = "echo '[nfsd][00004]'`sed -i '/^\\s*$/d' /etc/exports >/dev/null; grep -n -v '^\\#' /etc/exports | cut -d'(' -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
     bash_root->write(command_paths.toStdString().c_str());
 }
 
 void main_widget::on_ftp_start_clicked()
 {
-    QString start_comand = "echo '[00025]'`systemctl start "+service_names[2]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00025]'`systemctl start "+service_names[2]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->ftp_start->setEnabled(false);
     ui->ftp_stop->setEnabled(false);
@@ -1966,7 +1418,7 @@ void main_widget::on_ftp_start_clicked()
 
 void main_widget::on_ftp_stop_clicked()
 {
-    QString start_comand = "echo '[00026]'`systemctl stop "+service_names[2]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00026]'`systemctl stop "+service_names[2]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->ftp_start->setEnabled(false);
     ui->ftp_stop->setEnabled(false);
@@ -1976,7 +1428,7 @@ void main_widget::on_ftp_stop_clicked()
 
 void main_widget::on_ftp_restart_clicked()
 {
-    QString start_comand = "echo '[00027]'`systemctl restart "+service_names[2]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00027]'`systemctl restart "+service_names[2]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->ftp_start->setEnabled(false);
     ui->ftp_stop->setEnabled(false);
@@ -2007,7 +1459,7 @@ void main_widget::on_pushButton_clicked()
 
 void main_widget::on_mysql_start_clicked()
 {
-    QString start_comand = "echo '[00039]'`systemctl start "+service_names[1]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00029]'`systemctl start "+service_names[1]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->mysql_start->setEnabled(false);
     ui->mysql_stop->setEnabled(false);
@@ -2017,7 +1469,7 @@ void main_widget::on_mysql_start_clicked()
 
 void main_widget::on_mysql_stop_clicked()
 {
-    QString start_comand = "echo '[00040]'`systemctl stop "+service_names[1]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00030]'`systemctl stop "+service_names[1]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->mysql_start->setEnabled(false);
     ui->mysql_stop->setEnabled(false);
@@ -2027,7 +1479,7 @@ void main_widget::on_mysql_stop_clicked()
 
 void main_widget::on_mysql_restart_clicked()
 {
-    QString start_comand = "echo '[00041]'`systemctl restart "+service_names[1]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00031]'`systemctl restart "+service_names[1]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->mysql_start->setEnabled(false);
     ui->mysql_stop->setEnabled(false);
@@ -2044,7 +1496,7 @@ void main_widget::on_mysql_config_clicked()
 
 void main_widget::on_samba_start_clicked()
 {
-    QString start_comand = "echo '[00042]'`systemctl start "+service_names[3]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00032]'`systemctl start "+service_names[3]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->samba_start->setEnabled(false);
     ui->samba_stop->setEnabled(false);
@@ -2054,7 +1506,7 @@ void main_widget::on_samba_start_clicked()
 
 void main_widget::on_samba_stop_clicked()
 {
-    QString start_comand = "echo '[00043]'`systemctl stop "+service_names[3]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00033]'`systemctl stop "+service_names[3]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->samba_start->setEnabled(false);
     ui->samba_stop->setEnabled(false);
@@ -2064,7 +1516,7 @@ void main_widget::on_samba_stop_clicked()
 
 void main_widget::on_samba_restart_clicked()
 {
-    QString start_comand = "echo '[00044]'`systemctl restart "+service_names[3]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00034]'`systemctl restart "+service_names[3]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->samba_start->setEnabled(false);
     ui->samba_stop->setEnabled(false);
@@ -2079,7 +1531,7 @@ void main_widget::on_samba_config_clicked()
 
 void main_widget::on_dhcp_start_clicked()
 {
-    QString start_comand = "echo '[00045]'`systemctl start "+service_names[4]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00035]'`systemctl start "+service_names[4]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->dhcp_start->setEnabled(false);
     ui->dhcp_stop->setEnabled(false);
@@ -2089,7 +1541,7 @@ void main_widget::on_dhcp_start_clicked()
 
 void main_widget::on_dhcp_stop_clicked()
 {
-    QString start_comand = "echo '[00046]'`systemctl stop "+service_names[4]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00036]'`systemctl stop "+service_names[4]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->dhcp_start->setEnabled(false);
     ui->dhcp_stop->setEnabled(false);
@@ -2099,7 +1551,7 @@ void main_widget::on_dhcp_stop_clicked()
 
 void main_widget::on_dhcp_restart_clicked()
 {
-    QString start_comand = "echo '[00047]'`systemctl restart "+service_names[4]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00037]'`systemctl restart "+service_names[4]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->dhcp_start->setEnabled(false);
     ui->dhcp_stop->setEnabled(false);
@@ -2120,7 +1572,7 @@ void main_widget::on_status_button_clicked()
 
 void main_widget::on_backup_clicked()
 {
-    QString check_bm_tarball = "echo '[00053]'`grep '^[[:space:]]*export[[:space:]]*BM_TARBALL_DIRECTORIES.*$' /etc/backup-manager.conf >> /dev/null && echo true`'[XXXXX]' \n";
+    QString check_bm_tarball = "echo '[back][00001]'`grep '^[[:space:]]*export[[:space:]]*BM_TARBALL_DIRECTORIES.*$' /etc/backup-manager.conf >> /dev/null && echo true`'[XXXXX]' \n";
     bash_root->write(check_bm_tarball.toStdString().c_str());
 }
 
@@ -2165,24 +1617,24 @@ void main_widget::ssh_connect_window_closed()
 
 void main_widget::check_ssh_connection()
 {
-    bash_root->write("echo '[00000]'`whoami`'[XXXXX]' \n");
+    bash_root->write("echo '[main][00000]'`whoami`'[XXXXX]' \n");
     QTimer::singleShot(500, this, SLOT(get_ssh_bash_pid()));
 }
 
 
 void main_widget::get_ssh_bash_pid()
 {
-    bash_root->write("echo '[00056]'`echo $$`'[XXXXX]' \n");
+    bash_root->write("echo '[main][00038]'`echo $$`'[XXXXX]' \n");
 }
 
 void main_widget::get_local_bash_pid()
 {
-    bash_root->write("echo '[00057]'`echo $$`'[XXXXX]' \n");
+    bash_root->write("echo '[main][00039]'`echo $$`'[XXXXX]' \n");
 }
 
 void main_widget::verify_bash_pid()
 {
-    bash_root->write("echo '[00058]'`echo $$`'[XXXXX]' \n");
+    bash_root->write("echo '[main][00040]'`echo $$`'[XXXXX]' \n");
 }
 
 
@@ -2198,7 +1650,7 @@ void main_widget::on_dns_config_clicked()
 
 void main_widget::on_dns_start_clicked()
 {
-    QString start_comand = "echo '[00064]'`systemctl start "+service_names[6]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00043]'`systemctl start "+service_names[6]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->dns_start->setEnabled(false);
     ui->dns_stop->setEnabled(true);
@@ -2209,7 +1661,7 @@ void main_widget::on_dns_start_clicked()
 
 void main_widget::on_dns_stop_clicked()
 {
-    QString start_comand = "echo '[00065]'`systemctl stop "+service_names[6]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00044]'`systemctl stop "+service_names[6]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->dns_start->setEnabled(true);
     ui->dns_stop->setEnabled(false);
@@ -2219,7 +1671,7 @@ void main_widget::on_dns_stop_clicked()
 
 void main_widget::on_dns_restart_clicked()
 {
-    QString start_comand = "echo '[00066]'`systemctl restart "+service_names[6]+"`'[XXXXX]' \n";
+    QString start_comand = "echo '[main][00045]'`systemctl restart "+service_names[6]+"`'[XXXXX]' \n";
     bash_root->write(start_comand.toStdString().c_str());
     ui->dns_start->setEnabled(false);
     ui->dns_stop->setEnabled(true);
@@ -2229,13 +1681,13 @@ void main_widget::on_dns_restart_clicked()
 
 void main_widget::on_qemu_config_clicked()
 {
-    QString command = "echo [00068]`virsh --connect qemu:///system list --all | awk '{ print $2 }' | sed -n 3,999p | sed ':a;N;$!ba;s/\\n/=/g' | rev | cut -d= -f2-999 | rev`[XXXXX]";
+    QString command = "echo [qemu][00001]`virsh --connect qemu:///system list --all | awk '{ print $2 }' | sed -n 3,999p | sed ':a;N;$!ba;s/\\n/=/g' | rev | cut -d= -f2-999 | rev`[XXXXX]";
     bash_root->write(command.toStdString().c_str());
 }
 
 void main_widget::on_qemu_start_clicked()
 {
-    QString command = "echo [00075]`systemctl start "+service_names[7]+"`[XXXXX]";
+    QString command = "echo [main][00047]`systemctl start "+service_names[7]+"`[XXXXX]";
     bash_root->write(command.toStdString().c_str());
     ui->qemu_start->setEnabled(false);
     ui->qemu_stop->setEnabled(true);
@@ -2246,7 +1698,7 @@ void main_widget::on_qemu_start_clicked()
 
 void main_widget::on_qemu_stop_clicked()
 {
-    QString command = "echo [00076]`systemctl stop "+service_names[7]+"`[XXXXX]";
+    QString command = "echo [main][00048]`systemctl stop "+service_names[7]+"`[XXXXX]";
     bash_root->write(command.toStdString().c_str());
     ui->qemu_start->setEnabled(true);
     ui->qemu_stop->setEnabled(false);
@@ -2256,7 +1708,7 @@ void main_widget::on_qemu_stop_clicked()
 
 void main_widget::on_qemu_restart_clicked()
 {
-    QString command = "echo [00077]`systemctl restart "+service_names[7]+"`[XXXXX]";
+    QString command = "echo [main][00049]`systemctl restart "+service_names[7]+"`[XXXXX]";
     bash_root->write(command.toStdString().c_str());
     ui->qemu_start->setEnabled(false);
     ui->qemu_stop->setEnabled(true);
@@ -2271,12 +1723,12 @@ void main_widget::enableService(bool state, int service)
     QString command = "";
     if(state == true)
     {
-        command = "echo '[00091]'`systemctl enable "+service_names[service]+"`'[XXXXX]'";
+        command = "echo '[main][00061]'`systemctl enable "+service_names[service]+"`'[XXXXX]'";
         update_log("Enabling "+service_names[service]);
     }
     else
     {
-        command = "echo '[00091]'`systemctl disable "+service_names[service]+"`'[XXXXX]'";
+        command = "echo '[main][00061]'`systemctl disable "+service_names[service]+"`'[XXXXX]'";
         update_log("Disabling "+service_names[service]);
     }
     bash_root->write(command.toStdString().c_str());
@@ -2329,21 +1781,13 @@ void main_widget::on_docker_enable_clicked(bool checked)
 
 void main_widget::on_docker_config_clicked()
 {
-    QString command = "echo [00115]`docker ps -a --format '{{.Names}}' | sed ':a;N;$!ba;s/\\n/=/g'`[XXXXX]";
-    //update_log(command);
+    QString command = "echo [dckr][00001]`docker ps -a --format '{{.Names}}' | sed ':a;N;$!ba;s/\\n/=/g'`[XXXXX]";
     bash_root->write(command.toStdString().c_str());
-
-    //QString command2 = "echo [00131]`docker image ls | sed -n 2,99p | awk '{ print $1 }' | sed ':a;N;$!ba;s/\\n/=/g'`[XXXXX]";
-    //update_log(command2);
-    //bash_root->write(command2.toStdString().c_str());
-
-    //docker_win->load_data();
-    //docker_win->show();
 }
 
 void main_widget::on_docker_start_clicked()
 {
-    QString command = "echo [00128]`systemctl start "+service_names[8]+"`[XXXXX]";
+    QString command = "echo [main][00067]`systemctl start "+service_names[8]+"`[XXXXX]";
     bash_root->write(command.toStdString().c_str());
     ui->docker_start->setEnabled(false);
     ui->docker_stop->setEnabled(true);
@@ -2353,7 +1797,7 @@ void main_widget::on_docker_start_clicked()
 
 void main_widget::on_docker_stop_clicked()
 {
-    QString command = "echo [00129]`systemctl stop "+service_names[8]+"`[XXXXX]";
+    QString command = "echo [main][00068]`systemctl stop "+service_names[8]+"`[XXXXX]";
     bash_root->write(command.toStdString().c_str());
     ui->docker_start->setEnabled(true);
     ui->docker_stop->setEnabled(false);
@@ -2363,7 +1807,7 @@ void main_widget::on_docker_stop_clicked()
 
 void main_widget::on_docker_restart_clicked()
 {
-    QString command = "echo [00130]`systemctl restart "+service_names[8]+"`[XXXXX]";
+    QString command = "echo [main][00069]`systemctl restart "+service_names[8]+"`[XXXXX]";
     bash_root->write(command.toStdString().c_str());
     ui->docker_start->setEnabled(false);
     ui->docker_stop->setEnabled(true);
@@ -2371,4 +1815,395 @@ void main_widget::on_docker_restart_clicked()
     update_log("Restarting "+service_names[8]);
 }
 
+
+void main_widget::bash_output_interpreter(QString output)
+{
+    if(output.startsWith("["))
+    {
+        QString tag = output.left(7);
+        tag.replace("[","");
+        tag.replace("]","");
+        int tag_number = tag.toInt();
+        output.remove(0, 7);
+        switch(tag_number)
+        {
+        case -1:
+            //log appender
+            break;
+        case 0:
+            authorisation(output);
+            break;
+        case 1:
+            set_status(output, 0);//status check for Apache
+            break;
+        case 2:
+            set_status(output, 1);//status check for mysql
+            break;
+        case 3:
+            set_status(output, 2);//status check for ftp
+            break;
+        case 4:
+            set_status(output, 3);//status check for samba
+            break;
+        case 5:
+            set_status(output, 4);//status check for dhcp
+            break;
+        case 6:
+            set_pids(output, 0);//pid check for apache
+            break;
+        case 7:
+            set_pids(output, 1);//pid check for mysql
+            break;
+        case 8:
+            set_pids(output, 2);//pid check for ftp
+            break;
+        case 9:
+            set_pids(output, 3);//pid check for samba
+            break;
+        case 10:
+            set_pids(output, 4);//pid check for dhcp
+            break;
+        case 11:
+            set_status(output, 5);//status check for nfs
+            break;
+        case 12:
+            set_pids(output, 5);//pid check for nfs
+            break;
+        case 13:
+            set_port(output,0);//port check for apache
+            break;
+        case 14:
+            set_port(output,1);//port check for mysql
+            break;
+        case 15:
+            set_port(output,2);//port check for ftp
+            break;
+        case 16:
+            set_port(output,3);//port check for samba
+            break;
+        case 17:
+            set_port(output,4);//port check for dhcp
+            break;
+        case 18:
+            set_port(output,5);//port check for nfs
+            break;
+        case 19:
+            pid_check(pids_names[0],0);//start apache
+            port_check(ports_names[0],0);
+            status_check(service_names[0],0);
+            break;
+        case 20:
+            pid_check(pids_names[0],0);//stop apache
+            port_check(ports_names[0],0);
+            status_check(service_names[0],0);
+            break;
+        case 21:
+            pid_check(pids_names[0],0);//restart apache
+            port_check(ports_names[0],0);
+            status_check(service_names[0],0);
+            break;
+        case 22:
+            pid_check(pids_names[5],5);//start nfs
+            port_check(ports_names[5],5);
+            status_check(service_names[5],5);
+            break;
+        case 23:
+            pid_check(pids_names[5],5);//stop nfs
+            port_check(ports_names[5],5);
+            status_check(service_names[5],5);
+            break;
+        case 24:
+            pid_check(pids_names[5],5);//restart nfs
+            port_check(ports_names[5],5);
+            status_check(service_names[5],5);
+            break;
+        case 25:
+            pid_check(pids_names[2],2);//start ftp
+            port_check(ports_names[2],2);
+            status_check(service_names[2],2);
+            break;
+        case 26:
+            pid_check(pids_names[2],2);//stop ftp
+            port_check(ports_names[2],2);
+            status_check(service_names[2],2);
+            break;
+        case 27:
+            pid_check(pids_names[2],2);//restart ftp
+            port_check(ports_names[2],2);
+            status_check(service_names[2],2);
+            break;
+        case 28:
+            update_log("Current kernel: "+output);//kernel info
+            break;
+        // RIP case 38
+        case 29:
+            pid_check(pids_names[1],1);//start mysql
+            port_check(ports_names[1],1);
+            status_check(service_names[1],1);
+            break;
+        case 30:
+            pid_check(pids_names[1],1);//stop mysql
+            port_check(ports_names[1],1);
+            status_check(service_names[1],1);
+            break;
+        case 31:
+            pid_check(pids_names[1],1);//restart mysql
+            port_check(ports_names[1],1);
+            status_check(service_names[1],1);
+            break;
+        case 32:
+            pid_check(pids_names[3],3);//start samba
+            port_check(ports_names[3],3);
+            status_check(service_names[3],3);
+            break;
+        case 33:
+            pid_check(pids_names[3],3);//stop samba
+            port_check(ports_names[3],3);
+            status_check(service_names[3],3);
+            break;
+        case 34:
+            pid_check(pids_names[3],3);//restart samba
+            port_check(ports_names[3],3);
+            status_check(service_names[3],3);
+            break;
+        case 35:
+            pid_check(pids_names[4],4);//start dhcp
+            port_check(ports_names[4],4);
+            status_check(service_names[4],4);
+            break;
+        case 36:
+            pid_check(pids_names[4],4);//stop dhcp
+            port_check(ports_names[4],4);
+            status_check(service_names[4],4);
+            break;
+        case 37:
+            pid_check(pids_names[4],4);//restart dhcp
+            port_check(ports_names[4],4);
+            status_check(service_names[4],4);
+            break;
+        case 38:
+            // verify connection and get ssh bash pid
+            output.replace(" ","");
+            if(!output.isEmpty() && output.toInt() != this->local_bash_pid && is_authorised == true)
+            {
+                this->ssh_bash_pid = output.toInt();
+                update_log("Connected via ssh");
+                QTimer *timer = new QTimer(this);
+                connect(timer, SIGNAL(timeout()), this, SLOT(verify_bash_pid()));
+                timer->start(5000);
+            }
+            // activate interface
+            this->setEnabled(true);
+            status_win->setEnabled(true);
+            settings_win->setEnabled(true);
+            break;
+        case 39:
+            //get local bash pid
+            output.replace(" ","");
+            if(!output.isEmpty())
+            {
+                this->local_bash_pid = output.toInt();
+                //update_log("local bash pid = "+QString::number(this->local_bash_pid));
+            }
+            break;
+        case 40:
+            // check if ssh session stil active
+            output.replace(" ","");
+            if(output.toInt() != this->ssh_bash_pid)
+            {
+                update_log("Critical ssh connection error wrong bash pid: "+output+" expected: "+QString::number(this->ssh_bash_pid));
+                this->setEnabled(false);
+                status_win->setEnabled(false);
+                settings_win->setEnabled(false);
+            }
+            //update_log("got bash pid: "+output+" expected: "+QString::number(this->ssh_bash_pid));
+            break;
+        case 41:
+            set_status(output, 6);//status check for dns
+            break;
+        case 42:
+            set_port(output,6);//port check for dns
+            update_log(output);
+            break;
+        case 43:
+            pid_check(pids_names[6],6);//start dns
+            port_check(ports_names[6],6);
+            status_check(service_names[6],6);
+            break;
+        case 44:
+            pid_check(pids_names[6],6);//stop dns
+            port_check(ports_names[6],6);
+            status_check(service_names[6],6);
+            break;
+        case 45:
+            pid_check(pids_names[6],6);//restart dns
+            port_check(ports_names[6],6);
+            status_check(service_names[6],6);
+            break;
+        case 46:
+            set_pids(output, 6);//pid check for dns
+            break;
+        case 47:
+            pid_check(pids_names[7],7);//start libvirt
+            port_check(ports_names[7],7);
+            status_check(service_names[7],7);
+            break;
+        case 48:
+            pid_check(pids_names[7],7);//stop libvirt
+            port_check(ports_names[7],7);
+            status_check(service_names[7],7);
+            break;
+        case 49:
+            pid_check(pids_names[7],7);//restart libvirt
+            port_check(ports_names[7],7);
+            status_check(service_names[7],7);
+            break;
+        case 50:
+            set_status(output,7);//status check for libvirt
+            break;
+        case 51:
+            set_pids(output,7);//pid check for libvirt
+            break;
+        case 52://apache enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 0);
+            }
+            else
+            {
+                set_enabled(false, 0);
+             }
+            break;
+        case 53://mysql enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 1);
+            }
+            else
+            {
+                set_enabled(false, 1);
+            }
+            break;
+        case 54://ftp enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 2);
+            }
+            else
+            {
+                set_enabled(false, 2);
+            }
+            break;
+        case 55://samba enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 3);
+            }
+            else
+            {
+                set_enabled(false, 3);
+            }
+            break;
+        case 56://dhcp enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 4);
+            }
+            else
+            {
+                set_enabled(false, 4);
+            }
+            break;
+        case 57://nfs enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 5);
+            }
+            else
+            {
+                set_enabled(false, 5);
+            }
+            break;
+        case 58://dns enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 6);
+            }
+            else
+            {
+                set_enabled(false, 6);
+            }
+            break;
+        case 59://libvirt enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 7);
+            }
+            else
+            {
+                set_enabled(false, 7);
+            }
+            break;
+        case 60://docker enable check
+            if(output == "enabled")
+            {
+                set_enabled(true, 8);
+            }
+            else
+            {
+                set_enabled(false, 8);
+            }
+            break;
+        case 61://enabling services
+            update_module_info();
+            break;
+        case 62:
+            set_status(output,8);//status check for libvirt
+            break;
+        case 63:
+            set_pids(output,8);//pid check for libvirt
+            break;
+        case 64:
+            set_port(output,7);//port check for libvirt
+            update_log(output);
+            break;
+        case 65://not used yet !!!!!!!!?
+            set_port(output,8);//port check for docker
+            update_log(output);
+            break;
+        case 66://check backup-manager status
+            //DEVupdate_log("BM CHECK: "+output);
+            if(output == "/etc/backup-manager.conf")
+            {
+                ui->backup->setDisabled(false);
+                backup_manager = true;
+            }
+            else
+            {
+                ui->backup->setDisabled(true);
+                backup_manager = false;
+            }
+            break;
+        case 67:
+            pid_check(pids_names[8],8);//start docker
+            port_check(ports_names[8],8);
+            status_check(service_names[8],8);
+            break;
+        case 68:
+            pid_check(pids_names[8],8);//stop docker
+            port_check(ports_names[8],8);
+            status_check(service_names[8],8);
+            break;
+        case 69:
+            pid_check(pids_names[8],8);//restart docker
+            port_check(ports_names[8],8);
+            status_check(service_names[8],8);
+            break;
+
+        default:
+            // do nothing
+            break;
+        }
+    }
+}
 

@@ -12,6 +12,84 @@ nfs_window::~nfs_window()
 {
     delete ui;
 }
+
+void nfs_window::bash_output_interpreter(QString output)
+{
+    if(output.startsWith("["))
+    {
+        QString tag = output.left(7);
+        tag.replace("[","");
+        tag.replace("]","");
+        int tag_number = tag.toInt();
+        output.remove(0, 7);
+        switch(tag_number)
+        {
+
+        case 1://48
+        {
+            emit data_to_log("NFS share added...");
+            QString command_paths_in = "echo '[nfsd][00004]'`sed -i '/^\\s*$/d' /etc/exports >/dev/null; grep -n -v '^\\#' /etc/exports | cut -d'(' -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
+            bash_root->write(command_paths_in.toStdString().c_str());
+            break;
+        }
+        case 2://49
+        {
+            this->get_params(output);
+            break;
+        }
+        case 3://50
+        {
+            QStringList paths_and_params;
+            if(output == "[paths_and_params]" || output == " [paths_and_params] ")
+            {
+                output = "";
+            }
+            else
+            {
+            paths_and_params = output.split("[paths_and_params]");
+            }
+            /*
+            int counter = 0;
+            QList<int> indexes_to_remove;
+            foreach (QString single_value, paths_and_params)
+            {
+                if(single_value == "" || single_value == " " || single_value == "\n")
+                {
+                    indexes_to_remove.append(counter);
+                }
+                counter++;
+            }
+            foreach (int index, indexes_to_remove)
+            {
+                paths_and_params.removeAt(index);
+            }
+            */
+            if(paths_and_params.size() > 1)
+            {
+            this->nfs_prepare_window(paths_and_params[0],paths_and_params[1]);
+            this->show();
+            }
+            else
+            {
+                this->nfs_prepare_window("","");
+                this->show();
+            }
+            break;
+        }
+        case 4://51
+        {
+            emit data_to_log("NFS share modified...");
+            QString command_paths = "echo '[nfsd][00004]'`sed -i '/^\\s*$/d' /etc/exports >/dev/null; grep -n -v '^\\#' /etc/exports | cut -d'(' -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
+            bash_root->write(command_paths.toStdString().c_str());
+            //on_nfs_config_clicked();
+            break;
+        }
+        default:
+            break;
+        }
+    }
+}
+
 QString nfs_window::from_begin_to_char(QString input, QString given_char, bool if_false_returns_rest)
 {
     // todo: fix zeby nie sypala programu  jak niema given chara
@@ -205,11 +283,11 @@ void nfs_window::on_apply_clicked()
             QString add_share_command;
             if(ui->share_combobox->currentText() == "new")
             {
-                add_share_command = "echo '[00048]'`echo '"+share+"' >> /etc/exports`'[XXXXX]' \n";
+                add_share_command = "echo '[00001]'`echo '"+share+"' >> /etc/exports`'[XXXXX]' \n";
             }
             else
             {
-                add_share_command = "echo '[00051]'`sed -i '"+from_begin_to_char(ui->share_combobox->currentText(),":",true)+"s!.*!"+share+"!' /etc/exports`'[XXXXX]' \n";
+                add_share_command = "echo '[00004]'`sed -i '"+from_begin_to_char(ui->share_combobox->currentText(),":",true)+"s!.*!"+share+"!' /etc/exports`'[XXXXX]' \n";
             }
             bash_root->write(add_share_command.toStdString().c_str());
         }
@@ -223,19 +301,6 @@ void nfs_window::on_apply_clicked()
 
 void nfs_window::get_params(QString paths)
 {
-    QString command_params = "echo '[00050]"+paths+"[paths_and_params]'`grep -v \"^\\#\" /etc/exports | cut -d\"(\" -f2 | cut -d\")\" -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
+    QString command_params = "echo '[00003]"+paths+"[paths_and_params]'`grep -v \"^\\#\" /etc/exports | cut -d\"(\" -f2 | cut -d\")\" -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
     bash_root->write(command_params.toStdString().c_str());
 }
-
-//PATHS: 6:/lolec *libQt5Xml57:/bolec * PARAMS: ro,all_squash,test,uid=500libQt5Xml5ro,no_root_squash,test,uid=600
-//QStringList pathz = kupaslonia!
-//
-/*
-tablica1: /sciezka
-tablica2: parametry_scieszki
-tablica1[0]="6:/lolec 192.168.0.1/24,192.168.0.0/24"
-QString::indexOf(" ");
-substring od początku do indexu
-tablica2[0]="ro,all_squash,test,uid=500"
-*/
-//sed -i 'nr_liniis!.*!share!' /etc/exports

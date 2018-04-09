@@ -22,6 +22,7 @@ public:
     void get_params(QString paths);
     QString from_begin_to_char(QString input, QString given_char, bool if_false_returns_rest);
     QStringList sort_options(QString share_options);
+    void bash_output_interpreter(QString output);
 
 signals:
     void data_to_log(QString new_content);

@@ -16,6 +16,11 @@ public:
     explicit ftp_window(QWidget *parent = 0);
     ~ftp_window();
     QProcess *bash_root;
+    void bash_output_interpreter(QString output);
+
+signals:
+    void data_to_log(QString new_content);
+
 
 public:
     void ftpOptionCheck();//ustawia checkboxy zgodnie ze stanem z configu

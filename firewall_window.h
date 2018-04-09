@@ -17,6 +17,7 @@ public:
     void firewall_prepare_window(QString ifaces);
     QProcess *bash_root;
     ~firewall_window();
+    void bash_output_interpreter(QString output);
 
 signals:
     void data_to_log(QString new_content);

@@ -14,6 +14,11 @@ class samba_window : public QWidget
 public:
     explicit samba_window(QWidget *parent = 0);
     ~samba_window();
+    void bash_output_interpreter(QString output);
+
+signals:
+    void data_to_log(QString new_content);
+
 
 private:
     Ui::samba_window *ui;

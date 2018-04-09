@@ -19,7 +19,7 @@ public:
     void backup_prepare_window(QString config_values);
     QProcess *bash_root;
     void save_config();
-
+    void bash_output_interpreter(QString output);
 
 signals:
     void data_to_log(QString new_content);

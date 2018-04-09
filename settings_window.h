@@ -19,6 +19,7 @@ public:
 	bool is_authorised;
     QStringList installCommands;
 	void settings_prepare_window();
+    void bash_output_interpreter(QString output);
 
 
 private slots:
@@ -48,6 +49,9 @@ private slots:
 
 signals:
     void distro_changed();
+    void data_to_log(QString new_content);
+    void update_module_info();
+
 
 private:
     Ui::settings_window *ui;

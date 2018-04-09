@@ -24,6 +24,24 @@ raid_window::~raid_window()
 {
     delete ui;
 }
+
+void raid_window::bash_output_interpreter(QString output)
+{
+    if(output.startsWith("["))
+    {
+        QString tag = output.left(7);
+        tag.replace("[","");
+        tag.replace("]","");
+        int tag_number = tag.toInt();
+        output.remove(0, 7);
+        switch(tag_number)
+        {
+        default:
+            break;
+        }
+    }
+}
+
 /*
  Target functionality:
  create array

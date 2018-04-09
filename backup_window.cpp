@@ -13,6 +13,69 @@ backup_window::~backup_window()
     delete ui;
 }
 
+void backup_window::bash_output_interpreter(QString output)
+{
+    if(output.startsWith("["))
+    {
+        QString tag = output.left(7);
+        tag.replace("[","");
+        tag.replace("]","");
+        int tag_number = tag.toInt();
+        output.remove(0, 7);
+        switch(tag_number)
+        {
+        case 1:
+            if(output == "true")
+            {
+                QMessageBox::StandardButton reply;
+                reply = QMessageBox::information(this,tr("Obsolete config warning"),tr("Your backup-manager uses obsolete TARBALL_DIRECTORIES method. SLM is only intendend to be used with array method. Choosing YES will convert your config to new format. Backup will be generated under /etc/backup-manager.conf.slm. Continue?"),QMessageBox::No | QMessageBox::Yes);
+                if(reply == QMessageBox::Yes)
+                {
+                    QString obsolete_list_values = "echo '[back][00002]'`grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_DIRECTORIES=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_REPOSITORY_ROOT=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_FREQUENCY=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_PREFIX=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "`'[XXXXX]' \n";
+                    bash_root->write(obsolete_list_values.toStdString().c_str());
+                }
+            }
+            else
+            {
+                // listowanie parametrów z configa z tablicą folderów
+                QString array_method_list_values = "echo '[back][00002]'`grep '^[[:blank:]]*BM_TARBALL_TARGETS' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_REPOSITORY_ROOT=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_FREQUENCY=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_PREFIX=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "`'[XXXXX]' \n";
+                bash_root->write(array_method_list_values.toStdString().c_str());
+            }
+            break;
+        case 2:
+            if(output != "")
+            {
+            this->show();
+            this->backup_prepare_window(output);
+            //update_log(output);
+            }
+            else
+            {
+                // update_log("Backup-manager config error");
+            }
+            break;
+        case 3:
+            // save backup-manager config
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
 QString backup_window::remove_char(QString input, QString char_to_remove)
 {
     // removes given char from begginig and end many times
@@ -113,7 +176,7 @@ void backup_window::backup_prepare_window(QString config_values)
             reply = QMessageBox::information(this,tr(""),tr("BM_ARCHIVE_FREQUENCY not found in /etc/backup-manager.conf. Do you want to add it?"),QMessageBox::No | QMessageBox::Yes);
             if(reply == QMessageBox::Yes)
             {
-                QString add_BM_ARCHIVE_FREQUENCY = "echo '[00055]'`echo 'export BM_ARCHIVE_FREQUENCY=\"daily\"' >> /etc/backup-manager.conf`'[XXXXX]' \n";
+                QString add_BM_ARCHIVE_FREQUENCY = "echo '[back][00003]'`echo 'export BM_ARCHIVE_FREQUENCY=\"daily\"' >> /etc/backup-manager.conf`'[XXXXX]' \n";
                 bash_root->write(add_BM_ARCHIVE_FREQUENCY.toStdString().c_str());
             }
         }
@@ -211,30 +274,30 @@ void backup_window::backup_prepare_window(QString config_values)
 void backup_window::save_config()
 {
     //BEGIN flushing BM_TARBALL_DIRECTORIES
-    QString command = "echo '[00055]'`sed -i '/^[[:space:]]*export[[:space:]]BM_TARBALL_DIRECTORIES.*/c\\\\#export BM_TARBALL_DIRECTORIES=\"\"' /etc/backup-manager.conf`'[XXXXX]' \n";
+    QString command = "echo '[back][00003]'`sed -i '/^[[:space:]]*export[[:space:]]BM_TARBALL_DIRECTORIES.*/c\\\\#export BM_TARBALL_DIRECTORIES=\"\"' /etc/backup-manager.conf`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
     //END flushing BM_TARBALL_DIRECTORIES
     //BEGIN flushing old BM_TARBALL_TARGETS
-    command = "echo '[00055]'`sed -i '/^[[:space:]]*export[[:space:]]BM_TARBALL_TARGETS.*/c\\\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+    command = "echo '[back][00003]'`sed -i '/^[[:space:]]*export[[:space:]]BM_TARBALL_TARGETS.*/c\\\\' /etc/backup-manager.conf`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
-    command = "echo '[00055]'`sed -i '/^[[:space:]]*BM_TARBALL_TARGETS/c\\\\' /etc/backup-manager.conf`'[XXXXX]' \n";//to check
+    command = "echo '[back][00003]'`sed -i '/^[[:space:]]*BM_TARBALL_TARGETS/c\\\\' /etc/backup-manager.conf`'[XXXXX]' \n";//to check
     bash_root->write(command.toStdString().c_str());
-    command = "echo '[00055]'`sed -i '/^[[:space:]]*declare -a BM_TARBALL_TARGETS/c\\\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+    command = "echo '[back][00003]'`sed -i '/^[[:space:]]*declare -a BM_TARBALL_TARGETS/c\\\\' /etc/backup-manager.conf`'[XXXXX]' \n";
     bash_root->write(command.toStdString().c_str());
     //END building new BM_TARBALL_TARGETS
 
     if(ui->backup_directories->toPlainText() != "")
     {
         //BUILDING NEW BM_TARBALL_TARGETS
-        QString command2 = "echo '[00055]'`echo \"declare -a BM_TARBALL_TARGETS\" >> /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command2 = "echo '[back][00003]'`echo \"declare -a BM_TARBALL_TARGETS\" >> /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command2.toStdString().c_str());
         QStringList directories = ui->backup_directories->toPlainText().split("\n");
         foreach(QString dir, directories)
         {
-            QString command3 = "echo '[00055]'`echo \"BM_TARBALL_TARGETS+=('"+dir+"')\" >> /etc/backup-manager.conf`'[XXXXX]' \n";
+            QString command3 = "echo '[back][00003]'`echo \"BM_TARBALL_TARGETS+=('"+dir+"')\" >> /etc/backup-manager.conf`'[XXXXX]' \n";
             bash_root->write(command3.toStdString().c_str());
         }
-        QString command4 = "echo '[00055]'`echo \"export BM_TARBALL_TARGETS\" >> /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command4 = "echo '[back][00003]'`echo \"export BM_TARBALL_TARGETS\" >> /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command4.toStdString().c_str());
     }
     else
@@ -246,7 +309,7 @@ void backup_window::save_config()
     if(ui->destination_directory->text() != "")
     {
         QString destination_directory = ui->destination_directory->text();
-        QString command_destination_directory = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_REPOSITORY_ROOT/c\\export BM_REPOSITORY_ROOT=\""+destination_directory+"\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_destination_directory = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_REPOSITORY_ROOT/c\\export BM_REPOSITORY_ROOT=\""+destination_directory+"\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_destination_directory.toStdString().c_str());
     } else
     {
@@ -257,7 +320,7 @@ void backup_window::save_config()
     if(ui->file_name_prefix->text() != "")
     {
         QString file_name_prefix = ui->file_name_prefix->text();
-        QString command_prefix = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_ARCHIVE_PREFIX/c\\export BM_ARCHIVE_PREFIX=\""+file_name_prefix+"\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_prefix = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_ARCHIVE_PREFIX/c\\export BM_ARCHIVE_PREFIX=\""+file_name_prefix+"\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_prefix.toStdString().c_str());
     }
     else
@@ -268,56 +331,56 @@ void backup_window::save_config()
 
     if(ui->format_tar->isChecked())
     {
-        QString command_format_tar = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"tar\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_format_tar = "echo '[back][0003]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"tar\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_format_tar.toStdString().c_str());
         // format tar
     }
     else if(ui->format_tar_gz->isChecked())
     {
-        QString command_format_tar_gz = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"tar.gz\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_format_tar_gz = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"tar.gz\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_format_tar_gz.toStdString().c_str());
         // format tar.gz
     }
     else if(ui->format_tar_bz2->isChecked())
     {
-        QString command_format_tar_bz2 = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"tar.bz2\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_format_tar_bz2 = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"tar.bz2\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_format_tar_bz2.toStdString().c_str());
         // format tar.bz2
     }
     else if(ui->format_tar_xz->isChecked())
     {
-        QString command_format_tar_xz = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"tar.xz\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_format_tar_xz = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"tar.xz\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_format_tar_xz.toStdString().c_str());
         // format tar.xz
     }
     else if(ui->format_tar_lzma->isChecked())
     {
-        QString command_format_tar_lzma = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"tar.lzma\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_format_tar_lzma = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"tar.lzma\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_format_tar_lzma.toStdString().c_str());
         // format tar.lzma
     }
     else if(ui->format_dar->isChecked())
     {
-        QString command_format_dar = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"dar\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_format_dar = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"dar\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_format_dar.toStdString().c_str());
         // format dar
     }
     else
     {
-        QString command_format_zip = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"zip\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_format_zip = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_TARBALL_FILETYPE/c\\export BM_TARBALL_FILETYPE=\"zip\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_format_zip.toStdString().c_str());
         // format zip
     }
 
     if(ui->frequency_daily->isChecked())
     {
-        QString command_frequency_daily = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_ARCHIVE_FREQUENCY/c\\export BM_ARCHIVE_FREQUENCY=\"daily\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_frequency_daily = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_ARCHIVE_FREQUENCY/c\\export BM_ARCHIVE_FREQUENCY=\"daily\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_frequency_daily.toStdString().c_str());
         // frequency dialy
     }
     else
     {
-        QString command_frequency_hourly = "echo '[00055]'`sed -i '/^[[:space:]]*export BM_ARCHIVE_FREQUENCY/c\\export BM_ARCHIVE_FREQUENCY=\"hourly\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        QString command_frequency_hourly = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_ARCHIVE_FREQUENCY/c\\export BM_ARCHIVE_FREQUENCY=\"hourly\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_frequency_hourly.toStdString().c_str());
         // frequency hourly
     }
