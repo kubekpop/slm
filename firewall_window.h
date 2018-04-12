@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QProcess>
+#include <QMessageBox>
 
 namespace Ui {
 class firewall_window;
@@ -25,11 +26,15 @@ signals:
 private slots:
     void on_dnat_apply_clicked();
 
-    void on_next_clicked();
-
-    void on_back_clicked();
-
     void on_routing_apply_clicked();
+
+    void on_custom_port_apply_clicked();
+
+    void ask(QString command, QString tag, QString tag_number);
+
+    void on_list_rules_ok_clicked();
+
+    void on_allowed_services_ok_clicked();
 
 private:
     Ui::firewall_window *ui;

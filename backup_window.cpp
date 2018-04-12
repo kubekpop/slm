@@ -24,6 +24,7 @@ void backup_window::bash_output_interpreter(QString output)
         output.remove(0, 7);
         switch(tag_number)
         {
+        //export BM_TARBALLINC_MASTERDATETYPE="weekly"
         case 1:
             if(output == "true")
             {
@@ -37,6 +38,7 @@ void backup_window::bash_output_interpreter(QString output)
                                                    "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_PREFIX=' /etc/backup-manager.conf | cut -d= -f2"
                                                    "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2"
                                                    "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2"
+                                                   "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALLINC_MASTERDATETYPE=' /etc/backup-manager.conf | cut -d= -f2"
                                                    "`'[XXXXX]' \n";
                     bash_root->write(obsolete_list_values.toStdString().c_str());
                 }
@@ -50,6 +52,8 @@ void backup_window::bash_output_interpreter(QString output)
                                                "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_ARCHIVE_PREFIX=' /etc/backup-manager.conf | cut -d= -f2"
                                                "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_NAMEFORMAT=' /etc/backup-manager.conf | cut -d= -f2"
                                                "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALL_FILETYPE=' /etc/backup-manager.conf | cut -d= -f2"
+                                               "; echo [backup-manager-config-split]; grep '^[[:blank:]]*export[[:blank:]]*BM_TARBALLINC_MASTERDATETYPE=' /etc/backup-manager.conf | cut -d= -f2"
+
                                                "`'[XXXXX]' \n";
                 bash_root->write(array_method_list_values.toStdString().c_str());
             }
@@ -111,7 +115,7 @@ void backup_window::backup_prepare_window(QString config_values)
     config_values.replace("'","");
     ui->backup_directories->clear();
     QStringList config_values_list = config_values.split("[backup-manager-config-split]");
-    if(config_values_list.size() == 6)
+    if(config_values_list.size() == 7)
     {
         // BM_TARBALL_TARGETS or BM_TARBALL_DIRECTORIES
         QString backup_dirs = config_values_list.at(0);
@@ -191,6 +195,36 @@ void backup_window::backup_prepare_window(QString config_values)
         else
         {
             emit data_to_log("BM_ARCHIVE_FREQUENCY not found in /etc/backup-manager.conf");
+        }
+
+        // BM_TARBALLINC_MASTERDATETYPE
+        QString BM_TARBALLINC_MASTERDATETYPE = config_values_list.at(6);
+        // w nastempnej linijce wali buga bo BM_ARCHIVE_FREQUENCY to spacja bo niema jej w configu
+        if(BM_TARBALLINC_MASTERDATETYPE != " ")
+        {
+            BM_TARBALLINC_MASTERDATETYPE = remove_char(BM_TARBALLINC_MASTERDATETYPE, " ");
+        }
+        else
+        {
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::information(this,tr(""),tr("BM_TARBALLINC_MASTERDATETYPE not found in /etc/backup-manager.conf. Do you want to add it?"),QMessageBox::No | QMessageBox::Yes);
+            if(reply == QMessageBox::Yes)
+            {
+                QString add_BM_TARBALLINC_MASTERDATETYPE = "echo '[back][00003]'`echo 'export BM_TARBALLINC_MASTERDATETYPE=\"weekly\"' >> /etc/backup-manager.conf`'[XXXXX]' \n";
+                bash_root->write(add_BM_TARBALLINC_MASTERDATETYPE.toStdString().c_str());
+            }
+        }
+        if(BM_TARBALLINC_MASTERDATETYPE == "weekly")
+        {
+            ui->master_weekly->setChecked(true);
+        }
+        else if(BM_ARCHIVE_FREQUENCY == "monthly")
+        {
+            ui->master_monthly->setChecked(true);
+        }
+        else
+        {
+            emit data_to_log("BM_TARBALLINC_MASTERDATETYPE not found in /etc/backup-manager.conf");
         }
 
         // BM_ARCHIVE_PREFIX
@@ -381,6 +415,19 @@ void backup_window::save_config()
     else
     {
         QString command_frequency_hourly = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_ARCHIVE_FREQUENCY/c\\export BM_ARCHIVE_FREQUENCY=\"hourly\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        bash_root->write(command_frequency_hourly.toStdString().c_str());
+        // frequency hourly
+    }
+
+    if(ui->master_monthly->isChecked())
+    {
+        QString command_frequency_daily = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_TARBALLINC_MASTERDATETYPE/c\\export BM_TARBALLINC_MASTERDATETYPE=\"monthly\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
+        bash_root->write(command_frequency_daily.toStdString().c_str());
+        // frequency dialy
+    }
+    else
+    {
+        QString command_frequency_hourly = "echo '[back][00003]'`sed -i '/^[[:space:]]*export BM_TARBALLINC_MASTERDATETYPE/c\\export BM_TARBALLINC_MASTERDATETYPE=\"weekly\"\\' /etc/backup-manager.conf`'[XXXXX]' \n";
         bash_root->write(command_frequency_hourly.toStdString().c_str());
         // frequency hourly
     }

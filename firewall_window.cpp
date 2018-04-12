@@ -27,6 +27,8 @@ void firewall_window::bash_output_interpreter(QString output)
             this->firewall_prepare_window(output);//gets interfaces and opens firewall
             this->show();
             break;
+        case 5:
+            emit data_to_log(output);  //do ostylowania
         default:
             break;
         }
@@ -35,7 +37,7 @@ void firewall_window::bash_output_interpreter(QString output)
 
 void firewall_window::firewall_prepare_window(QString ifaces)
 {
-    ui->stackedWidget->setCurrentIndex(0);
+    //ui->stackedWidget->setCurrentIndex(0);
     ui->source_interface->clear();
     ui->destination_interface->clear();
     ui->local_interface->clear();
@@ -47,6 +49,8 @@ void firewall_window::firewall_prepare_window(QString ifaces)
     interfaces.prepend("");
     ui->source_interface->addItem("*");
     ui->destination_interface->addItem("*");
+    ui->custom_port_interface->addItem("*");
+    ui->allowed_interface_services->addItem("*");
     foreach(QString iface, interfaces)
     {
         iface.replace("\n","");
@@ -139,31 +143,8 @@ void firewall_window::on_dnat_apply_clicked()
             }
             command_dnat += " -m state --state ESTABLISHED,RELATED -j ACCEPT; ";
 
-
-   emit data_to_log(command_dnat);
+            ask(command_dnat, "fire","00002");
 }
-
-void firewall_window::on_next_clicked()
-{
-    int current_index = ui->stackedWidget->currentIndex();
-    if(current_index < 2)
-    {
-        current_index++;
-        ui->stackedWidget->setCurrentIndex(current_index);
-    }
-}
-
-void firewall_window::on_back_clicked()
-{
-    int current_index = ui->stackedWidget->currentIndex();
-    if(current_index > 0)
-    {
-        current_index--;
-        ui->stackedWidget->setCurrentIndex(current_index);
-    }
-}
-
-
 
 void firewall_window::on_routing_apply_clicked()
 {
@@ -182,6 +163,132 @@ void firewall_window::on_routing_apply_clicked()
             }
             command_routing += "iptables -A FORWARD -i "+ui->internet_interface->currentText()+" -o "+ui->internet_interface->currentText()+" -m state --state NEW -j REJECT; ";
 
+            ask(command_routing, "fire","00003");
+}
 
-    emit data_to_log(command_routing); // tu wpisz komende
+void firewall_window::on_custom_port_apply_clicked()
+{
+    QString custom_port_command = "iptables -A INPUT";
+    if(ui->custom_port_interface->currentText() == "*")
+    {
+
+    }
+    else
+    {
+        custom_port_command += " -i " + ui->custom_port_interface->currentText();
+    }
+
+     if(ui->protocol_combo_box->currentText() == "TCP/UDP")
+     {
+         custom_port_command += " -p all";
+     }
+     else
+     {
+         custom_port_command += " -p " + ui->protocol_combo_box->currentText().toLower();
+     }
+
+   custom_port_command += " --dport " + ui->custom_port_value->text() + " -j ACCEPT";
+   ask(custom_port_command, "fire","00004");
+}
+
+
+void firewall_window::ask(QString command, QString tag, QString tag_number)
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::information(this,tr("Are you sure?"), command ,QMessageBox::No | QMessageBox::Yes);
+    if(reply == QMessageBox::Yes)
+    {
+        command.prepend("echo '["+ tag +"]["+ tag_number +"]'`");
+        command.append("`'[XXXXX]' \n");
+        //bash_root->write(command.toStdString().c_str());
+    }
+}
+
+void firewall_window::on_list_rules_ok_clicked()
+{
+    QString list_command = "echo '[fire][00005]'`iptables -L " + ui->list_rules_chain->currentText() + "`'[XXXXX]' \n";
+    bash_root->write(list_command.toStdString().c_str());
+}
+
+void firewall_window::on_allowed_services_ok_clicked()
+{
+    QString services_command_body;
+    int counter = 0;
+    if(ui->sql_check->isChecked())
+    {
+        counter++;
+    }
+    if(ui->http_check->isChecked())
+    {
+        counter++;
+    }
+    if(ui->https_check->isChecked())
+    {
+        counter++;
+    }
+    if(ui->ftp_check->isChecked())
+    {
+        counter++;
+    }
+    if(counter == 0)
+    {
+
+    }
+    else if(counter == 1)
+    {
+        services_command_body += " -p tcp -m tcp --dport ";
+        if(ui->sql_check->isChecked())
+        {
+            services_command_body += "3389";
+        }
+        if(ui->http_check->isChecked())
+        {
+            services_command_body += "80";
+        }
+        if(ui->https_check->isChecked())
+        {
+            services_command_body += "443";
+        }
+        if(ui->ftp_check->isChecked())
+        {
+            services_command_body += "21";
+        }
+    }
+    else
+    {
+        services_command_body += " -p tcp -m multiport --dports ";
+        QString ports;
+        if(ui->sql_check->isChecked())
+        {
+            ports += "3389";
+        }
+        if(ui->http_check->isChecked())
+        {
+            ports+= ",80";
+        }
+        if(ui->https_check->isChecked())
+        {
+            ports += ",443";
+        }
+        if(ui->ftp_check->isChecked())
+        {
+            ports += ",21";
+        }
+        if(ports.startsWith(","))
+        {
+            ports.remove(0,1);
+        }
+        if(ports.endsWith(","))
+        {
+            ports.chop(1);
+        }
+        services_command_body += ports;
+    }
+    services_command_body += " -j ACCEPT";
+    QString services_command_full = "iptables -A INPUT" + services_command_body;
+    if(ui->add_output_rule->isChecked())
+    {
+        services_command_full += "; iptables -A OUTPUT" + services_command_body;
+    }
+    ask(services_command_full, "fire","00006");
 }

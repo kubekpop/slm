@@ -28,17 +28,38 @@
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_2">
-       <property name="text">
-        <string>weekly</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButton">
-       <property name="text">
-        <string>monthly</string>
-       </property>
+      <widget class="QWidget" name="widget_2" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QRadioButton" name="master_weekly">
+          <property name="text">
+           <string>weekly</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="master_monthly">
+          <property name="text">
+           <string>monthly</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
@@ -86,28 +107,28 @@
      <item>
       <widget class="QRadioButton" name="format_tar_gz">
        <property name="text">
-        <string>tar.gz</string>
+        <string>tar.&amp;gz</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QRadioButton" name="format_tar_bz2">
        <property name="text">
-        <string>tar.bz2</string>
+        <string>tar.bz&amp;2</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QRadioButton" name="format_tar_xz">
        <property name="text">
-        <string>tar.xz</string>
+        <string>tar.&amp;xz</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QRadioButton" name="format_tar_lzma">
        <property name="text">
-        <string>tar.lzma</string>
+        <string>tar.&amp;lzma</string>
        </property>
       </widget>
      </item>
@@ -121,7 +142,7 @@
      <item>
       <widget class="QRadioButton" name="format_zip">
        <property name="text">
-        <string>zip</string>
+        <string>z&amp;ip</string>
        </property>
       </widget>
      </item>
