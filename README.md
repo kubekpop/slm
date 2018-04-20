@@ -38,12 +38,13 @@ This panel is used for nfs server configuration. It allows to manage most common
 * rw/ro permissions
 * access permissions
 * other options in plain text edit field
+Unfortuately, there is no support for multi-access shares (multiple permissions in one line)
 
 #### Firewall Configurator (preview, WIP)
 This panel is used for firewall configuration. It uses iptables command. Available features (only adding and deleting, no edit available yet
 * DNAT port forwarding
 * Masquerade LAN to WAN
-* Open ports (preview)
+* Open ports
 * List rules in chain and delete them (preview)
 
 #### Apache Configurator (preview)
@@ -60,10 +61,6 @@ This panel is used for Apache configuration. Available features:
 
 #### DHCP Configurator (preview)
 
-#### DNS Configurator (preview)
-* Manage existing zones
-* Create new zones
-
 #### Backup-Manager
 This panel is used for backup-manager configuration. It allows to modify following options in config file:
 * Incremental frequency
@@ -79,6 +76,7 @@ This panel is used to manage DNS server (bind). It allows to create and manage z
 * Create forward lookup zone
 * Create reverse lookup zone
 * Manage records in zones
+* Show records in forward lookup zones (done)
 
 #### QEMU/KVM
 This panel is used to view and manage existing virtual machines (doesn't support creating new domains).

@@ -28,8 +28,7 @@ void nfs_window::bash_output_interpreter(QString output)
         case 1://48
         {
             emit data_to_log("NFS share added...");
-            QString command_paths_in = "echo '[nfsd][00004]'`sed -i '/^\\s*$/d' /etc/exports >/dev/null; grep -n -v '^\\#' /etc/exports | cut -d'(' -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
-            bash_root->write(command_paths_in.toStdString().c_str());
+            load_shares();
             break;
         }
         case 2://49
@@ -79,8 +78,8 @@ void nfs_window::bash_output_interpreter(QString output)
         case 4://51
         {
             emit data_to_log("NFS share modified...");
-            QString command_paths = "echo '[nfsd][00004]'`sed -i '/^\\s*$/d' /etc/exports >/dev/null; grep -n -v '^\\#' /etc/exports | cut -d'(' -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
-            bash_root->write(command_paths.toStdString().c_str());
+            //6:/srv/nfs4         hostname1libQt5Xml57:/srv/nfs4/home   hostname1
+            load_shares();
             //on_nfs_config_clicked();
             break;
         }
@@ -88,6 +87,12 @@ void nfs_window::bash_output_interpreter(QString output)
             break;
         }
     }
+}
+
+void nfs_window::load_shares()
+{
+    QString command_paths = "echo '[nfsd][00002]'`sed -i '/^\\s*$/d' /etc/exports >/dev/null; grep -n -v '^\\#' /etc/exports | cut -d'(' -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
+    bash_root->write(command_paths.toStdString().c_str());
 }
 
 QString nfs_window::from_begin_to_char(QString input, QString given_char, bool if_false_returns_rest)
@@ -283,11 +288,11 @@ void nfs_window::on_apply_clicked()
             QString add_share_command;
             if(ui->share_combobox->currentText() == "new")
             {
-                add_share_command = "echo '[00001]'`echo '"+share+"' >> /etc/exports`'[XXXXX]' \n";
+                add_share_command = "echo '[nfsd][00001]'`echo '"+share+"' >> /etc/exports`'[XXXXX]' \n";
             }
             else
             {
-                add_share_command = "echo '[00004]'`sed -i '"+from_begin_to_char(ui->share_combobox->currentText(),":",true)+"s!.*!"+share+"!' /etc/exports`'[XXXXX]' \n";
+                add_share_command = "echo '[nfsd][00004]'`sed -i '"+from_begin_to_char(ui->share_combobox->currentText(),":",true)+"s!.*!"+share+"!' /etc/exports`'[XXXXX]' \n";
             }
             bash_root->write(add_share_command.toStdString().c_str());
         }
@@ -301,6 +306,13 @@ void nfs_window::on_apply_clicked()
 
 void nfs_window::get_params(QString paths)
 {
-    QString command_params = "echo '[00003]"+paths+"[paths_and_params]'`grep -v \"^\\#\" /etc/exports | cut -d\"(\" -f2 | cut -d\")\" -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
+    QString command_params = "echo '[nfsd][00003]"+paths+"[paths_and_params]'`grep -v \"^\\#\" /etc/exports | cut -d\"(\" -f2 | cut -d\")\" -f1 | sed ':a;N;$!ba;s%\\n%libQt5Xml5%g'`'[XXXXX]' \n";
     bash_root->write(command_params.toStdString().c_str());
 }
+
+//sprawdza, czy są podwójne wpisy:
+//grep -n ^.*\).*\(.*$ /etc/exports
+//output: 4:/srv/home        hostname1(rw,sync) hostname2(ro,sync)
+
+
+
