@@ -18,6 +18,7 @@ public:
     explicit nfs_window(QWidget *parent = 0);
     ~nfs_window();
     QProcess *bash_root;
+    void load_shares();
     void nfs_prepare_window(QString paths, QString params);
     void get_params(QString paths);
     QString from_begin_to_char(QString input, QString given_char, bool if_false_returns_rest);
