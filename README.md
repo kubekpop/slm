@@ -10,7 +10,7 @@ SLM uses following commands: netstat, systemctl, ps, iptables, awk, sed, grep. M
 * SUSE: net-tools-deprecated sshpass
 * ARCH: sshpass
 * FEDORA: sshpass
-* DEBIAN/UBUNTU: sshpass
+* DEBIAN/UBUNTU: sshpass qt5-default
 
 ### 2. USAGE
 SLM is a GUI binary file either installed from rpm/deb package or run directly from an executable. It's supposed to run as a standard user. Advanced options appear after authenticating in a program.
